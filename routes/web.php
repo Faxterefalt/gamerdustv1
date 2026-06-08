@@ -1,7 +1,8 @@
 <?php
 
-use App\Http\Controllers\CharacterController;
+use App\Http\Controllers\AccountController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CharacterController;
 use App\Http\Controllers\CostEstimationController;
 use App\Http\Controllers\DialogueNodeController;
 use App\Http\Controllers\EmotionalAnalysisController;
@@ -31,6 +32,10 @@ Route::post('logout', [AuthController::class, 'destroy'])
     ->name('logout');
 
 Route::middleware(['auth', 'verified'])->group(function (): void {
+    Route::get('account', [AccountController::class, 'edit'])->name('account.edit');
+    Route::put('account/profile', [AccountController::class, 'updateProfile'])->name('account.profile.update');
+    Route::put('account/password', [AccountController::class, 'updatePassword'])->name('account.password.update');
+
     Route::resource('projects', ProjectController::class);
 
     Route::post('projects/{project}/constraints', [ProjectConstraintController::class, 'store'])
