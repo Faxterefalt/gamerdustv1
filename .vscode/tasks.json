@@ -1,0 +1,33 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "api: serve",
+            "type": "shell",
+            "command": "php artisan serve",
+            "options": { "cwd": "${workspaceFolder}/apps/api" },
+            "isBackground": true,
+            "problemMatcher": []
+        },
+        {
+            "label": "web: vite dev",
+            "type": "shell",
+            "command": "npm run dev",
+            "options": { "cwd": "${workspaceFolder}/apps/api" },
+            "isBackground": true,
+            "problemMatcher": []
+        },
+        {
+            "label": "dev: api + web",
+            "dependsOn": ["api: serve", "web: vite dev"],
+            "problemMatcher": []
+        },
+        {
+            "label": "api: tests",
+            "type": "shell",
+            "command": "php artisan test",
+            "options": { "cwd": "${workspaceFolder}/apps/api" },
+            "problemMatcher": []
+        }
+    ]
+}

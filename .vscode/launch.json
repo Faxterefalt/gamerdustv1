@@ -1,0 +1,14 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "API: Xdebug (Laravel)",
+            "type": "php",
+            "request": "launch",
+            "port": 9003,
+            "pathMappings": {
+                "${workspaceFolder}/apps/api": "${workspaceFolder}/apps/api"
+            }
+        }
+    ]
+}

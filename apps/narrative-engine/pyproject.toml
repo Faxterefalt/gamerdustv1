@@ -1,0 +1,6 @@
+[project]
+name = "gamerdust-narrative-engine"
+version = "0.1.0"
+description = "Motor de análisis narrativo de Gamerdust (texto, VAD, coherencia e IA)"
+requires-python = ">=3.11"
+dependencies = []
