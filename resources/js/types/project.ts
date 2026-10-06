@@ -62,6 +62,8 @@ export interface Project {
     title: string;
     description?: string | null;
     game_genre?: string | null;
+    language?: string;
+    favorite?: boolean;
     narrative_type: NarrativeType;
     premise?: string | null;
     central_conflict?: string | null;

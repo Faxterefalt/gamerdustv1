@@ -28,10 +28,10 @@ export default function Register() {
                     <Field label="Email" error={errors.email}>
                         <input value={data.email} onChange={(event) => setData('email', event.target.value)} className={inputClass} />
                     </Field>
-                    <Field label="Password" error={errors.password}>
+                    <Field label="Contraseña" error={errors.password}>
                         <input type="password" value={data.password} onChange={(event) => setData('password', event.target.value)} className={inputClass} />
                     </Field>
-                    <Field label="Confirmar password" error={errors.password_confirmation}>
+                    <Field label="Confirmar contraseña" error={errors.password_confirmation}>
                         <input
                             type="password"
                             value={data.password_confirmation}

@@ -18,11 +18,12 @@ class StoreProjectRequest extends FormRequest
             'title' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
             'game_genre' => ['nullable', 'string', 'max:255'],
-            'narrative_type' => ['required', Rule::in(['game_story', 'balanced_narrative', 'player_story'])],
+            'language' => ['required', Rule::in(['Español', 'English'])],
+            'narrative_type' => ['sometimes', Rule::in(['game_story', 'balanced_narrative', 'player_story'])],
             'premise' => ['nullable', 'string'],
             'central_conflict' => ['nullable', 'string'],
             'target_audience' => ['nullable', 'string', 'max:255'],
-            'status' => ['required', Rule::in(['draft', 'in_progress', 'completed'])],
+            'status' => ['sometimes', Rule::in(['draft', 'in_progress', 'completed'])],
         ];
     }
 }

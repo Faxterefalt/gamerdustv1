@@ -1,6 +1,8 @@
-import { Link, router, usePage } from '@inertiajs/react';
+import { usePage } from '@inertiajs/react';
 import type { PropsWithChildren, ReactNode } from 'react';
 import type { PageProps } from '../../types/project';
+import Footer from '../site/Footer';
+import Header from '../site/Header';
 
 interface AppShellProps extends PropsWithChildren {
     title?: string;
@@ -9,35 +11,10 @@ interface AppShellProps extends PropsWithChildren {
 
 export default function AppShell({ title, actions, children }: AppShellProps) {
     const { props } = usePage<PageProps>();
-    const logout = () => router.post('/logout');
 
     return (
-        <div className="min-h-screen bg-zinc-950 text-zinc-100">
-            <header className="border-b border-zinc-800 bg-zinc-950/95">
-                <div className="mx-auto flex max-w-7xl flex-col gap-4 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
-                    <div className="flex items-center gap-5">
-                        <Link href="/projects" className="text-lg font-semibold text-amber-300">
-                            Gamerdust
-                        </Link>
-                        <nav className="flex items-center gap-3 text-sm text-zinc-300">
-                            <Link href="/projects" className="hover:text-white">
-                                Proyectos
-                            </Link>
-                            <Link href="/account" className="hover:text-white">
-                                Cuenta
-                            </Link>
-                        </nav>
-                    </div>
-                    <div className="flex items-center gap-3 text-sm">
-                        <Link href="/account" className="text-zinc-400 hover:text-white">
-                            {props.auth.user?.name ?? 'Sesion local'}
-                        </Link>
-                        <button type="button" onClick={logout} className="border border-zinc-700 px-3 py-2 text-zinc-300 hover:border-rose-500 hover:text-rose-100">
-                            Cerrar sesion
-                        </button>
-                    </div>
-                </div>
-            </header>
+        <div className="min-h-screen bg-background text-foreground">
+            <Header />
 
             <main className="mx-auto max-w-7xl px-4 py-6 sm:px-6">
                 {(title || actions) && (
@@ -61,6 +38,7 @@ export default function AppShell({ title, actions, children }: AppShellProps) {
 
                 {children}
             </main>
+            <Footer />
         </div>
     );
 }

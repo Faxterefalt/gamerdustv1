@@ -62,12 +62,12 @@ export default function Edit() {
 
                 <section className="border border-zinc-800 bg-zinc-900 p-5">
                     <div>
-                        <h2 className="text-lg font-semibold text-white">Password</h2>
-                        <p className="mt-1 text-sm text-zinc-400">Confirma tu password actual antes de guardar uno nuevo.</p>
+                        <h2 className="text-lg font-semibold text-white">Contraseña</h2>
+                        <p className="mt-1 text-sm text-zinc-400">Confirma tu contraseña actual antes de guardar uno nuevo.</p>
                     </div>
 
                     <form onSubmit={submitPassword} className="mt-5 space-y-4">
-                        <Field label="Password actual" error={passwordForm.errors.current_password}>
+                        <Field label="Contraseña actual" error={passwordForm.errors.current_password}>
                             <input
                                 type="password"
                                 value={passwordForm.data.current_password}
@@ -75,10 +75,10 @@ export default function Edit() {
                                 className={inputClass}
                             />
                         </Field>
-                        <Field label="Nuevo password" error={passwordForm.errors.password}>
+                        <Field label="Nueva contraseña" error={passwordForm.errors.password}>
                             <input type="password" value={passwordForm.data.password} onChange={(event) => passwordForm.setData('password', event.target.value)} className={inputClass} />
                         </Field>
-                        <Field label="Confirmar nuevo password" error={passwordForm.errors.password_confirmation}>
+                        <Field label="Confirmar nueva contraseña" error={passwordForm.errors.password_confirmation}>
                             <input
                                 type="password"
                                 value={passwordForm.data.password_confirmation}
@@ -92,7 +92,7 @@ export default function Edit() {
                             disabled={passwordForm.processing}
                             className="border border-amber-600 px-4 py-2 text-sm font-medium text-amber-100 hover:bg-amber-950 disabled:opacity-50"
                         >
-                            Cambiar password
+                            Cambiar contraseña
                         </button>
                     </form>
                 </section>

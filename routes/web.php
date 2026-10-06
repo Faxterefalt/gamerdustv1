@@ -14,11 +14,7 @@ use App\Http\Controllers\SceneController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
-Route::get('/', function () {
-    return auth()->check()
-        ? redirect()->route('projects.index')
-        : Inertia::render('Auth/Login');
-});
+Route::get('/', fn () => Inertia::render('Landing'));
 
 Route::middleware('guest')->group(function (): void {
     Route::get('login', [AuthController::class, 'create'])->name('login');
@@ -36,6 +32,8 @@ Route::middleware(['auth', 'verified'])->group(function (): void {
     Route::put('account/profile', [AccountController::class, 'updateProfile'])->name('account.profile.update');
     Route::put('account/password', [AccountController::class, 'updatePassword'])->name('account.password.update');
 
+    Route::patch('projects/{project}/favorite', [ProjectController::class, 'toggleFavorite'])
+        ->name('projects.favorite');
     Route::resource('projects', ProjectController::class);
 
     Route::post('projects/{project}/constraints', [ProjectConstraintController::class, 'store'])

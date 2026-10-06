@@ -41,7 +41,7 @@ class ProjectController extends Controller
         $project = $request->user()->projects()->create($request->validated());
 
         return redirect()
-            ->route('projects.show', $project)
+            ->route('projects.index')
             ->with('success', 'Proyecto narrativo creado.');
     }
 
@@ -83,6 +83,15 @@ class ProjectController extends Controller
         return redirect()
             ->route('projects.show', $project)
             ->with('success', 'Proyecto actualizado.');
+    }
+
+    public function toggleFavorite(Project $project): RedirectResponse
+    {
+        $this->authorize('update', $project);
+
+        $project->update(['favorite' => ! $project->favorite]);
+
+        return back();
     }
 
     public function destroy(Project $project): RedirectResponse

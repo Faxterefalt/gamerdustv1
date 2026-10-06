@@ -17,12 +17,19 @@ class Project extends Model
         'title',
         'description',
         'game_genre',
+        'language',
         'narrative_type',
         'premise',
         'central_conflict',
         'target_audience',
         'status',
+        'favorite',
     ];
+
+    protected function casts(): array
+    {
+        return ['favorite' => 'boolean'];
+    }
 
     public function user(): BelongsTo
     {

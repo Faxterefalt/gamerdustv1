@@ -1,11 +1,16 @@
 import { Link, router } from '@inertiajs/react';
+import { ArrowUpRight, GitBranch, Star, Trash2 } from 'lucide-react';
+import { imageForGenre } from '../../lib/styles';
 import type { Project } from '../../types/project';
 
 interface ProjectCardProps {
     project: Project;
+    list: boolean;
 }
 
-export default function ProjectCard({ project }: ProjectCardProps) {
+export default function ProjectCard({ project, list }: ProjectCardProps) {
+    const scenes = project.scenes_count ?? 0;
+    const toggleFavorite = () => router.patch(`/projects/${project.id}/favorite`, {}, { preserveScroll: true });
     const destroy = () => {
         if (confirm(`Eliminar "${project.title}"?`)) {
             router.delete(`/projects/${project.id}`);
@@ -13,33 +18,50 @@ export default function ProjectCard({ project }: ProjectCardProps) {
     };
 
     return (
-        <article className="border border-zinc-800 bg-zinc-900 p-4">
-            <div className="flex items-start justify-between gap-4">
-                <div>
-                    <Link href={`/projects/${project.id}`} className="text-lg font-semibold text-white hover:text-amber-200">
+        <article className={`group overflow-hidden rounded-lg border border-border bg-[#171d16] transition hover:border-primary/50 ${list ? 'flex' : ''}`}>
+            <Link href={`/projects/${project.id}`} className={`relative block overflow-hidden ${list ? 'w-36 shrink-0' : 'h-52 w-full'}`}>
+                <img
+                    src={imageForGenre(project.game_genre)}
+                    alt={project.title}
+                    className="h-full w-full object-cover brightness-75 transition duration-500 group-hover:scale-105"
+                />
+                <span className="absolute left-4 top-4 rounded border border-white/20 bg-black/40 px-2 py-1 font-mono text-[8px] uppercase tracking-wider">
+                    {project.game_genre || 'Sin género'}
+                </span>
+            </Link>
+            <div className="flex-1 p-5">
+                <div className="flex items-center justify-between gap-3">
+                    <Link href={`/projects/${project.id}`} className="font-display text-xl">
                         {project.title}
                     </Link>
-                    <p className="mt-1 text-sm text-zinc-400">{project.game_genre || 'Genero sin definir'}</p>
+                    <button
+                        type="button"
+                        aria-label={project.favorite ? 'Quitar de favoritos' : 'Añadir a favoritos'}
+                        onClick={toggleFavorite}
+                    >
+                        <Star size={16} className={project.favorite ? 'fill-primary text-primary' : 'text-[#74816b]'} />
+                    </button>
                 </div>
-                <span className="border border-zinc-700 px-2 py-1 text-xs text-zinc-300">{project.status}</span>
-            </div>
-
-            <p className="mt-4 line-clamp-3 text-sm text-zinc-300">{project.description || 'Sin descripcion todavia.'}</p>
-
-            <div className="mt-4 grid grid-cols-4 gap-2 text-center text-xs text-zinc-400">
-                <span>Lore {project.lore_entries_count ?? 0}</span>
-                <span>Pers. {project.characters_count ?? 0}</span>
-                <span>Esc. {project.scenes_count ?? 0}</span>
-                <span>Dial. {project.dialogue_nodes_count ?? 0}</span>
-            </div>
-
-            <div className="mt-4 flex gap-2">
-                <Link href={`/projects/${project.id}/edit`} className="border border-zinc-700 px-3 py-2 text-sm hover:border-amber-500">
-                    Editar
-                </Link>
-                <button type="button" onClick={destroy} className="border border-rose-800 px-3 py-2 text-sm text-rose-200 hover:bg-rose-950">
-                    Eliminar
-                </button>
+                <p className="mt-2 line-clamp-2 min-h-10 text-xs leading-5 text-[#94a18a]">
+                    {project.description || 'Un nuevo mundo espera su primera historia.'}
+                </p>
+                <div className="mt-5 flex items-center justify-between border-t border-border pt-4 text-[10px] text-[#74816b]">
+                    <span className="flex gap-2">
+                        <GitBranch size={13} />
+                        {scenes} escenas
+                    </span>
+                    <span className="flex items-center gap-4">
+                        <Link href={`/projects/${project.id}/edit`} className="hover:text-white">
+                            Editar
+                        </Link>
+                        <button type="button" onClick={destroy} aria-label="Eliminar proyecto" className="hover:text-rose-300">
+                            <Trash2 size={13} />
+                        </button>
+                        <Link href={`/projects/${project.id}`} className="flex items-center gap-2 text-primary">
+                            Abrir mundo <ArrowUpRight size={14} />
+                        </Link>
+                    </span>
+                </div>
             </div>
         </article>
     );
