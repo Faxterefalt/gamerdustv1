@@ -14,7 +14,7 @@ export default function ProjectForm({ project, action, method = 'post', submitLa
         title: project?.title ?? '',
         description: project?.description ?? '',
         game_genre: project?.game_genre ?? '',
-        narrative_type: project?.narrative_type ?? 'balanced_narrative',
+        narrative_type: project?.narrative_type ?? 'balanced',
         premise: project?.premise ?? '',
         central_conflict: project?.central_conflict ?? '',
         target_audience: project?.target_audience ?? '',
@@ -42,9 +42,9 @@ export default function ProjectForm({ project, action, method = 'post', submitLa
                 </Field>
                 <Field label="Tipo narrativo" error={errors.narrative_type}>
                     <select value={data.narrative_type} onChange={(event) => setData('narrative_type', event.target.value as NarrativeType)} className={inputClass}>
-                        <option value="game_story">Game story</option>
-                        <option value="balanced_narrative">Balanced narrative</option>
-                        <option value="player_story">Player story</option>
+                        <option value="linear">Lineal</option>
+                        <option value="balanced">Balanceada</option>
+                        <option value="branching">Ramificada</option>
                     </select>
                 </Field>
                 <Field label="Estado" error={errors.status}>

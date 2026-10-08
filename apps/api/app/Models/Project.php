@@ -19,6 +19,7 @@ class Project extends Model
         'game_genre',
         'language',
         'narrative_type',
+        'branching_enabled',
         'premise',
         'central_conflict',
         'target_audience',
@@ -26,9 +27,16 @@ class Project extends Model
         'favorite',
     ];
 
+    protected static function booted(): void
+    {
+        static::saving(function (Project $project) {
+            $project->branching_enabled = $project->narrative_type !== 'linear';
+        });
+    }
+
     protected function casts(): array
     {
-        return ['favorite' => 'boolean'];
+        return ['favorite' => 'boolean', 'branching_enabled' => 'boolean'];
     }
 
     public function user(): BelongsTo

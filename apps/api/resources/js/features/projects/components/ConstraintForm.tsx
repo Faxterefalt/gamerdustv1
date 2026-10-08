@@ -1,79 +1,167 @@
 import { useForm } from '@inertiajs/react';
 import type { FormEvent, ReactNode } from 'react';
-import type { ProjectConstraint } from '../projects.types';
+import type { NarrativeType, Project } from '../projects.types';
 
 interface ConstraintFormProps {
-    projectId: number;
-    constraint?: ProjectConstraint | null;
+    project: Project;
 }
 
-export default function ConstraintForm({ projectId, constraint }: ConstraintFormProps) {
-    const { data, setData, post, processing, errors } = useForm({
-        main_emotional_tone: constraint?.main_emotional_tone ?? '',
-        dominant_emotion: constraint?.dominant_emotion ?? '',
-        secondary_emotions: (constraint?.secondary_emotions ?? []).join('\n'),
-        world_type: constraint?.world_type ?? '',
-        player_role: constraint?.player_role ?? '',
-        branching_level: constraint?.branching_level ?? '',
-        required_elements: (constraint?.required_elements ?? []).join('\n'),
-        forbidden_elements: (constraint?.forbidden_elements ?? []).join('\n'),
-        creative_notes: constraint?.creative_notes ?? '',
+const genres = [
+    ['fantasy', 'Fantasía'],
+    ['science_fiction', 'Ciencia ficción'],
+    ['mystery', 'Misterio'],
+    ['horror', 'Terror'],
+    ['drama', 'Drama'],
+    ['adventure', 'Aventura'],
+    ['comedy', 'Comedia'],
+    ['romance', 'Romance'],
+    ['thriller', 'Thriller'],
+    ['other', 'Otro'],
+] as const;
+
+const narrativeTypes: { value: NarrativeType; label: string; help: string }[] = [
+    { value: 'linear', label: 'Lineal', help: 'La historia sigue una secuencia principal sin bifurcaciones que alteren el recorrido.' },
+    { value: 'branching', label: 'Ramificada', help: 'Las decisiones del jugador permiten recorrer diferentes caminos narrativos.' },
+    { value: 'balanced', label: 'Balanceada', help: 'Combina una historia principal definida con decisiones y variaciones que pueden converger.' },
+];
+
+const required = 'Este campo es obligatorio.';
+
+export default function ConstraintForm({ project }: ConstraintFormProps) {
+    const constraint = project.constraint;
+    const { data, setData, post, processing, errors, setError, clearErrors, recentlySuccessful } = useForm({
+        premise: project.premise ?? '',
+        central_conflict: project.central_conflict ?? '',
+        narrative_genre: constraint?.narrative_genre ?? '',
+        central_theme: constraint?.central_theme ?? '',
+        setting: constraint?.setting ?? '',
+        player_objective: constraint?.player_objective ?? '',
+        narrative_type: project.narrative_type ?? 'balanced',
     });
+
+    const selectedType = narrativeTypes.find((type) => type.value === data.narrative_type);
+    const branchingEnabled = data.narrative_type !== 'linear';
 
     const submit = (event: FormEvent) => {
         event.preventDefault();
-        post(`/projects/${projectId}/constraints`);
+        clearErrors();
+
+        const missing = (['premise', 'central_conflict', 'narrative_genre', 'central_theme', 'setting', 'player_objective'] as const).filter(
+            (field) => !data[field].trim(),
+        );
+        if (missing.length > 0) {
+            missing.forEach((field) => setError(field, required));
+            return;
+        }
+
+        post(`/projects/${project.id}/constraints`, { preserveScroll: true });
     };
 
     return (
-        <form onSubmit={submit} className="space-y-4 border border-zinc-800 bg-zinc-900 p-4">
-            <h2 className="font-semibold text-white">Restricciones base</h2>
-            <div className="grid gap-4 md:grid-cols-3">
-                <Field label="Tono principal" error={errors.main_emotional_tone}>
-                    <input value={data.main_emotional_tone} onChange={(event) => setData('main_emotional_tone', event.target.value)} className={inputClass} />
-                </Field>
-                <Field label="Emocion dominante" error={errors.dominant_emotion}>
-                    <input value={data.dominant_emotion} onChange={(event) => setData('dominant_emotion', event.target.value)} className={inputClass} />
-                </Field>
-                <Field label="Nivel de ramificacion" error={errors.branching_level}>
-                    <input value={data.branching_level} onChange={(event) => setData('branching_level', event.target.value)} className={inputClass} />
-                </Field>
+        <form onSubmit={submit} className="space-y-5 border border-zinc-800 bg-zinc-900 p-5">
+            <div>
+                <h2 className="font-semibold text-white">Configuración narrativa inicial</h2>
+                <p className="mt-1 text-sm text-zinc-400">Define las bases de tu historia antes de empezar a escribir. Puedes modificarlas cuando quieras.</p>
             </div>
-            <div className="grid gap-4 md:grid-cols-2">
-                <Field label="Tipo de mundo" error={errors.world_type}>
-                    <input value={data.world_type} onChange={(event) => setData('world_type', event.target.value)} className={inputClass} />
-                </Field>
-                <Field label="Rol del jugador" error={errors.player_role}>
-                    <input value={data.player_role} onChange={(event) => setData('player_role', event.target.value)} className={inputClass} />
-                </Field>
-            </div>
-            <div className="grid gap-4 md:grid-cols-3">
-                <Field label="Emociones secundarias" error={errors.secondary_emotions}>
-                    <textarea value={data.secondary_emotions} onChange={(event) => setData('secondary_emotions', event.target.value)} rows={4} className={inputClass} />
-                </Field>
-                <Field label="Elementos requeridos" error={errors.required_elements}>
-                    <textarea value={data.required_elements} onChange={(event) => setData('required_elements', event.target.value)} rows={4} className={inputClass} />
-                </Field>
-                <Field label="Elementos prohibidos" error={errors.forbidden_elements}>
-                    <textarea value={data.forbidden_elements} onChange={(event) => setData('forbidden_elements', event.target.value)} rows={4} className={inputClass} />
-                </Field>
-            </div>
-            <Field label="Notas creativas" error={errors.creative_notes}>
-                <textarea value={data.creative_notes} onChange={(event) => setData('creative_notes', event.target.value)} rows={4} className={inputClass} />
+
+            <Field label="Premisa" help="La idea principal de la historia, en pocas líneas." error={errors.premise}>
+                <textarea
+                    value={data.premise}
+                    onChange={(event) => setData('premise', event.target.value)}
+                    rows={3}
+                    maxLength={2000}
+                    placeholder="Ej.: Una archivista debe reconstruir la memoria de una colonia antes de que su mito fundador se derrumbe."
+                    className={inputClass}
+                />
             </Field>
-            <button type="submit" disabled={processing} className="border border-amber-600 px-4 py-2 text-sm text-amber-100 hover:bg-amber-950 disabled:opacity-50">
-                Guardar restricciones
-            </button>
+
+            <Field label="Conflicto principal" help="El problema central que impulsa los acontecimientos." error={errors.central_conflict}>
+                <textarea
+                    value={data.central_conflict}
+                    onChange={(event) => setData('central_conflict', event.target.value)}
+                    rows={3}
+                    maxLength={2000}
+                    placeholder="Ej.: La verdad puede salvar a la colonia, pero también destruir su identidad."
+                    className={inputClass}
+                />
+            </Field>
+
+            <div className="grid gap-4 md:grid-cols-2">
+                <Field label="Género narrativo" error={errors.narrative_genre}>
+                    <select value={data.narrative_genre} onChange={(event) => setData('narrative_genre', event.target.value)} className={inputClass}>
+                        <option value="">Selecciona un género</option>
+                        {genres.map(([value, label]) => (
+                            <option key={value} value={value}>
+                                {label}
+                            </option>
+                        ))}
+                    </select>
+                </Field>
+                <Field label="Tema central" help="Conceptos que aborda la historia." error={errors.central_theme}>
+                    <input
+                        value={data.central_theme}
+                        onChange={(event) => setData('central_theme', event.target.value)}
+                        maxLength={255}
+                        placeholder="Ej.: identidad, pérdida, venganza"
+                        className={inputClass}
+                    />
+                </Field>
+            </div>
+
+            <Field label="Ambientación" help="Contexto, lugar o época donde transcurre la historia." error={errors.setting}>
+                <textarea
+                    value={data.setting}
+                    onChange={(event) => setData('setting', event.target.value)}
+                    rows={3}
+                    maxLength={2000}
+                    placeholder="Ej.: Una colonia aislada sobre un planeta cubierto de polvo, décadas después del colapso."
+                    className={inputClass}
+                />
+            </Field>
+
+            <Field label="Objetivo del jugador" help="Qué debe intentar conseguir el jugador." error={errors.player_objective}>
+                <textarea
+                    value={data.player_objective}
+                    onChange={(event) => setData('player_objective', event.target.value)}
+                    rows={3}
+                    maxLength={2000}
+                    placeholder="Ej.: Descubrir qué ocurrió con los fundadores y decidir qué verdad revelar."
+                    className={inputClass}
+                />
+            </Field>
+
+            <Field label="Tipo de narrativa" help={selectedType?.help} error={errors.narrative_type}>
+                <select value={data.narrative_type} onChange={(event) => setData('narrative_type', event.target.value as NarrativeType)} className={inputClass}>
+                    {narrativeTypes.map((type) => (
+                        <option key={type.value} value={type.value}>
+                            {type.label}
+                        </option>
+                    ))}
+                </select>
+            </Field>
+            <p className="text-xs text-zinc-500">
+                {branchingEnabled
+                    ? 'Este proyecto será compatible con el futuro panel de ramificaciones.'
+                    : 'El futuro panel de ramificaciones no estará habilitado. Tus escenas y conexiones existentes se conservan si cambias de tipo.'}
+            </p>
+
+            <div className="flex items-center gap-3">
+                <button type="submit" disabled={processing} className="border border-amber-600 px-4 py-2 text-sm text-amber-100 hover:bg-amber-950 disabled:opacity-50">
+                    {processing ? 'Guardando...' : 'Guardar configuración'}
+                </button>
+                {recentlySuccessful && <span className="text-sm text-emerald-300">Cambios guardados correctamente.</span>}
+            </div>
         </form>
     );
 }
 
 const inputClass = 'w-full border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm text-zinc-100 outline-none focus:border-amber-500';
 
-function Field({ label, error, children }: { label: string; error?: string; children: ReactNode }) {
+function Field({ label, help, error, children }: { label: string; help?: string; error?: string; children: ReactNode }) {
     return (
         <label className="block">
-            <span className="mb-2 block text-sm font-medium text-zinc-200">{label}</span>
+            <span className="mb-1 block text-sm font-medium text-zinc-200">{label}</span>
+            {help && <span className="mb-2 block text-xs text-zinc-500">{help}</span>}
             {children}
             {error && <span className="mt-1 block text-sm text-rose-300">{error}</span>}
         </label>

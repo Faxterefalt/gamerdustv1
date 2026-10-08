@@ -60,7 +60,7 @@ export default function Show({ project }: ProjectShowProps) {
                 </section>
 
                 <div className="grid gap-6 xl:grid-cols-[1.2fr_0.8fr]">
-                    <ConstraintForm projectId={project.id} constraint={project.constraint} />
+                    <ConstraintForm project={project} />
                     <NarrativeValidationPanel projectId={project.id} validations={project.narrative_validations ?? []} />
                 </div>
 

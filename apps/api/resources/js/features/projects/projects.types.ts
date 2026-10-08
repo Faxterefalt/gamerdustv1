@@ -7,7 +7,7 @@ import type { Scene } from '../scenes/scenes.types';
 import type { NarrativeValidation } from '../analysis/validation.types';
 
 export type ProjectStatus = 'draft' | 'in_progress' | 'completed';
-export type NarrativeType = 'game_story' | 'balanced_narrative' | 'player_story';
+export type NarrativeType = 'linear' | 'branching' | 'balanced';
 
 export interface UserSummary {
     id: number;
@@ -45,15 +45,10 @@ export interface Paginated<T> {
 export interface ProjectConstraint {
     id?: number;
     project_id?: number;
-    main_emotional_tone?: string | null;
-    dominant_emotion?: string | null;
-    secondary_emotions?: string[] | null;
-    world_type?: string | null;
-    player_role?: string | null;
-    branching_level?: string | null;
-    required_elements?: string[] | null;
-    forbidden_elements?: string[] | null;
-    creative_notes?: string | null;
+    narrative_genre?: string | null;
+    central_theme?: string | null;
+    setting?: string | null;
+    player_objective?: string | null;
 }
 
 export interface Project {
@@ -65,6 +60,7 @@ export interface Project {
     language?: string;
     favorite?: boolean;
     narrative_type: NarrativeType;
+    branching_enabled?: boolean;
     premise?: string | null;
     central_conflict?: string | null;
     target_audience?: string | null;

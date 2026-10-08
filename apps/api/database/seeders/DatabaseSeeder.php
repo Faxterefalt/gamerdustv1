@@ -31,7 +31,7 @@ class DatabaseSeeder extends Seeder
         ], [
             'description' => 'Proyecto de ejemplo para validar la estructura inicial de Gamerdust.',
             'game_genre' => 'Narrative adventure',
-            'narrative_type' => 'balanced_narrative',
+            'narrative_type' => 'balanced',
             'premise' => 'Una archivista debe reconstruir la memoria de una colonia antes de que su mito fundador se derrumbe.',
             'central_conflict' => 'La verdad historica puede salvar a la colonia, pero tambien destruir su identidad compartida.',
             'target_audience' => 'Jugadores interesados en misterio, decisiones morales y worldbuilding.',
@@ -41,15 +41,10 @@ class DatabaseSeeder extends Seeder
         $project->constraint()->updateOrCreate([
             'project_id' => $project->id,
         ], [
-            'main_emotional_tone' => 'Melancolia esperanzada',
-            'dominant_emotion' => 'tension',
-            'secondary_emotions' => ['nostalgia', 'curiosidad'],
-            'world_type' => 'Colonia aislada',
-            'player_role' => 'Archivista',
-            'branching_level' => 'moderado',
-            'required_elements' => ['memoria fragmentada', 'decision moral'],
-            'forbidden_elements' => ['solucion unica perfecta'],
-            'creative_notes' => 'Mantener a la IA como asistente de revision, no como autora final.',
+            'narrative_genre' => 'mystery',
+            'central_theme' => 'memoria, identidad',
+            'setting' => 'Una colonia aislada sobre un planeta cubierto de polvo.',
+            'player_objective' => 'Reconstruir la memoria de la colonia y decidir que verdad revelar.',
         ]);
 
         $project->loreEntries()->firstOrCreate([

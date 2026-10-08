@@ -9,6 +9,10 @@ class ProjectConstraint extends Model
 {
     protected $fillable = [
         'project_id',
+        'narrative_genre',
+        'central_theme',
+        'setting',
+        'player_objective',
         'main_emotional_tone',
         'dominant_emotion',
         'secondary_emotions',

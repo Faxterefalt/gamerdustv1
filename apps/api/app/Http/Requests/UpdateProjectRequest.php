@@ -21,7 +21,7 @@ class UpdateProjectRequest extends FormRequest
             'title' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
             'game_genre' => ['nullable', 'string', 'max:255'],
-            'narrative_type' => ['required', Rule::in(['game_story', 'balanced_narrative', 'player_story'])],
+            'narrative_type' => ['required', Rule::in(['linear', 'branching', 'balanced'])],
             'premise' => ['nullable', 'string'],
             'central_conflict' => ['nullable', 'string'],
             'target_audience' => ['nullable', 'string', 'max:255'],

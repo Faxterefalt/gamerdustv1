@@ -19,7 +19,7 @@ class StoreProjectRequest extends FormRequest
             'description' => ['nullable', 'string'],
             'game_genre' => ['nullable', 'string', 'max:255'],
             'language' => ['required', Rule::in(['Español', 'English'])],
-            'narrative_type' => ['sometimes', Rule::in(['game_story', 'balanced_narrative', 'player_story'])],
+            'narrative_type' => ['sometimes', Rule::in(['linear', 'branching', 'balanced'])],
             'premise' => ['nullable', 'string'],
             'central_conflict' => ['nullable', 'string'],
             'target_audience' => ['nullable', 'string', 'max:255'],

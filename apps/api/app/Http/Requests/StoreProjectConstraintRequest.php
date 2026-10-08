@@ -4,9 +4,15 @@ namespace App\Http\Requests;
 
 use App\Models\Project;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreProjectConstraintRequest extends FormRequest
 {
+    public const GENRES = [
+        'fantasy', 'science_fiction', 'mystery', 'horror', 'drama',
+        'adventure', 'comedy', 'romance', 'thriller', 'other',
+    ];
+
     public function authorize(): bool
     {
         $project = $this->route('project');
@@ -14,36 +20,16 @@ class StoreProjectConstraintRequest extends FormRequest
         return $project instanceof Project && $this->user()?->can('update', $project);
     }
 
-    protected function prepareForValidation(): void
-    {
-        foreach (['secondary_emotions', 'required_elements', 'forbidden_elements'] as $field) {
-            if (is_string($this->input($field))) {
-                $this->merge([
-                    $field => collect(preg_split('/[\r\n,]+/', $this->input($field)))
-                        ->map(fn (string $value) => trim($value))
-                        ->filter()
-                        ->values()
-                        ->all(),
-                ]);
-            }
-        }
-    }
-
     public function rules(): array
     {
         return [
-            'main_emotional_tone' => ['nullable', 'string', 'max:255'],
-            'dominant_emotion' => ['nullable', 'string', 'max:255'],
-            'secondary_emotions' => ['nullable', 'array'],
-            'secondary_emotions.*' => ['string', 'max:255'],
-            'world_type' => ['nullable', 'string', 'max:255'],
-            'player_role' => ['nullable', 'string', 'max:255'],
-            'branching_level' => ['nullable', 'string', 'max:255'],
-            'required_elements' => ['nullable', 'array'],
-            'required_elements.*' => ['string', 'max:255'],
-            'forbidden_elements' => ['nullable', 'array'],
-            'forbidden_elements.*' => ['string', 'max:255'],
-            'creative_notes' => ['nullable', 'string'],
+            'premise' => ['required', 'string', 'max:2000'],
+            'central_conflict' => ['required', 'string', 'max:2000'],
+            'narrative_genre' => ['required', Rule::in(self::GENRES)],
+            'central_theme' => ['required', 'string', 'max:255'],
+            'setting' => ['required', 'string', 'max:2000'],
+            'player_objective' => ['required', 'string', 'max:2000'],
+            'narrative_type' => ['required', Rule::in(['linear', 'branching', 'balanced'])],
         ];
     }
 }
