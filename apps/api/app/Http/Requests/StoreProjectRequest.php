@@ -7,6 +7,12 @@ use Illuminate\Validation\Rule;
 
 class StoreProjectRequest extends FormRequest
 {
+    public const GENRES = ['Aventura', 'RPG', 'Novela visual', 'Aventura gráfica', 'Acción-aventura', 'Otro'];
+
+    public const LANGUAGES = ['Español', 'English'];
+
+    public const NARRATIVE_TYPES = ['linear', 'balanced', 'branching'];
+
     public function authorize(): bool
     {
         return $this->user() !== null;
@@ -16,14 +22,10 @@ class StoreProjectRequest extends FormRequest
     {
         return [
             'title' => ['required', 'string', 'max:255'],
-            'description' => ['nullable', 'string'],
-            'game_genre' => ['nullable', 'string', 'max:255'],
-            'language' => ['required', Rule::in(['Español', 'English'])],
-            'narrative_type' => ['sometimes', Rule::in(['linear', 'branching', 'balanced'])],
-            'premise' => ['nullable', 'string'],
-            'central_conflict' => ['nullable', 'string'],
-            'target_audience' => ['nullable', 'string', 'max:255'],
-            'status' => ['sometimes', Rule::in(['draft', 'in_progress', 'completed'])],
+            'game_genre' => ['required', Rule::in(self::GENRES)],
+            'language' => ['required', Rule::in(self::LANGUAGES)],
+            'narrative_type' => ['required', Rule::in(self::NARRATIVE_TYPES)],
+            'premise' => ['nullable', 'string', 'max:2000'],
         ];
     }
 }

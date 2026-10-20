@@ -49,6 +49,7 @@ export interface ProjectConstraint {
     central_theme?: string | null;
     setting?: string | null;
     player_objective?: string | null;
+    expected_outcome?: string | null;
 }
 
 export interface Project {

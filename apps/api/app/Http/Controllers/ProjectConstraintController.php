@@ -15,27 +15,24 @@ class ProjectConstraintController extends Controller
 
         $data = $request->validated();
 
-        // Existing scenes, decisions and connections are never touched here.
+        // Narrative type, scenes, decisions and connections are never touched here.
         DB::transaction(function () use ($project, $data) {
             $project->update([
-                'premise' => $data['premise'],
-                'central_conflict' => $data['central_conflict'],
-                'narrative_type' => $data['narrative_type'],
+                'premise' => $data['premise'] ?? null,
+                'central_conflict' => $data['central_conflict'] ?? null,
             ]);
 
             $project->constraint()->updateOrCreate(
                 ['project_id' => $project->id],
                 [
-                    'narrative_genre' => $data['narrative_genre'],
-                    'central_theme' => $data['central_theme'],
-                    'setting' => $data['setting'],
-                    'player_objective' => $data['player_objective'],
+                    'central_theme' => $data['central_theme'] ?? null,
+                    'player_objective' => $data['player_objective'] ?? null,
+                    'setting' => $data['setting'] ?? null,
+                    'expected_outcome' => $data['expected_outcome'] ?? null,
                 ]
             );
         });
 
-        return redirect()
-            ->route('projects.show', $project)
-            ->with('success', 'Configuración narrativa guardada.');
+        return back()->with('success', 'Planteamiento narrativo guardado.');
     }
 }

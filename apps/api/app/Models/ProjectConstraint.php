@@ -13,6 +13,7 @@ class ProjectConstraint extends Model
         'central_theme',
         'setting',
         'player_objective',
+        'expected_outcome',
         'main_emotional_tone',
         'dominant_emotion',
         'secondary_emotions',

@@ -41,7 +41,7 @@ class ProjectController extends Controller
         $project = $request->user()->projects()->create($request->validated());
 
         return redirect()
-            ->route('projects.index')
+            ->route('projects.show', $project)
             ->with('success', 'Proyecto narrativo creado.');
     }
 

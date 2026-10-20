@@ -17,15 +17,15 @@ class UpdateProjectRequest extends FormRequest
 
     public function rules(): array
     {
+        $project = $this->route('project');
+
         return [
             'title' => ['required', 'string', 'max:255'],
-            'description' => ['nullable', 'string'],
-            'game_genre' => ['nullable', 'string', 'max:255'],
-            'narrative_type' => ['required', Rule::in(['linear', 'branching', 'balanced'])],
-            'premise' => ['nullable', 'string'],
-            'central_conflict' => ['nullable', 'string'],
-            'target_audience' => ['nullable', 'string', 'max:255'],
-            'status' => ['required', Rule::in(['draft', 'in_progress', 'completed'])],
+            // Legacy projects may hold a value outside the current lists; keeping it unchanged stays valid.
+            'game_genre' => ['required', Rule::in([...StoreProjectRequest::GENRES, $project->game_genre])],
+            'language' => ['required', Rule::in([...StoreProjectRequest::LANGUAGES, $project->language])],
+            'narrative_type' => ['required', Rule::in(StoreProjectRequest::NARRATIVE_TYPES)],
+            'premise' => ['nullable', 'string', 'max:2000'],
         ];
     }
 }

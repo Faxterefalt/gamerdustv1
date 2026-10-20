@@ -18,7 +18,7 @@ export default function Edit({ project }: ProjectEditProps) {
             }
         >
             <Head title={`Editar ${project.title}`} />
-            <ProjectForm project={project} action={`/projects/${project.id}`} method="put" submitLabel="Guardar cambios" />
+            <ProjectForm project={project} />
         </ProjectLayout>
     );
 }

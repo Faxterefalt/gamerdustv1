@@ -1,153 +1,100 @@
 import { useForm } from '@inertiajs/react';
 import type { FormEvent, ReactNode } from 'react';
-import type { NarrativeType, Project } from '../projects.types';
+import type { Project } from '../projects.types';
 
 interface ConstraintFormProps {
     project: Project;
 }
 
-const genres = [
-    ['fantasy', 'Fantasía'],
-    ['science_fiction', 'Ciencia ficción'],
-    ['mystery', 'Misterio'],
-    ['horror', 'Terror'],
-    ['drama', 'Drama'],
-    ['adventure', 'Aventura'],
-    ['comedy', 'Comedia'],
-    ['romance', 'Romance'],
-    ['thriller', 'Thriller'],
-    ['other', 'Otro'],
-] as const;
-
-const narrativeTypes: { value: NarrativeType; label: string; help: string }[] = [
-    { value: 'linear', label: 'Lineal', help: 'La historia sigue una secuencia principal sin bifurcaciones que alteren el recorrido.' },
-    { value: 'branching', label: 'Ramificada', help: 'Las decisiones del jugador permiten recorrer diferentes caminos narrativos.' },
-    { value: 'balanced', label: 'Balanceada', help: 'Combina una historia principal definida con decisiones y variaciones que pueden converger.' },
-];
-
-const required = 'Este campo es obligatorio.';
-
 export default function ConstraintForm({ project }: ConstraintFormProps) {
     const constraint = project.constraint;
-    const { data, setData, post, processing, errors, setError, clearErrors, recentlySuccessful } = useForm({
+    const { data, setData, post, processing, errors, recentlySuccessful } = useForm({
         premise: project.premise ?? '',
-        central_conflict: project.central_conflict ?? '',
-        narrative_genre: constraint?.narrative_genre ?? '',
         central_theme: constraint?.central_theme ?? '',
-        setting: constraint?.setting ?? '',
+        central_conflict: project.central_conflict ?? '',
         player_objective: constraint?.player_objective ?? '',
-        narrative_type: project.narrative_type ?? 'balanced',
+        setting: constraint?.setting ?? '',
+        expected_outcome: constraint?.expected_outcome ?? '',
     });
-
-    const selectedType = narrativeTypes.find((type) => type.value === data.narrative_type);
-    const branchingEnabled = data.narrative_type !== 'linear';
 
     const submit = (event: FormEvent) => {
         event.preventDefault();
-        clearErrors();
-
-        const missing = (['premise', 'central_conflict', 'narrative_genre', 'central_theme', 'setting', 'player_objective'] as const).filter(
-            (field) => !data[field].trim(),
-        );
-        if (missing.length > 0) {
-            missing.forEach((field) => setError(field, required));
-            return;
-        }
-
         post(`/projects/${project.id}/constraints`, { preserveScroll: true });
     };
 
     return (
-        <form onSubmit={submit} className="space-y-5 border border-zinc-800 bg-zinc-900 p-5">
+        <form onSubmit={submit} className="space-y-4 border border-zinc-800 bg-zinc-900 p-5">
             <div>
-                <h2 className="font-semibold text-white">Configuración narrativa inicial</h2>
-                <p className="mt-1 text-sm text-zinc-400">Define las bases de tu historia antes de empezar a escribir. Puedes modificarlas cuando quieras.</p>
+                <h2 className="font-semibold text-white">Planteamiento narrativo</h2>
+                <p className="mt-1 text-sm text-zinc-400">Todos los campos son opcionales: complétalos progresivamente durante el desarrollo.</p>
             </div>
 
-            <Field label="Premisa" help="La idea principal de la historia, en pocas líneas." error={errors.premise}>
+            <Field label="Premisa" help="Resumen breve de la idea principal." error={errors.premise}>
                 <textarea
                     value={data.premise}
                     onChange={(event) => setData('premise', event.target.value)}
-                    rows={3}
+                    rows={2}
                     maxLength={2000}
                     placeholder="Ej.: Una archivista debe reconstruir la memoria de una colonia antes de que su mito fundador se derrumbe."
                     className={inputClass}
                 />
             </Field>
 
-            <Field label="Conflicto principal" help="El problema central que impulsa los acontecimientos." error={errors.central_conflict}>
-                <textarea
-                    value={data.central_conflict}
-                    onChange={(event) => setData('central_conflict', event.target.value)}
-                    rows={3}
-                    maxLength={2000}
-                    placeholder="Ej.: La verdad puede salvar a la colonia, pero también destruir su identidad."
-                    className={inputClass}
-                />
-            </Field>
-
             <div className="grid gap-4 md:grid-cols-2">
-                <Field label="Género narrativo" error={errors.narrative_genre}>
-                    <select value={data.narrative_genre} onChange={(event) => setData('narrative_genre', event.target.value)} className={inputClass}>
-                        <option value="">Selecciona un género</option>
-                        {genres.map(([value, label]) => (
-                            <option key={value} value={value}>
-                                {label}
-                            </option>
-                        ))}
-                    </select>
-                </Field>
-                <Field label="Tema central" help="Conceptos que aborda la historia." error={errors.central_theme}>
+                <Field label="Tema central" help="Idea que aborda la historia." error={errors.central_theme}>
                     <input
                         value={data.central_theme}
                         onChange={(event) => setData('central_theme', event.target.value)}
                         maxLength={255}
-                        placeholder="Ej.: identidad, pérdida, venganza"
+                        placeholder="Ej.: memoria, identidad, pérdida"
+                        className={inputClass}
+                    />
+                </Field>
+                <Field label="Ambientación" help="Contexto, lugar o época." error={errors.setting}>
+                    <input
+                        value={data.setting}
+                        onChange={(event) => setData('setting', event.target.value)}
+                        maxLength={2000}
+                        placeholder="Ej.: Colonia aislada en un planeta de polvo"
+                        className={inputClass}
+                    />
+                </Field>
+                <Field label="Conflicto principal" help="Problema u oposición que impulsa los hechos." error={errors.central_conflict}>
+                    <textarea
+                        value={data.central_conflict}
+                        onChange={(event) => setData('central_conflict', event.target.value)}
+                        rows={2}
+                        maxLength={2000}
+                        placeholder="Ej.: La verdad puede salvar a la colonia o destruir su identidad."
+                        className={inputClass}
+                    />
+                </Field>
+                <Field label="Objetivo principal" help="Qué intenta conseguir el protagonista o el jugador." error={errors.player_objective}>
+                    <textarea
+                        value={data.player_objective}
+                        onChange={(event) => setData('player_objective', event.target.value)}
+                        rows={2}
+                        maxLength={2000}
+                        placeholder="Ej.: Reconstruir la memoria de la colonia."
                         className={inputClass}
                     />
                 </Field>
             </div>
 
-            <Field label="Ambientación" help="Contexto, lugar o época donde transcurre la historia." error={errors.setting}>
+            <Field label="Desenlace previsto" help="Resultado o posibles desenlaces hacia los que se orienta la historia." error={errors.expected_outcome}>
                 <textarea
-                    value={data.setting}
-                    onChange={(event) => setData('setting', event.target.value)}
-                    rows={3}
+                    value={data.expected_outcome}
+                    onChange={(event) => setData('expected_outcome', event.target.value)}
+                    rows={2}
                     maxLength={2000}
-                    placeholder="Ej.: Una colonia aislada sobre un planeta cubierto de polvo, décadas después del colapso."
+                    placeholder="Ej.: El mito se derrumba, o se reescribe con una verdad compartida."
                     className={inputClass}
                 />
             </Field>
-
-            <Field label="Objetivo del jugador" help="Qué debe intentar conseguir el jugador." error={errors.player_objective}>
-                <textarea
-                    value={data.player_objective}
-                    onChange={(event) => setData('player_objective', event.target.value)}
-                    rows={3}
-                    maxLength={2000}
-                    placeholder="Ej.: Descubrir qué ocurrió con los fundadores y decidir qué verdad revelar."
-                    className={inputClass}
-                />
-            </Field>
-
-            <Field label="Tipo de narrativa" help={selectedType?.help} error={errors.narrative_type}>
-                <select value={data.narrative_type} onChange={(event) => setData('narrative_type', event.target.value as NarrativeType)} className={inputClass}>
-                    {narrativeTypes.map((type) => (
-                        <option key={type.value} value={type.value}>
-                            {type.label}
-                        </option>
-                    ))}
-                </select>
-            </Field>
-            <p className="text-xs text-zinc-500">
-                {branchingEnabled
-                    ? 'Este proyecto será compatible con el futuro panel de ramificaciones.'
-                    : 'El futuro panel de ramificaciones no estará habilitado. Tus escenas y conexiones existentes se conservan si cambias de tipo.'}
-            </p>
 
             <div className="flex items-center gap-3">
                 <button type="submit" disabled={processing} className="border border-amber-600 px-4 py-2 text-sm text-amber-100 hover:bg-amber-950 disabled:opacity-50">
-                    {processing ? 'Guardando...' : 'Guardar configuración'}
+                    {processing ? 'Guardando...' : 'Guardar planteamiento'}
                 </button>
                 {recentlySuccessful && <span className="text-sm text-emerald-300">Cambios guardados correctamente.</span>}
             </div>

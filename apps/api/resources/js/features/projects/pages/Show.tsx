@@ -10,6 +10,7 @@ import NarrativeValidationPanel from '../../analysis/components/NarrativeValidat
 import ProjectStats from '../components/ProjectStats';
 import SceneCard from '../../scenes/components/SceneCard';
 import type { Project } from '../projects.types';
+import { genreLabel, narrativeLabel, statusLabel, summaryText, uiLang } from '../projectOptions';
 
 interface ProjectShowProps {
     project: Project;
@@ -17,6 +18,7 @@ interface ProjectShowProps {
 
 export default function Show({ project }: ProjectShowProps) {
     const latestAnalysis = project.emotional_analyses?.[0] ?? null;
+    const lang = uiLang(project.language);
 
     return (
         <ProjectLayout
@@ -38,20 +40,21 @@ export default function Show({ project }: ProjectShowProps) {
                 <section className="grid gap-4 lg:grid-cols-[1.5fr_1fr]">
                     <div className="border border-zinc-800 bg-zinc-900 p-5">
                         <div className="flex flex-wrap gap-2 text-xs text-zinc-300">
-                            <span className="border border-zinc-700 px-2 py-1">{project.status}</span>
-                            <span className="border border-zinc-700 px-2 py-1">{project.narrative_type}</span>
-                            {project.game_genre && <span className="border border-zinc-700 px-2 py-1">{project.game_genre}</span>}
+                            <span className="border border-zinc-700 px-2 py-1">{statusLabel(project.status, lang)}</span>
+                            <span className="border border-zinc-700 px-2 py-1">{narrativeLabel(project.narrative_type, lang)}</span>
+                            {project.game_genre && <span className="border border-zinc-700 px-2 py-1">{genreLabel(project.game_genre, lang)}</span>}
+                            {project.language && <span className="border border-zinc-700 px-2 py-1">{project.language === 'English' ? (lang === 'en' ? 'English' : 'Inglés') : lang === 'en' ? 'Spanish' : 'Español'}</span>}
                         </div>
-                        <p className="mt-4 text-zinc-300">{project.description || 'Sin descripcion todavia.'}</p>
+                        {project.description && <p className="mt-4 text-zinc-300">{project.description}</p>}
                         {project.premise && (
                             <div className="mt-5">
-                                <h2 className="text-sm font-semibold text-amber-200">Premisa</h2>
+                                <h2 className="text-sm font-semibold text-amber-200">{summaryText('premise', lang)}</h2>
                                 <p className="mt-2 text-sm text-zinc-300">{project.premise}</p>
                             </div>
                         )}
                         {project.central_conflict && (
                             <div className="mt-5">
-                                <h2 className="text-sm font-semibold text-rose-200">Conflicto central</h2>
+                                <h2 className="text-sm font-semibold text-rose-200">{summaryText('conflict', lang)}</h2>
                                 <p className="mt-2 text-sm text-zinc-300">{project.central_conflict}</p>
                             </div>
                         )}
