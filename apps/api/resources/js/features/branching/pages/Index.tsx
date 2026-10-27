@@ -1,0 +1,175 @@
+import { Head, Link } from '@inertiajs/react';
+import { CheckCircle2, CircleAlert, Loader2, Save, X } from 'lucide-react';
+import { useCallback, useEffect, useState } from 'react';
+import ProjectLayout from '../../../layouts/ProjectLayout';
+import type { BranchingGraph, SaveStatus } from '../branching.types';
+import BranchingCanvas from '../components/BranchingCanvas';
+import NodeEditorPanel from '../components/NodeEditorPanel';
+import { useBranchingGraph } from '../hooks/useBranchingGraph';
+
+interface BranchingIndexProps {
+    project: { id: number; title: string };
+    graph: BranchingGraph;
+    selectedNodeId: number | null;
+}
+
+const STATUS_LABEL: Record<SaveStatus, string> = {
+    idle: 'Sin cambios',
+    pending: 'Cambios sin guardar...',
+    saving: 'Guardando...',
+    saved: 'Guardado',
+    error: 'Error al guardar',
+};
+
+const NOTICE_TONE = {
+    info: 'border-zinc-700 bg-zinc-900 text-zinc-200',
+    warning: 'border-amber-700 bg-amber-950/50 text-amber-100',
+    error: 'border-rose-700 bg-rose-950/60 text-rose-100',
+} as const;
+
+export default function Index({ project, graph: initialGraph, selectedNodeId }: BranchingIndexProps) {
+    const editor = useBranchingGraph(project.id, initialGraph);
+    const { graph, displayNode, createNode, deleteNode, createOption, deleteOption, movePositions, flush } = editor;
+    const [selectedId, setSelectedId] = useState<number | null>(selectedNodeId);
+    const [focusNonce, setFocusNonce] = useState(selectedNodeId ? 1 : 0);
+
+    useEffect(() => {
+        if (selectedId !== null && !graph.nodes.some((node) => node.id === selectedId)) {
+            setSelectedId(null);
+        }
+    }, [graph.nodes, selectedId]);
+
+    const selected = graph.nodes.find((node) => node.id === selectedId) ?? null;
+
+    const handleCreate = useCallback(
+        async (position: { x: number; y: number }) => {
+            const taken = new Set(graph.nodes.map((node) => node.display_title.trim().toLowerCase()));
+            let title = 'Nuevo pasaje';
+
+            for (let n = 2; taken.has(title.toLowerCase()); n++) {
+                title = `Nuevo pasaje ${n}`;
+            }
+
+            const response = await createNode({ title, pos_x: position.x, pos_y: position.y });
+
+            if (response?.node_id) {
+                setSelectedId(response.node_id);
+                setFocusNonce((nonce) => nonce + 1);
+            }
+        },
+        [createNode, graph.nodes],
+    );
+
+    const handleConnect = useCallback(
+        (sourceId: number, targetId: number) => {
+            const target = graph.nodes.find((node) => node.id === targetId);
+
+            void createOption(sourceId, { player_option: target?.display_title ?? 'Continuar', next_dialogue_node_id: targetId });
+        },
+        [createOption, graph.nodes],
+    );
+
+    const handleDelete = async () => {
+        if (!selected) {
+            return;
+        }
+
+        const incoming = graph.edges.filter((edge) => edge.target === selected.id && edge.source !== selected.id);
+        const lines = [`Eliminar "${selected.display_title}"?`, ''];
+
+        lines.push(`- Se eliminaran sus ${selected.options.length} opciones salientes.`);
+        lines.push(
+            incoming.length > 0
+                ? `- ${incoming.length} opciones de otros nodos apuntan aqui y quedaran SIN DESTINO (su texto no se borra):\n${incoming.map((edge) => `   • ${graph.nodes.find((node) => node.id === edge.source)?.display_title}: "${edge.label}"`).join('\n')}`
+                : '- Ningun otro nodo apunta aqui.',
+        );
+
+        if (confirm(lines.join('\n'))) {
+            await deleteNode(selected.id);
+            setSelectedId(null);
+        }
+    };
+
+    const status = editor.status;
+
+    return (
+        <ProjectLayout
+            fullWidth
+            title={`Editor de ramificacion - ${project.title}`}
+            actions={
+                <div className="flex flex-wrap items-center gap-2">
+                    <span
+                        role="status"
+                        className={`flex items-center gap-1.5 text-xs ${status === 'error' ? 'text-rose-300' : status === 'saved' ? 'text-emerald-300' : 'text-zinc-400'}`}
+                    >
+                        {status === 'saving' && <Loader2 size={13} className="animate-spin" />}
+                        {status === 'saved' && <CheckCircle2 size={13} />}
+                        {status === 'error' && <CircleAlert size={13} />}
+                        {STATUS_LABEL[status]}
+                    </span>
+                    <button type="button" onClick={() => void flush()} className="flex items-center gap-1.5 border border-amber-600 px-3 py-2 text-sm text-amber-100 hover:bg-amber-950">
+                        <Save size={14} /> Guardar
+                    </button>
+                    <Link href={`/projects/${project.id}`} className="border border-zinc-700 px-3 py-2 text-sm hover:border-amber-500">
+                        Panel
+                    </Link>
+                    <Link href={`/projects/${project.id}/dialogues`} className="border border-zinc-700 px-3 py-2 text-sm hover:border-amber-500">
+                        Lista de dialogos
+                    </Link>
+                </div>
+            }
+        >
+            <Head title={`Ramificacion - ${project.title}`} />
+
+            {editor.notices.length > 0 && (
+                <div className="mb-3 space-y-2">
+                    {editor.notices.map((notice) => (
+                        <div key={notice.id} className={`flex items-start justify-between gap-3 border px-3 py-2 text-xs ${NOTICE_TONE[notice.tone]}`}>
+                            <span>{notice.message}</span>
+                            <button type="button" aria-label="Cerrar aviso" onClick={() => editor.dismissNotice(notice.id)}>
+                                <X size={14} />
+                            </button>
+                        </div>
+                    ))}
+                </div>
+            )}
+
+            {editor.error && !selected && <div className="mb-3 border border-rose-700 bg-rose-950/60 px-3 py-2 text-xs text-rose-100">{editor.error.message}</div>}
+
+            <div className="flex h-[calc(100vh-230px)] min-h-[520px] border border-zinc-800">
+                <div className="min-w-0 flex-1">
+                    <BranchingCanvas
+                        graph={graph}
+                        displayNode={displayNode}
+                        selectedId={selectedId}
+                        focusNonce={focusNonce}
+                        onSelect={setSelectedId}
+                        onMove={movePositions}
+                        onConnect={handleConnect}
+                        onCreate={handleCreate}
+                    />
+                </div>
+
+                {selected && (
+                    <div className="w-[400px] max-w-[45%] shrink-0">
+                        <NodeEditorPanel
+                            projectId={project.id}
+                            node={displayNode(selected)}
+                            graph={graph}
+                            warnings={graph.warnings.filter((warning) => warning.node_id === selected.id)}
+                            error={editor.error}
+                            displayOption={editor.displayOption}
+                            onEdit={(patch) => editor.editNode(selected.id, patch)}
+                            onEditOption={editor.editOption}
+                            onCreateOption={() => void createOption(selected.id, { player_option: 'Nueva opcion' })}
+                            onDeleteOption={(id) => void deleteOption(id)}
+                            onDelete={() => void handleDelete()}
+                            onClose={() => setSelectedId(null)}
+                            onFlush={flush}
+                        />
+                    </div>
+                )}
+            </div>
+        </ProjectLayout>
+    );
+}

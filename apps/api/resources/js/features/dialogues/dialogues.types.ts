@@ -16,6 +16,7 @@ export interface DialogueOption {
     player_option: string;
     consequence?: string | null;
     required_condition?: string | null;
+    source_ref?: string | null;
     next_dialogue_node?: Pick<DialogueNode, 'id' | 'node_key'> | null;
 }
 
@@ -25,10 +26,13 @@ export interface DialogueNode {
     scene_id?: number | null;
     character_id?: number | null;
     node_key: string;
+    title?: string | null;
     dialogue_type: DialogueType;
     text: string;
     emotional_tone?: string | null;
     trigger_condition?: string | null;
+    pos_x?: number | null;
+    pos_y?: number | null;
     scene?: Pick<Scene, 'id' | 'title'> | null;
     character?: Pick<Character, 'id' | 'name'> | null;
     options?: DialogueOption[];

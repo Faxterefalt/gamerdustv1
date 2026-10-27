@@ -25,6 +25,9 @@ export default function Show({ project }: ProjectShowProps) {
             title={project.title}
             actions={
                 <div className="flex flex-wrap gap-2">
+                    <Link href={`/projects/${project.id}/branching`} className="border border-amber-600 px-4 py-2 text-sm text-amber-100 hover:bg-amber-950">
+                        Editor de ramificacion
+                    </Link>
                     <Link href={`/projects/${project.id}/edit`} className="border border-zinc-700 px-4 py-2 text-sm hover:border-amber-500">
                         Editar
                     </Link>
@@ -105,10 +108,11 @@ function QuickLinks({ projectId }: { projectId: number }) {
         ['Crear personaje', `/projects/${projectId}/characters/create`],
         ['Crear escena', `/projects/${projectId}/scenes/create`],
         ['Crear dialogo', `/projects/${projectId}/dialogues/create`],
+        ['Mapa de ramificacion', `/projects/${projectId}/branching`],
     ];
 
     return (
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
             {links.map(([label, href]) => (
                 <Link key={href} href={href} className="border border-zinc-800 bg-zinc-900 px-4 py-3 text-sm text-zinc-200 hover:border-amber-500">
                     {label}

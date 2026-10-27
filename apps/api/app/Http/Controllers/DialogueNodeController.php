@@ -67,7 +67,14 @@ class DialogueNodeController extends Controller
     {
         $this->authorizeDialogue($project, $dialogue);
 
-        $dialogue->update($request->safe()->except('options'));
+        $attributes = $request->safe()->except('options');
+
+        // Sin título propio, node_key es el título efectivo: se fija para no romper las {{referencias}} existentes.
+        if (blank($dialogue->title) && $attributes['node_key'] !== $dialogue->node_key) {
+            $attributes['title'] = $dialogue->node_key;
+        }
+
+        $dialogue->update($attributes);
         $this->syncOptions($dialogue, $request->validated('options', []));
         $estimator->createFor($project, $dialogue);
 
@@ -87,11 +94,22 @@ class DialogueNodeController extends Controller
 
     private function syncOptions(DialogueNode $dialogue, array $options): void
     {
+        // El formulario reenvía todas las opciones sin id; se conserva el marcador de las administradas por {{ }}.
+        $managed = $dialogue->options()->whereNotNull('source_ref')->get();
+
         $dialogue->options()->delete();
 
         foreach ($options as $option) {
             if (blank($option['player_option'] ?? null)) {
                 continue;
+            }
+
+            $match = $managed->first(fn ($old) => $old->next_dialogue_node_id == ($option['next_dialogue_node_id'] ?? null)
+                && $old->player_option === $option['player_option']);
+
+            if ($match) {
+                $managed = $managed->reject(fn ($old) => $old->id === $match->id);
+                $option['source_ref'] = $match->source_ref;
             }
 
             $dialogue->options()->create($option);

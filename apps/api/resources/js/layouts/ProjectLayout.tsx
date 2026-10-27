@@ -7,16 +7,17 @@ import Header from './components/Header';
 interface AppShellProps extends PropsWithChildren {
     title?: string;
     actions?: ReactNode;
+    fullWidth?: boolean;
 }
 
-export default function ProjectLayout({ title, actions, children }: AppShellProps) {
+export default function ProjectLayout({ title, actions, fullWidth = false, children }: AppShellProps) {
     const { props } = usePage<PageProps>();
 
     return (
         <div className="min-h-screen bg-background text-foreground">
             <Header />
 
-            <main className="mx-auto max-w-7xl px-4 py-6 sm:px-6">
+            <main className={fullWidth ? 'px-4 py-4 sm:px-6' : 'mx-auto max-w-7xl px-4 py-6 sm:px-6'}>
                 {(title || actions) && (
                     <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                         {title && <h1 className="text-2xl font-semibold text-white">{title}</h1>}

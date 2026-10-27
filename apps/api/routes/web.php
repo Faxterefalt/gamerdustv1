@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\BranchingGraphController;
 use App\Http\Controllers\CharacterController;
 use App\Http\Controllers\CostEstimationController;
 use App\Http\Controllers\DialogueNodeController;
@@ -54,6 +55,23 @@ Route::middleware(['auth', 'verified'])->group(function (): void {
     Route::resource('projects.dialogues', DialogueNodeController::class)
         ->parameters(['dialogues' => 'dialogue'])
         ->except(['show']);
+
+    Route::controller(BranchingGraphController::class)
+        ->prefix('projects/{project}/branching')
+        ->name('projects.branching.')
+        ->group(function (): void {
+            Route::get('/', 'index')->name('index');
+            Route::get('graph', 'graph')->name('graph');
+            Route::post('nodes', 'storeNode')->name('nodes.store');
+            Route::put('nodes/{node}', 'updateNode')->name('nodes.update');
+            Route::delete('nodes/{node}', 'destroyNode')->name('nodes.destroy');
+            Route::put('positions', 'positions')->name('positions');
+            Route::post('nodes/{node}/options', 'storeOption')->name('options.store');
+            Route::put('options/{option}', 'updateOption')->name('options.update');
+            Route::delete('options/{option}', 'destroyOption')->name('options.destroy');
+            Route::get('nodes/{node}/context', 'context')->name('nodes.context');
+            Route::post('nodes/{node}/analysis', 'analyze')->name('nodes.analysis');
+        });
 
     Route::get('projects/{project}/emotional-analysis', [EmotionalAnalysisController::class, 'index'])
         ->name('projects.emotional-analysis.index');

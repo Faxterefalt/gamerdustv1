@@ -13,7 +13,13 @@ class DialogueOption extends Model
         'player_option',
         'consequence',
         'required_condition',
+        'source_ref',
     ];
+
+    public function isManaged(): bool
+    {
+        return $this->source_ref !== null;
+    }
 
     public function dialogueNode(): BelongsTo
     {

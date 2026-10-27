@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Models\DialogueNode;
 use App\Models\Project;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -31,17 +32,7 @@ class StoreDialogueNodeRequest extends FormRequest
             'scene_id' => ['nullable', Rule::exists('scenes', 'id')->where('project_id', $project->id)],
             'character_id' => ['nullable', Rule::exists('characters', 'id')->where('project_id', $project->id)],
             'node_key' => ['required', 'string', 'max:255', $nodeKeyRule],
-            'dialogue_type' => [
-                'required',
-                Rule::in([
-                    'cutscene',
-                    'ambient',
-                    'bark',
-                    'interactive_no_branch',
-                    'interactive_rubber_banding',
-                    'interactive_alternative_paths',
-                ]),
-            ],
+            'dialogue_type' => ['required', Rule::in(DialogueNode::TYPES)],
             'text' => ['required', 'string'],
             'emotional_tone' => ['nullable', 'string', 'max:255'],
             'trigger_condition' => ['nullable', 'string'],
