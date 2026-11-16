@@ -77,7 +77,7 @@ class StudioController extends Controller
     {
         $this->authorize('view', $project);
 
-        $project->load(['constraint', 'characters', 'mechanics']);
+        $project->load(['constraint', 'characters', 'mechanics.scenes', 'mechanics.characters']);
         $none = __('Not defined.');
         $locations = $project->loreEntries()->where('type', 'location')->orderBy('title')->get();
         $scenes = $project->scenes()->get();
@@ -108,6 +108,11 @@ class StudioController extends Controller
                 $mechanic->description ?: '',
                 __('Activation').': '.($mechanic->activation ?: ''),
                 __('Narrative consequence').': '.($mechanic->narrative_effect ?: ''),
+                __('Playable actions').': '.collect(preg_split('/R/u', $mechanic->playable_actions ?? ''))->map(fn ($line) => trim($line))->filter()->implode(', '),
+                __('Restrictions').': '.collect(preg_split('/R/u', $mechanic->restrictions ?? ''))->map(fn ($line) => trim($line))->filter()->implode(', '),
+                __('Conflict').': '.($mechanic->conflict ?: ''),
+                __('Scenes').': '.$mechanic->scenes->pluck('title')->implode(', '),
+                __('Characters').': '.$mechanic->characters->pluck('name')->implode(', '),
                 '',
             );
         }

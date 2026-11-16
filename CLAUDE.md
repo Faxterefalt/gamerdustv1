@@ -27,6 +27,7 @@ npx tsc --noEmit           # chequeo de tipos TS (no hay script npm ni ESLint)
 ```
 
 Los tests usan SQLite en memoria (`phpunit.xml`), no MySQL. No existe `.env.example`; copiar el `.env` existente.
+Con `APP_LOCALE=en` en `.env` fallan 5 tests que esperan textos en español (p. ej. `DÍA` en el guion); ejecutar con `APP_LOCALE=es php artisan test`. En Laragon el CLI necesita PHP ≥ 8.4 (ruta `laragon/bin/php/php-8.5...`).
 
 ## Arquitectura
 

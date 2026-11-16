@@ -180,13 +180,65 @@ class ScriptStudioTest extends TestCase
         $this->assertSame(0, $this->project->comments()->count());
 
         $this->actingAs($this->user)
-            ->post("/projects/{$this->project->id}/mechanics", ['title' => 'Elegir bando', 'kind' => 'decision', 'activation' => 'Al hablar con Luna'])
+            ->post("/projects/{$this->project->id}/mechanics", ['title' => 'Elegir bando', 'kind' => 'decision', 'icon' => 'dialogue', 'description' => 'Decidir a quién apoyar', 'activation' => 'Al hablar con Luna'])
             ->assertSessionHasNoErrors();
         $mechanic = $this->project->mechanics()->first();
         $this->assertSame('Al hablar con Luna', $mechanic->activation);
 
         $this->actingAs($this->user)
-            ->put("/projects/{$this->project->id}/mechanics/{$mechanic->id}", ['title' => 'Elegir bando', 'kind' => 'magic'])
+            ->put("/projects/{$this->project->id}/mechanics/{$mechanic->id}", ['title' => 'Elegir bando', 'kind' => 'magic', 'icon' => 'dialogue', 'description' => 'Decidir a quién apoyar'])
             ->assertSessionHasErrors('kind');
+    }
+
+    public function test_mecanica_vincula_escenas_y_personajes_del_mismo_proyecto(): void
+    {
+        $scene = $this->createScene();
+        $luna = $this->project->characters()->create(['name' => 'Luna']);
+        $payload = [
+            'title' => 'Sigilo',
+            'kind' => 'exploration',
+            'icon' => 'footsteps',
+            'description' => 'Pasar sin ser visto',
+            'playable_actions' => "Agacharse\nOcultarse",
+            'restrictions' => 'Sin combate directo',
+            'conflict' => 'Confiar en quienes ocultan su pasado',
+            'scene_ids' => [$scene['id']],
+            'character_ids' => [$luna->id],
+        ];
+
+        $this->actingAs($this->user)->post("/projects/{$this->project->id}/mechanics", $payload)->assertSessionHasNoErrors();
+        $mechanic = $this->project->mechanics()->firstOrFail();
+        $this->assertSame([$scene['id']], $mechanic->scenes()->pluck('scenes.id')->all());
+        $this->assertSame([$luna->id], $mechanic->characters()->pluck('characters.id')->all());
+        $this->assertSame("Agacharse\nOcultarse", $mechanic->playable_actions);
+
+        $this->actingAs($this->user)
+            ->get("/projects/{$this->project->id}/mechanics?mechanic={$mechanic->id}")
+            ->assertInertia(fn ($page) => $page
+                ->where('selected', $mechanic->id)
+                ->where('mechanics.0.scene_ids', [$scene['id']])
+                ->where('mechanics.0.character_ids', [$luna->id]));
+
+        // Quitar los vínculos al guardar con listas vacías.
+        $this->actingAs($this->user)
+            ->put("/projects/{$this->project->id}/mechanics/{$mechanic->id}", [...$payload, 'scene_ids' => [], 'character_ids' => []])
+            ->assertSessionHasNoErrors();
+        $this->assertSame(0, $mechanic->scenes()->count() + $mechanic->characters()->count());
+    }
+
+    public function test_mecanica_rechaza_vinculos_de_otro_proyecto(): void
+    {
+        $other = $this->user->projects()->create(['title' => 'Otro', 'game_genre' => 'RPG', 'language' => 'es', 'narrative_type' => 'linear']);
+        $foreignScene = $other->scenes()->create(['title' => 'Ajena', 'order' => 1]);
+        $foreignCharacter = $other->characters()->create(['name' => 'Ajeno']);
+        $base = ['title' => 'Sigilo', 'kind' => 'exploration', 'icon' => 'footsteps', 'description' => 'Pasar sin ser visto'];
+
+        $this->actingAs($this->user)
+            ->post("/projects/{$this->project->id}/mechanics", [...$base, 'scene_ids' => [$foreignScene->id]])
+            ->assertSessionHasErrors('scene_ids.0');
+        $this->actingAs($this->user)
+            ->post("/projects/{$this->project->id}/mechanics", [...$base, 'character_ids' => [$foreignCharacter->id]])
+            ->assertSessionHasErrors('character_ids.0');
+        $this->assertSame(0, $this->project->mechanics()->count());
     }
 }
