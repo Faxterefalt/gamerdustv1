@@ -15,9 +15,7 @@ use Illuminate\Validation\ValidationException;
  */
 class ReferenceSyncService
 {
-    public function __construct(private readonly ReferenceParser $parser)
-    {
-    }
+    public function __construct(private readonly ReferenceParser $parser) {}
 
     /**
      * @return array{created_nodes: array<int, array{id: int, title: string}>, created_options: int, updated_options: int, removed_options: array<int, array{id: int, player_option: string}>}
@@ -170,7 +168,7 @@ class ReferenceSyncService
             ->contains(fn (DialogueNode $other) => $this->parser->normalize($other->displayTitle()) === $key);
 
         if ($taken) {
-            throw ValidationException::withMessages(['title' => "Ya existe un pasaje llamado \"{$title}\" en este proyecto."]);
+            throw ValidationException::withMessages(['title' => __('A passage named ":title" already exists in this project.', ['title' => $title])]);
         }
     }
 

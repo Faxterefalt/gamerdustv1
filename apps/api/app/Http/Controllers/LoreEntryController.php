@@ -38,7 +38,7 @@ class LoreEntryController extends Controller
 
         return redirect()
             ->route('projects.lore.index', $project)
-            ->with('success', 'Entrada de lore creada.');
+            ->with('success', __('Lore entry created.'));
     }
 
     public function edit(Project $project, LoreEntry $loreEntry): Response
@@ -59,7 +59,7 @@ class LoreEntryController extends Controller
 
         return redirect()
             ->route('projects.lore.index', $project)
-            ->with('success', 'Entrada de lore actualizada.');
+            ->with('success', __('Lore entry updated.'));
     }
 
     public function destroy(Project $project, LoreEntry $loreEntry): RedirectResponse
@@ -68,7 +68,7 @@ class LoreEntryController extends Controller
 
         $loreEntry->delete();
 
-        return back()->with('success', 'Entrada de lore eliminada.');
+        return back()->with('success', __('Lore entry deleted.'));
     }
 
     private function authorizeLore(Project $project, LoreEntry $loreEntry): void

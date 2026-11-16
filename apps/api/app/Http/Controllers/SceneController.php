@@ -41,7 +41,7 @@ class SceneController extends Controller
 
         return redirect()
             ->route('projects.scenes.index', $project)
-            ->with('success', 'Escena creada.');
+            ->with('success', __('Scene created.'));
     }
 
     public function edit(Project $project, Scene $scene): Response
@@ -64,7 +64,7 @@ class SceneController extends Controller
 
         return redirect()
             ->route('projects.scenes.index', $project)
-            ->with('success', 'Escena actualizada.');
+            ->with('success', __('Scene updated.'));
     }
 
     public function destroy(Project $project, Scene $scene): RedirectResponse
@@ -73,7 +73,7 @@ class SceneController extends Controller
 
         $scene->delete();
 
-        return back()->with('success', 'Escena eliminada.');
+        return back()->with('success', __('Scene deleted.'));
     }
 
     private function authorizeScene(Project $project, Scene $scene): void

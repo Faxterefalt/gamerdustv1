@@ -1,3 +1,4 @@
+import { __ } from '../../../shared/lib/i18n';
 import { Link } from '@inertiajs/react';
 import { Flag, Plus, Trash2, X } from 'lucide-react';
 import type { ReactNode } from 'react';
@@ -62,14 +63,14 @@ export default function NodeEditorPanel({
                     <p className="flex items-center gap-1.5 text-xs text-zinc-500">
                         {node.is_start && (
                             <span className="flex items-center gap-1 text-amber-400">
-                                <Flag size={12} /> Inicio
+                                <Flag size={12} /> {__('Start')}
                             </span>
                         )}
                         <code className="truncate">{node.node_key}</code>
                     </p>
                     <h2 className="truncate font-semibold text-white">{node.display_title}</h2>
                 </div>
-                <button type="button" onClick={onClose} aria-label="Cerrar panel" className="p-1 text-zinc-400 hover:text-white">
+                <button type="button" onClick={onClose} aria-label={__('Close panel')} className="p-1 text-zinc-400 hover:text-white">
                     <X size={16} />
                 </button>
             </div>
@@ -89,18 +90,18 @@ export default function NodeEditorPanel({
                     </ul>
                 )}
 
-                <Field label="Titulo (el ID estable no cambia)" error={nodeError('title')}>
+                <Field label={__('Title (the stable ID does not change)')} error={nodeError('title')}>
                     <input className={inputClass} value={node.title ?? node.display_title} onChange={(event) => onEdit({ title: event.target.value })} />
                 </Field>
 
-                <Field label="Texto - usa {{Nombre del pasaje}} para crear conexiones" error={nodeError('text')}>
+                <Field label={__('Text - use {{Passage name}} to create connections')} error={nodeError('text')}>
                     <textarea className={`${inputClass} min-h-40 resize-y`} rows={8} value={node.text} onChange={(event) => onEdit({ text: event.target.value })} />
                 </Field>
 
                 <div className="grid grid-cols-2 gap-3">
-                    <Field label="Escena" error={nodeError('scene_id')}>
+                    <Field label={__('Scene')} error={nodeError('scene_id')}>
                         <select className={inputClass} value={node.scene_id ?? ''} onChange={(event) => onEdit({ scene_id: event.target.value ? Number(event.target.value) : null })}>
-                            <option value="">Sin escena</option>
+                            <option value="">{__('No scene')}</option>
                             {graph.scenes.map((scene) => (
                                 <option key={scene.id} value={scene.id}>
                                     {scene.title}
@@ -108,9 +109,9 @@ export default function NodeEditorPanel({
                             ))}
                         </select>
                     </Field>
-                    <Field label="Personaje" error={nodeError('character_id')}>
+                    <Field label={__('Character')} error={nodeError('character_id')}>
                         <select className={inputClass} value={node.character_id ?? ''} onChange={(event) => onEdit({ character_id: event.target.value ? Number(event.target.value) : null })}>
-                            <option value="">Sin personaje</option>
+                            <option value="">{__('No character')}</option>
                             {graph.characters.map((character) => (
                                 <option key={character.id} value={character.id}>
                                     {character.name}
@@ -118,29 +119,29 @@ export default function NodeEditorPanel({
                             ))}
                         </select>
                     </Field>
-                    <Field label="Tipo" error={nodeError('dialogue_type')}>
+                    <Field label={__('Type')} error={nodeError('dialogue_type')}>
                         <select className={inputClass} value={node.dialogue_type} onChange={(event) => onEdit({ dialogue_type: event.target.value as DialogueType })}>
                             {(Object.keys(DIALOGUE_TYPE_STYLE) as DialogueType[]).map((type) => (
                                 <option key={type} value={type}>
-                                    {type}
+                                    {__(DIALOGUE_TYPE_STYLE[type].label)}
                                 </option>
                             ))}
                         </select>
                     </Field>
-                    <Field label="Tono emocional" error={nodeError('emotional_tone')}>
+                    <Field label={__('Emotional tone')} error={nodeError('emotional_tone')}>
                         <input className={inputClass} value={node.emotional_tone ?? ''} onChange={(event) => onEdit({ emotional_tone: event.target.value })} />
                     </Field>
                 </div>
 
-                <Field label="Condicion de disparo" error={nodeError('trigger_condition')}>
+                <Field label={__('Trigger condition')} error={nodeError('trigger_condition')}>
                     <textarea className={`${inputClass} resize-y`} rows={2} value={node.trigger_condition ?? ''} onChange={(event) => onEdit({ trigger_condition: event.target.value })} />
                 </Field>
 
                 <section className="space-y-3 border-t border-zinc-800 pt-4">
                     <div className="flex items-center justify-between">
-                        <h3 className="text-sm font-semibold text-white">Opciones ({node.options.length})</h3>
+                        <h3 className="text-sm font-semibold text-white">{__('Options')} ({node.options.length})</h3>
                         <button type="button" onClick={onCreateOption} className="flex items-center gap-1 border border-zinc-700 px-2 py-1 text-xs hover:border-amber-500">
-                            <Plus size={12} /> Opcion
+                            <Plus size={12} /> {__('Option')}
                         </button>
                     </div>
 
@@ -152,19 +153,19 @@ export default function NodeEditorPanel({
                                 <div className="flex items-start justify-between gap-2">
                                     {option.managed ? (
                                         <p className="min-w-0 flex-1 text-sm text-white">
-                                            <span className="mr-1.5 border border-fuchsia-800 px-1 text-[10px] text-fuchsia-200" title="Administrada por una referencia {{ }} del texto">
+                                            <span className="mr-1.5 border border-fuchsia-800 px-1 text-[10px] text-fuchsia-200" title={__('Managed by a {{ }} reference in the text')}>
                                                 {'{{ }}'}
                                             </span>
                                             {option.player_option}
                                         </p>
                                     ) : (
-                                        <input className={inputClass} value={option.player_option} placeholder="Texto de la opcion" onChange={(event) => onEditOption(option.id, { player_option: event.target.value })} />
+                                        <input className={inputClass} value={option.player_option} placeholder={__('Option text')} onChange={(event) => onEditOption(option.id, { player_option: event.target.value })} />
                                     )}
                                     <button
                                         type="button"
                                         onClick={() => onDeleteOption(option.id)}
                                         disabled={option.managed}
-                                        title={option.managed ? 'Quita la referencia del texto para eliminarla' : 'Eliminar opcion'}
+                                        title={option.managed ? __('Remove the reference from the text to delete it') : __('Delete option')}
                                         className="p-1 text-zinc-400 hover:text-rose-300 disabled:opacity-30"
                                     >
                                         <Trash2 size={14} />
@@ -172,16 +173,16 @@ export default function NodeEditorPanel({
                                 </div>
                                 {optionError(option, 'player_option') && <p className="text-xs text-rose-300">{optionError(option, 'player_option')}</p>}
 
-                                <Field label="Destino" error={optionError(option, 'next_dialogue_node_id')}>
+                                <Field label={__('Target')} error={optionError(option, 'next_dialogue_node_id')}>
                                     {option.managed ? (
-                                        <p className="text-sm text-zinc-300">{option.next_dialogue_node_id ? titles.get(option.next_dialogue_node_id) : 'Sin destino (se recreara al guardar el texto)'}</p>
+                                        <p className="text-sm text-zinc-300">{option.next_dialogue_node_id ? titles.get(option.next_dialogue_node_id) : __('No target (it will be recreated when the text is saved)')}</p>
                                     ) : (
                                         <select
                                             className={inputClass}
                                             value={option.next_dialogue_node_id ?? ''}
                                             onChange={(event) => onEditOption(option.id, { next_dialogue_node_id: event.target.value ? Number(event.target.value) : null }, true)}
                                         >
-                                            <option value="">(sin destino)</option>
+                                            <option value="">{__('(no target)')}</option>
                                             {graph.nodes.map((candidate) => (
                                                 <option key={candidate.id} value={candidate.id}>
                                                     {candidate.display_title}
@@ -190,23 +191,23 @@ export default function NodeEditorPanel({
                                         </select>
                                     )}
                                 </Field>
-                                {option.next_dialogue_node_id === null && <p className="text-xs text-rose-300">Opcion sin destino.</p>}
+                                {option.next_dialogue_node_id === null && <p className="text-xs text-rose-300">{__('Option without target.')}</p>}
 
-                                <Field label="Consecuencia" error={optionError(option, 'consequence')}>
+                                <Field label={__('Consequence')} error={optionError(option, 'consequence')}>
                                     <textarea className={`${inputClass} resize-y`} rows={2} value={option.consequence ?? ''} onChange={(event) => onEditOption(option.id, { consequence: event.target.value })} />
                                 </Field>
-                                <Field label="Condicion requerida" error={optionError(option, 'required_condition')}>
+                                <Field label={__('Required condition')} error={optionError(option, 'required_condition')}>
                                     <input className={inputClass} value={option.required_condition ?? ''} onChange={(event) => onEditOption(option.id, { required_condition: event.target.value })} />
                                 </Field>
                             </div>
                         );
                     })}
-                    {node.options.length === 0 && <p className="text-xs text-zinc-500">Sin opciones. Escribe {'{{Nombre}}'} en el texto o crea una opcion manual.</p>}
+                    {node.options.length === 0 && <p className="text-xs text-zinc-500">{__('No options. Write {{Name}} in the text or create a manual option.')}</p>}
                 </section>
 
                 {incoming.length > 0 && (
                     <section className="space-y-1 border-t border-zinc-800 pt-4 text-xs text-zinc-400">
-                        <h3 className="text-sm font-semibold text-white">Entradas ({incoming.length})</h3>
+                        <h3 className="text-sm font-semibold text-white">{__('Incoming')} ({incoming.length})</h3>
                         {incoming.map((edge) => (
                             <p key={edge.id}>
                                 {titles.get(edge.source)} → "{edge.label}"
@@ -219,10 +220,10 @@ export default function NodeEditorPanel({
 
                 <div className="flex items-center justify-between border-t border-zinc-800 pt-4">
                     <Link href={`/projects/${projectId}/dialogues/${node.id}/edit`} className="text-xs text-zinc-400 underline hover:text-white">
-                        Abrir en el formulario
+                        {__('Open in form')}
                     </Link>
                     <button type="button" onClick={onDelete} className="flex items-center gap-1.5 border border-rose-800 px-3 py-1.5 text-xs text-rose-200 hover:bg-rose-950">
-                        <Trash2 size={13} /> Eliminar nodo
+                        <Trash2 size={13} /> {__('Delete node')}
                     </button>
                 </div>
             </div>

@@ -1,3 +1,4 @@
+import { __ } from '../../shared/lib/i18n';
 import type { GraphEdge, GraphNode } from './branching.types';
 import type { DialogueType } from '../dialogues/dialogues.types';
 
@@ -11,10 +12,13 @@ export const DIALOGUE_TYPE_STYLE: Record<DialogueType, { label: string; accent: 
     cutscene: { label: 'Cutscene', accent: 'border-l-violet-500', badge: 'border-violet-700 bg-violet-950/50 text-violet-200', minimap: '#8b5cf6' },
     ambient: { label: 'Ambient', accent: 'border-l-zinc-500', badge: 'border-zinc-600 bg-zinc-800/60 text-zinc-300', minimap: '#71717a' },
     bark: { label: 'Bark', accent: 'border-l-yellow-500', badge: 'border-yellow-700 bg-yellow-950/40 text-yellow-200', minimap: '#eab308' },
-    interactive_no_branch: { label: 'Interactivo sin ramas', accent: 'border-l-sky-500', badge: 'border-sky-700 bg-sky-950/40 text-sky-200', minimap: '#0ea5e9' },
-    interactive_rubber_banding: { label: 'Interactivo rubber-banding', accent: 'border-l-amber-500', badge: 'border-amber-700 bg-amber-950/40 text-amber-200', minimap: '#f59e0b' },
-    interactive_alternative_paths: { label: 'Interactivo rutas alternas', accent: 'border-l-fuchsia-500', badge: 'border-fuchsia-700 bg-fuchsia-950/40 text-fuchsia-200', minimap: '#d946ef' },
+    interactive_no_branch: { label: 'Interactive, no branches', accent: 'border-l-sky-500', badge: 'border-sky-700 bg-sky-950/40 text-sky-200', minimap: '#0ea5e9' },
+    interactive_rubber_banding: { label: 'Interactive, rubber-banding', accent: 'border-l-amber-500', badge: 'border-amber-700 bg-amber-950/40 text-amber-200', minimap: '#f59e0b' },
+    interactive_alternative_paths: { label: 'Interactive, alternative paths', accent: 'border-l-fuchsia-500', badge: 'border-fuchsia-700 bg-fuchsia-950/40 text-fuchsia-200', minimap: '#d946ef' },
 };
+
+/** Etiqueta traducida de un tipo de diálogo (las `label` de arriba son claves de traducción). */
+export const dialogueTypeLabel = (type: string) => __(DIALOGUE_TYPE_STYLE[type as DialogueType]?.label ?? type);
 
 /**
  * Posición inicial solo para nodos que aún no tienen pos_x/pos_y: capas por distancia desde el nodo inicial.

@@ -33,6 +33,6 @@ class ProjectConstraintController extends Controller
             );
         });
 
-        return back()->with('success', 'Planteamiento narrativo guardado.');
+        return back()->with('success', __('Narrative setup saved.'));
     }
 }

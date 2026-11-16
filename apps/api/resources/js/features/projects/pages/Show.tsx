@@ -1,3 +1,4 @@
+import { __ } from '../../../shared/lib/i18n';
 import { Head, Link } from '@inertiajs/react';
 import type { ReactNode } from 'react';
 import ProjectLayout from '../../../layouts/ProjectLayout';
@@ -10,7 +11,7 @@ import NarrativeValidationPanel from '../../analysis/components/NarrativeValidat
 import ProjectStats from '../components/ProjectStats';
 import SceneCard from '../../scenes/components/SceneCard';
 import type { Project } from '../projects.types';
-import { genreLabel, narrativeLabel, statusLabel, summaryText, uiLang } from '../projectOptions';
+import { genreLabel, languageLabel, narrativeLabel, statusLabel } from '../projectOptions';
 
 interface ProjectShowProps {
     project: Project;
@@ -18,7 +19,6 @@ interface ProjectShowProps {
 
 export default function Show({ project }: ProjectShowProps) {
     const latestAnalysis = project.emotional_analyses?.[0] ?? null;
-    const lang = uiLang(project.language);
 
     return (
         <ProjectLayout
@@ -26,13 +26,13 @@ export default function Show({ project }: ProjectShowProps) {
             actions={
                 <div className="flex flex-wrap gap-2">
                     <Link href={`/projects/${project.id}/branching`} className="border border-amber-600 px-4 py-2 text-sm text-amber-100 hover:bg-amber-950">
-                        Editor de ramificacion
+                        {__('Branching editor')}
                     </Link>
                     <Link href={`/projects/${project.id}/edit`} className="border border-zinc-700 px-4 py-2 text-sm hover:border-amber-500">
-                        Editar
+                        {__('Edit')}
                     </Link>
                     <Link href="/projects" className="border border-zinc-700 px-4 py-2 text-sm hover:border-amber-500">
-                        Proyectos
+                        {__('Projects')}
                     </Link>
                 </div>
             }
@@ -43,21 +43,21 @@ export default function Show({ project }: ProjectShowProps) {
                 <section className="grid gap-4 lg:grid-cols-[1.5fr_1fr]">
                     <div className="border border-zinc-800 bg-zinc-900 p-5">
                         <div className="flex flex-wrap gap-2 text-xs text-zinc-300">
-                            <span className="border border-zinc-700 px-2 py-1">{statusLabel(project.status, lang)}</span>
-                            <span className="border border-zinc-700 px-2 py-1">{narrativeLabel(project.narrative_type, lang)}</span>
-                            {project.game_genre && <span className="border border-zinc-700 px-2 py-1">{genreLabel(project.game_genre, lang)}</span>}
-                            {project.language && <span className="border border-zinc-700 px-2 py-1">{project.language === 'English' ? (lang === 'en' ? 'English' : 'Inglés') : lang === 'en' ? 'Spanish' : 'Español'}</span>}
+                            <span className="border border-zinc-700 px-2 py-1">{statusLabel(project.status)}</span>
+                            <span className="border border-zinc-700 px-2 py-1">{narrativeLabel(project.narrative_type)}</span>
+                            {project.game_genre && <span className="border border-zinc-700 px-2 py-1">{genreLabel(project.game_genre)}</span>}
+                            {project.language && <span className="border border-zinc-700 px-2 py-1">{languageLabel(project.language)}</span>}
                         </div>
                         {project.description && <p className="mt-4 text-zinc-300">{project.description}</p>}
                         {project.premise && (
                             <div className="mt-5">
-                                <h2 className="text-sm font-semibold text-amber-200">{summaryText('premise', lang)}</h2>
+                                <h2 className="text-sm font-semibold text-amber-200">{__('Premise')}</h2>
                                 <p className="mt-2 text-sm text-zinc-300">{project.premise}</p>
                             </div>
                         )}
                         {project.central_conflict && (
                             <div className="mt-5">
-                                <h2 className="text-sm font-semibold text-rose-200">{summaryText('conflict', lang)}</h2>
+                                <h2 className="text-sm font-semibold text-rose-200">{__('Main conflict')}</h2>
                                 <p className="mt-2 text-sm text-zinc-300">{project.central_conflict}</p>
                             </div>
                         )}
@@ -74,25 +74,25 @@ export default function Show({ project }: ProjectShowProps) {
 
                 <QuickLinks projectId={project.id} />
 
-                <DashboardSection title="Lore reciente" href={`/projects/${project.id}/lore`} createHref={`/projects/${project.id}/lore/create`}>
+                <DashboardSection title={__('Recent lore')} href={`/projects/${project.id}/lore`} createHref={`/projects/${project.id}/lore/create`}>
                     {(project.lore_entries ?? []).map((entry) => (
                         <LoreEntryCard key={entry.id} entry={entry} />
                     ))}
                 </DashboardSection>
 
-                <DashboardSection title="Personajes" href={`/projects/${project.id}/characters`} createHref={`/projects/${project.id}/characters/create`}>
+                <DashboardSection title={__('Characters')} href={`/projects/${project.id}/characters`} createHref={`/projects/${project.id}/characters/create`}>
                     {(project.characters ?? []).map((character) => (
                         <CharacterCard key={character.id} character={character} />
                     ))}
                 </DashboardSection>
 
-                <DashboardSection title="Escenas" href={`/projects/${project.id}/scenes`} createHref={`/projects/${project.id}/scenes/create`}>
+                <DashboardSection title={__('Scenes')} href={`/projects/${project.id}/scenes`} createHref={`/projects/${project.id}/scenes/create`}>
                     {(project.scenes ?? []).map((scene) => (
                         <SceneCard key={scene.id} scene={scene} />
                     ))}
                 </DashboardSection>
 
-                <DashboardSection title="Dialogos" href={`/projects/${project.id}/dialogues`} createHref={`/projects/${project.id}/dialogues/create`}>
+                <DashboardSection title={__('Dialogues')} href={`/projects/${project.id}/dialogues`} createHref={`/projects/${project.id}/dialogues/create`}>
                     {(project.dialogue_nodes ?? []).map((dialogue) => (
                         <DialogueNodeCard key={dialogue.id} dialogue={dialogue} />
                     ))}
@@ -104,11 +104,11 @@ export default function Show({ project }: ProjectShowProps) {
 
 function QuickLinks({ projectId }: { projectId: number }) {
     const links = [
-        ['Crear lore', `/projects/${projectId}/lore/create`],
-        ['Crear personaje', `/projects/${projectId}/characters/create`],
-        ['Crear escena', `/projects/${projectId}/scenes/create`],
-        ['Crear dialogo', `/projects/${projectId}/dialogues/create`],
-        ['Mapa de ramificacion', `/projects/${projectId}/branching`],
+        [__('Create lore'), `/projects/${projectId}/lore/create`],
+        [__('Create character'), `/projects/${projectId}/characters/create`],
+        [__('Create scene'), `/projects/${projectId}/scenes/create`],
+        [__('Create dialogue'), `/projects/${projectId}/dialogues/create`],
+        [__('Branching map'), `/projects/${projectId}/branching`],
     ];
 
     return (
@@ -129,10 +129,10 @@ function DashboardSection({ title, href, createHref, children }: { title: string
                 <h2 className="text-lg font-semibold text-white">{title}</h2>
                 <div className="flex gap-2">
                     <Link href={href} className="border border-zinc-700 px-3 py-2 text-sm hover:border-amber-500">
-                        Ver todo
+                        {__('View all')}
                     </Link>
                     <Link href={createHref} className="border border-amber-600 px-3 py-2 text-sm text-amber-100 hover:bg-amber-950">
-                        Crear
+                        {__('Create')}
                     </Link>
                 </div>
             </div>

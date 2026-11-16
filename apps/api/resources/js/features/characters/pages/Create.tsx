@@ -1,3 +1,4 @@
+import { __ } from '../../../shared/lib/i18n';
 import { Head, Link } from '@inertiajs/react';
 import ProjectLayout from '../../../layouts/ProjectLayout';
 import CharacterForm from '../components/CharacterForm';
@@ -10,15 +11,15 @@ interface CharacterCreateProps {
 export default function Create({ project }: CharacterCreateProps) {
     return (
         <ProjectLayout
-            title="Nuevo personaje"
+            title={__('New character')}
             actions={
                 <Link href={`/projects/${project.id}/characters`} className="border border-zinc-700 px-4 py-2 text-sm hover:border-amber-500">
-                    Volver
+                    {__('Back')}
                 </Link>
             }
         >
-            <Head title="Nuevo personaje" />
-            <CharacterForm projectId={project.id} submitLabel="Crear personaje" />
+            <Head title={__('New character')} />
+            <CharacterForm projectId={project.id} submitLabel={__('Create character')} />
         </ProjectLayout>
     );
 }

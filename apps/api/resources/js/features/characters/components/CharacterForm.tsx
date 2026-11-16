@@ -1,3 +1,4 @@
+import { __ } from '../../../shared/lib/i18n';
 import { useForm } from '@inertiajs/react';
 import type { FormEvent, ReactNode } from 'react';
 import type { Character } from '../characters.types';
@@ -36,38 +37,38 @@ export default function CharacterForm({ projectId, character, method = 'post', s
     return (
         <form onSubmit={submit} className="space-y-5 border border-zinc-800 bg-zinc-900 p-5">
             <div className="grid gap-4 md:grid-cols-3">
-                <Field label="Nombre" error={errors.name}>
+                <Field label={__('Name')} error={errors.name}>
                     <input value={data.name} onChange={(event) => setData('name', event.target.value)} className={inputClass} />
                 </Field>
-                <Field label="Rol" error={errors.role}>
+                <Field label={__('Role')} error={errors.role}>
                     <input value={data.role} onChange={(event) => setData('role', event.target.value)} className={inputClass} />
                 </Field>
-                <Field label="Arquetipo" error={errors.archetype}>
+                <Field label={__('Archetype')} error={errors.archetype}>
                     <input value={data.archetype} onChange={(event) => setData('archetype', event.target.value)} className={inputClass} />
                 </Field>
             </div>
 
             <div className="grid gap-4 md:grid-cols-2">
-                <Field label="Edad" error={errors.age}>
+                <Field label={__('Age')} error={errors.age}>
                     <input type="number" min="0" value={data.age} onChange={(event) => setData('age', event.target.value)} className={inputClass} />
                 </Field>
-                <Field label="Genero" error={errors.gender}>
+                <Field label={__('Gender')} error={errors.gender}>
                     <input value={data.gender} onChange={(event) => setData('gender', event.target.value)} className={inputClass} />
                 </Field>
             </div>
 
             {[
-                ['Trasfondo', 'background'],
-                ['Personalidad', 'personality'],
-                ['Estilo de habla', 'speech_style'],
-                ['Motivacion', 'motivation'],
-                ['Miedo', 'fear'],
-                ['Deseo', 'desire'],
-                ['Arco emocional', 'emotional_arc'],
-                ['Descripcion visual', 'visual_description'],
-                ['Notas de voz', 'voice_notes'],
+                ['Background', 'background'],
+                ['Personality', 'personality'],
+                ['Speech style', 'speech_style'],
+                ['Motivation', 'motivation'],
+                ['Fear', 'fear'],
+                ['Desire', 'desire'],
+                ['Emotional arc', 'emotional_arc'],
+                ['Visual description', 'visual_description'],
+                ['Voice notes', 'voice_notes'],
             ].map(([label, key]) => (
-                <Field key={key} label={label} error={errors[key as keyof typeof errors]}>
+                <Field key={key} label={__(label)} error={errors[key as keyof typeof errors]}>
                     <textarea
                         value={data[key as keyof typeof data]}
                         onChange={(event) => setData(key as keyof typeof data, event.target.value)}

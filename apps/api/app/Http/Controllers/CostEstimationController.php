@@ -35,7 +35,7 @@ class CostEstimationController extends Controller
             $source->update(['estimated_cost' => $cost->cost_level]);
         }
 
-        return back()->with('success', 'Estimacion de costo guardada.');
+        return back()->with('success', __('Cost estimate saved.'));
     }
 
     private function resolveSource(Project $project, string $type, int $id): Scene|DialogueNode

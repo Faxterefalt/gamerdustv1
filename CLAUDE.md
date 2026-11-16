@@ -2,7 +2,7 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-Gamerdust es una app web de asistencia al diseño narrativo de videojuegos (proyectos, lore, personajes, escenas, diálogos ramificados, análisis emocional, validación de coherencia y estimación de coste). El código, la UI, los mensajes de validación y los comentarios están en español; mantén ese idioma.
+Gamerdust es una app web de asistencia al diseño narrativo de videojuegos (proyectos, lore, personajes, escenas, diálogos ramificados, análisis emocional, validación de coherencia y estimación de coste). Los comentarios del código están en español; mantén ese idioma. La interfaz es bilingüe (español por defecto e inglés): **nunca escribas texto visible directamente**, usa `__()` (ver "Idiomas (i18n)").
 
 ## Monorepo
 
@@ -32,6 +32,13 @@ Los tests usan SQLite en memoria (`phpunit.xml`), no MySQL. No existe `.env.exam
 
 ### Inertia: controladores → páginas
 Los controladores devuelven `Inertia::render('Modulo/Pagina')`. [resolve-page.ts](apps/api/resources/js/app/resolve-page.ts) traduce ese nombre a `resources/js/features/<modulo en minúsculas>/pages/<Pagina>.tsx` (p. ej. `Projects/Index` → `features/projects/pages/Index.tsx`, `Landing` → `features/landing/pages/Landing.tsx`). Una página nueva debe seguir esa ruta o falla en runtime. Cada feature tiene `pages/`, `components/` y un `<feature>.types.ts`; layouts en `resources/js/layouts/`, clases Tailwind reutilizables en `shared/lib/styles.ts`. `HandleInertiaRequests` comparte `auth.user` y `flash.success/error`.
+
+### Idiomas (i18n)
+- **La clave es el texto en inglés** y `lang/es.json` contiene la traducción al español (con sus tildes). No existe `lang/en.json`: en inglés se muestra la propia clave. Un texto nuevo = `__('English text')` + su entrada en `lang/es.json`.
+- PHP: `__('Scene created.')`, con parámetros `__('The scene :title has no clear conflict.', ['title' => ...])`. Validación, auth y paginación van en `lang/{en,es}/*.php`; los nombres de campo en español están en `lang/es/validation.php` → `attributes` (añade ahí los campos nuevos).
+- React: `__()` y `choice()` de [shared/lib/i18n.ts](apps/api/resources/js/shared/lib/i18n.ts), que importa `lang/*.json` con Vite (mismo catálogo que PHP). `choice(':count scene|:count scenes', n)` para plurales. Los identificadores de BD (tipos de diálogo/lore, emociones, estados, géneros) se traducen con mapas de etiquetas (`projectOptions.ts`, `analysis/labels.ts`, `lore/loreOptions.ts`, `branching/layout.ts`).
+- Idioma activo: `config('app.locale')` (`es`) salvo que la cookie `locale` indique otro de `config('app.supported_locales')`; lo aplica el middleware `SetLocale`. `LocaleSwitcher` enlaza a `GET /locale/{locale}` (enlace normal, no Inertia: la página se recarga y el frontend lee el idioma de `<html lang>`).
+- **Idioma del proyecto ≠ idioma de la interfaz**: `projects.language` (`es`/`en`) indica en qué idioma se escribe la narrativa. Los textos que generan los servicios de análisis y se guardan en BD quedan en el idioma de la interfaz del momento en que se generaron.
 
 ### Autorización por proyecto
 Todo cuelga de `Project` (propiedad de `User`); todas las tablas de dominio tienen `project_id` con `cascadeOnDelete`. `ProjectPolicy` solo comprueba `project->user_id === user->id`. Las rutas anidadas (`projects.lore`, `projects.characters`, ...) deben además verificar que el hijo pertenece al proyecto (`abort_unless(... project_id === $project->id, 404)`); ver `ensureNode/ensureOption` en `BranchingGraphController` y `BranchingRequest::authorize()`.

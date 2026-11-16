@@ -78,9 +78,12 @@ return [
     |
     */
 
-    'locale' => env('APP_LOCALE', 'en'),
+    'locale' => env('APP_LOCALE', 'es'),
 
     'fallback_locale' => env('APP_FALLBACK_LOCALE', 'en'),
+
+    // Idiomas que el usuario puede elegir desde la interfaz (ver SetLocale y LocaleController).
+    'supported_locales' => ['es', 'en'],
 
     'faker_locale' => env('APP_FAKER_LOCALE', 'en_US'),
 

@@ -1,8 +1,10 @@
+import { __, choice } from '../../../shared/lib/i18n';
 import { useEffect, useState } from 'react';
 import { Brain } from 'lucide-react';
 import { api } from '../api';
 import type { AnalysisResponse, ContextResponse, NodeContext } from '../branching.types';
 import type { EmotionalAnalysis } from '../../analysis/emotion.types';
+import { emotionLabel } from '../../analysis/labels';
 
 interface NodeAnalysisSectionProps {
     projectId: number;
@@ -49,7 +51,7 @@ export default function NodeAnalysisSection({ projectId, nodeId, beforeAnalyze }
             setAnalysis(response.analysis);
             setContext(response.context);
         } catch (caught) {
-            setError(caught instanceof Error ? caught.message : 'No se pudo analizar.');
+            setError(caught instanceof Error ? caught.message : __('Could not analyze.'));
         } finally {
             setLoading(false);
         }
@@ -58,16 +60,20 @@ export default function NodeAnalysisSection({ projectId, nodeId, beforeAnalyze }
     return (
         <section className="space-y-2 border-t border-zinc-800 pt-4">
             <div className="flex items-center justify-between">
-                <h3 className="text-sm font-semibold text-white">Analisis emocional</h3>
+                <h3 className="text-sm font-semibold text-white">{__('Emotional analysis')}</h3>
                 <button type="button" onClick={analyze} disabled={loading} className="flex items-center gap-1.5 border border-fuchsia-800 px-2.5 py-1 text-xs text-fuchsia-200 hover:bg-fuchsia-950 disabled:opacity-50">
-                    <Brain size={13} /> {loading ? 'Analizando...' : 'Analizar'}
+                    <Brain size={13} /> {loading ? __('Analyzing...') : __('Analyze')}
                 </button>
             </div>
 
             {context && (
                 <p className="text-xs text-zinc-500">
-                    Contexto: {context.scene ? `escena "${context.scene.title}"` : 'sin escena'}, {context.character ? `personaje ${context.character.name}` : 'sin personaje'},{' '}
-                    {context.options.length} opciones, {context.lore.length} entradas de lore.
+                    {__('Context: :scene, :character, :options, :lore.', {
+                        scene: context.scene ? __('scene ":title"', { title: context.scene.title }) : __('no scene'),
+                        character: context.character ? __('character :name', { name: context.character.name }) : __('no character'),
+                        options: choice(':count option|:count options', context.options.length),
+                        lore: choice(':count lore entry|:count lore entries', context.lore.length),
+                    })}
                 </p>
             )}
 
@@ -76,7 +82,7 @@ export default function NodeAnalysisSection({ projectId, nodeId, beforeAnalyze }
             {analysis && (
                 <div className="space-y-2 border border-zinc-800 bg-zinc-950 p-3 text-xs text-zinc-300">
                     <p>
-                        Emocion dominante: <strong className="text-white">{analysis.dominant_emotion}</strong>
+                        {__('Dominant emotion:')} <strong className="text-white">{emotionLabel(analysis.dominant_emotion)}</strong>
                     </p>
                     {analysis.interpretation && <p className="text-zinc-400">{analysis.interpretation}</p>}
                     {analysis.suggestions && analysis.suggestions.length > 0 && (
@@ -86,7 +92,7 @@ export default function NodeAnalysisSection({ projectId, nodeId, beforeAnalyze }
                             ))}
                         </ul>
                     )}
-                    <p className="text-[10px] text-zinc-500">Son sugerencias para revisar: no modifican el texto, las opciones ni las conexiones.</p>
+                    <p className="text-[10px] text-zinc-500">{__('These are suggestions to review: they do not modify the text, options or connections.')}</p>
                 </div>
             )}
         </section>

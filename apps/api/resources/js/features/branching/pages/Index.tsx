@@ -1,3 +1,4 @@
+import { __ } from '../../../shared/lib/i18n';
 import { Head, Link } from '@inertiajs/react';
 import { CheckCircle2, CircleAlert, Loader2, Save, X } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
@@ -14,11 +15,11 @@ interface BranchingIndexProps {
 }
 
 const STATUS_LABEL: Record<SaveStatus, string> = {
-    idle: 'Sin cambios',
-    pending: 'Cambios sin guardar...',
-    saving: 'Guardando...',
-    saved: 'Guardado',
-    error: 'Error al guardar',
+    idle: 'No changes',
+    pending: 'Unsaved changes...',
+    saving: 'Saving...',
+    saved: 'Saved',
+    error: 'Error saving',
 };
 
 const NOTICE_TONE = {
@@ -44,10 +45,11 @@ export default function Index({ project, graph: initialGraph, selectedNodeId }: 
     const handleCreate = useCallback(
         async (position: { x: number; y: number }) => {
             const taken = new Set(graph.nodes.map((node) => node.display_title.trim().toLowerCase()));
-            let title = 'Nuevo pasaje';
+            const baseTitle = __('New passage');
+            let title = baseTitle;
 
             for (let n = 2; taken.has(title.toLowerCase()); n++) {
-                title = `Nuevo pasaje ${n}`;
+                title = `${baseTitle} ${n}`;
             }
 
             const response = await createNode({ title, pos_x: position.x, pos_y: position.y });
@@ -64,7 +66,7 @@ export default function Index({ project, graph: initialGraph, selectedNodeId }: 
         (sourceId: number, targetId: number) => {
             const target = graph.nodes.find((node) => node.id === targetId);
 
-            void createOption(sourceId, { player_option: target?.display_title ?? 'Continuar', next_dialogue_node_id: targetId });
+            void createOption(sourceId, { player_option: target?.display_title ?? __('Continue'), next_dialogue_node_id: targetId });
         },
         [createOption, graph.nodes],
     );
@@ -75,13 +77,13 @@ export default function Index({ project, graph: initialGraph, selectedNodeId }: 
         }
 
         const incoming = graph.edges.filter((edge) => edge.target === selected.id && edge.source !== selected.id);
-        const lines = [`Eliminar "${selected.display_title}"?`, ''];
+        const lines = [__('Delete ":name"?', { name: selected.display_title }), ''];
 
-        lines.push(`- Se eliminaran sus ${selected.options.length} opciones salientes.`);
+        lines.push(__('- Its :count outgoing options will be deleted.', { count: selected.options.length }));
         lines.push(
             incoming.length > 0
-                ? `- ${incoming.length} opciones de otros nodos apuntan aqui y quedaran SIN DESTINO (su texto no se borra):\n${incoming.map((edge) => `   • ${graph.nodes.find((node) => node.id === edge.source)?.display_title}: "${edge.label}"`).join('\n')}`
-                : '- Ningun otro nodo apunta aqui.',
+                ? `${__('- :count options from other nodes point here and will be left WITHOUT A TARGET (their text is not deleted):', { count: incoming.length })}\n${incoming.map((edge) => `   • ${graph.nodes.find((node) => node.id === edge.source)?.display_title}: "${edge.label}"`).join('\n')}`
+                : __('- No other node points here.'),
         );
 
         if (confirm(lines.join('\n'))) {
@@ -95,7 +97,7 @@ export default function Index({ project, graph: initialGraph, selectedNodeId }: 
     return (
         <ProjectLayout
             fullWidth
-            title={`Editor de ramificacion - ${project.title}`}
+            title={`${__('Branching editor')} - ${project.title}`}
             actions={
                 <div className="flex flex-wrap items-center gap-2">
                     <span
@@ -105,28 +107,28 @@ export default function Index({ project, graph: initialGraph, selectedNodeId }: 
                         {status === 'saving' && <Loader2 size={13} className="animate-spin" />}
                         {status === 'saved' && <CheckCircle2 size={13} />}
                         {status === 'error' && <CircleAlert size={13} />}
-                        {STATUS_LABEL[status]}
+                        {__(STATUS_LABEL[status])}
                     </span>
                     <button type="button" onClick={() => void flush()} className="flex items-center gap-1.5 border border-amber-600 px-3 py-2 text-sm text-amber-100 hover:bg-amber-950">
-                        <Save size={14} /> Guardar
+                        <Save size={14} /> {__('Save')}
                     </button>
                     <Link href={`/projects/${project.id}`} className="border border-zinc-700 px-3 py-2 text-sm hover:border-amber-500">
-                        Panel
+                        {__('Dashboard')}
                     </Link>
                     <Link href={`/projects/${project.id}/dialogues`} className="border border-zinc-700 px-3 py-2 text-sm hover:border-amber-500">
-                        Lista de dialogos
+                        {__('Dialogue list')}
                     </Link>
                 </div>
             }
         >
-            <Head title={`Ramificacion - ${project.title}`} />
+            <Head title={`${__('Branching editor')} - ${project.title}`} />
 
             {editor.notices.length > 0 && (
                 <div className="mb-3 space-y-2">
                     {editor.notices.map((notice) => (
                         <div key={notice.id} className={`flex items-start justify-between gap-3 border px-3 py-2 text-xs ${NOTICE_TONE[notice.tone]}`}>
                             <span>{notice.message}</span>
-                            <button type="button" aria-label="Cerrar aviso" onClick={() => editor.dismissNotice(notice.id)}>
+                            <button type="button" aria-label={__('Close notice')} onClick={() => editor.dismissNotice(notice.id)}>
                                 <X size={14} />
                             </button>
                         </div>
@@ -161,7 +163,7 @@ export default function Index({ project, graph: initialGraph, selectedNodeId }: 
                             displayOption={editor.displayOption}
                             onEdit={(patch) => editor.editNode(selected.id, patch)}
                             onEditOption={editor.editOption}
-                            onCreateOption={() => void createOption(selected.id, { player_option: 'Nueva opcion' })}
+                            onCreateOption={() => void createOption(selected.id, { player_option: __('New option') })}
                             onDeleteOption={(id) => void deleteOption(id)}
                             onDelete={() => void handleDelete()}
                             onClose={() => setSelectedId(null)}

@@ -16,8 +16,7 @@ class BranchingNodeService
     public function __construct(
         private readonly ReferenceSyncService $references,
         private readonly ReferenceParser $parser,
-    ) {
-    }
+    ) {}
 
     /**
      * @return array{node: DialogueNode, sync: array}
@@ -143,7 +142,7 @@ class BranchingNodeService
 
             if ($locked->isNotEmpty()) {
                 throw ValidationException::withMessages([
-                    $locked->first() => 'Esta opcion la administra una referencia {{ }} del texto; edita el texto del nodo para cambiarla.',
+                    $locked->first() => __('This option is managed by a {{ }} reference in the text; edit the node text to change it.'),
                 ]);
             }
 
@@ -159,7 +158,7 @@ class BranchingNodeService
     {
         if ($option->isManaged()) {
             throw ValidationException::withMessages([
-                'option' => 'Esta opcion la administra una referencia {{ }}; quita la referencia del texto para eliminarla.',
+                'option' => __('This option is managed by a {{ }} reference; remove the reference from the text to delete it.'),
             ]);
         }
 

@@ -1,3 +1,4 @@
+import { __ } from '../../../shared/lib/i18n';
 import { Head, Link } from '@inertiajs/react';
 import ProjectLayout from '../../../layouts/ProjectLayout';
 import LoreEntryForm from '../components/LoreEntryForm';
@@ -12,15 +13,15 @@ interface LoreEditProps {
 export default function Edit({ project, loreEntry }: LoreEditProps) {
     return (
         <ProjectLayout
-            title={`Editar ${loreEntry.title}`}
+            title={__('Edit :name', { name: loreEntry.title })}
             actions={
                 <Link href={`/projects/${project.id}/lore`} className="border border-zinc-700 px-4 py-2 text-sm hover:border-amber-500">
-                    Volver
+                    {__('Back')}
                 </Link>
             }
         >
-            <Head title={`Editar ${loreEntry.title}`} />
-            <LoreEntryForm projectId={project.id} entry={loreEntry} method="put" submitLabel="Guardar cambios" />
+            <Head title={__('Edit :name', { name: loreEntry.title })} />
+            <LoreEntryForm projectId={project.id} entry={loreEntry} method="put" submitLabel={__('Save changes')} />
         </ProjectLayout>
     );
 }

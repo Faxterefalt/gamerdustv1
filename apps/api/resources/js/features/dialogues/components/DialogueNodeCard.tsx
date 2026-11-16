@@ -1,4 +1,6 @@
+import { __ } from '../../../shared/lib/i18n';
 import { Link, router } from '@inertiajs/react';
+import { dialogueTypeLabel } from '../../branching/layout';
 import type { DialogueNode } from '../dialogues.types';
 
 interface DialogueNodeCardProps {
@@ -7,7 +9,7 @@ interface DialogueNodeCardProps {
 
 export default function DialogueNodeCard({ dialogue }: DialogueNodeCardProps) {
     const destroy = () => {
-        if (confirm(`Eliminar "${dialogue.node_key}"?`)) {
+        if (confirm(__('Delete ":name"?', { name: dialogue.node_key }))) {
             router.delete(`/projects/${dialogue.project_id}/dialogues/${dialogue.id}`);
         }
     };
@@ -18,10 +20,10 @@ export default function DialogueNodeCard({ dialogue }: DialogueNodeCardProps) {
                 <div>
                     <h3 className="font-semibold text-white">{dialogue.title || dialogue.node_key}</h3>
                     <p className="text-sm text-zinc-400">
-                        {dialogue.character?.name ?? 'Sin personaje'} {dialogue.scene ? `- ${dialogue.scene.title}` : ''}
+                        {dialogue.character?.name ?? __('No character')} {dialogue.scene ? `- ${dialogue.scene.title}` : ''}
                     </p>
                 </div>
-                <span className="border border-fuchsia-800 bg-fuchsia-950/40 px-2 py-1 text-xs text-fuchsia-200">{dialogue.dialogue_type}</span>
+                <span className="border border-fuchsia-800 bg-fuchsia-950/40 px-2 py-1 text-xs text-fuchsia-200">{dialogueTypeLabel(dialogue.dialogue_type)}</span>
             </div>
             <p className="mt-3 whitespace-pre-wrap text-sm text-zinc-300">{dialogue.text}</p>
             {dialogue.options && dialogue.options.length > 0 && (
@@ -35,13 +37,13 @@ export default function DialogueNodeCard({ dialogue }: DialogueNodeCardProps) {
             )}
             <div className="mt-4 flex gap-2">
                 <Link href={`/projects/${dialogue.project_id}/branching?node=${dialogue.id}`} className="border border-fuchsia-800 px-3 py-2 text-sm text-fuchsia-200 hover:bg-fuchsia-950">
-                    Ver en mapa
+                    {__('View on map')}
                 </Link>
                 <Link href={`/projects/${dialogue.project_id}/dialogues/${dialogue.id}/edit`} className="border border-zinc-700 px-3 py-2 text-sm hover:border-amber-500">
-                    Editar
+                    {__('Edit')}
                 </Link>
                 <button type="button" onClick={destroy} className="border border-rose-800 px-3 py-2 text-sm text-rose-200 hover:bg-rose-950">
-                    Eliminar
+                    {__('Delete')}
                 </button>
             </div>
         </article>

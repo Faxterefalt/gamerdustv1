@@ -32,10 +32,10 @@ class EmotionalAnalysisService
             'arousal' => min(1, 0.35 + ($topScore * 0.15)),
             'dominance' => $dominantEmotion === 'fear' ? 0.35 : 0.6,
             'emotion_scores' => $scores,
-            'interpretation' => 'Analisis simulado basado en palabras clave. Sirve como marcador inicial, no como juicio definitivo.',
+            'interpretation' => __('Simulated analysis based on keywords. It serves as an initial marker, not as a definitive judgment.'),
             'suggestions' => [
-                'Revisar si el tono emocional coincide con el arco narrativo esperado.',
-                'Agregar contraste emocional si la escena se siente plana.',
+                __('Check whether the emotional tone matches the expected narrative arc.'),
+                __('Add emotional contrast if the scene feels flat.'),
             ],
         ];
     }

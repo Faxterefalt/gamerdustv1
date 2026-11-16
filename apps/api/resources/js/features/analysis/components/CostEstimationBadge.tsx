@@ -1,3 +1,4 @@
+import { __ } from '../../../shared/lib/i18n';
 import type { CostLevel } from '../cost.types';
 
 interface CostEstimationBadgeProps {
@@ -5,9 +6,9 @@ interface CostEstimationBadgeProps {
 }
 
 const labels: Record<string, string> = {
-    low: 'Costo bajo',
-    medium: 'Costo medio',
-    high: 'Costo alto',
+    low: 'Low cost',
+    medium: 'Medium cost',
+    high: 'High cost',
 };
 
 const classes: Record<string, string> = {
@@ -21,7 +22,7 @@ export default function CostEstimationBadge({ level }: CostEstimationBadgeProps)
 
     return (
         <span className={`inline-flex items-center border px-2 py-1 text-xs font-medium ${classes[normalized] ?? classes.low}`}>
-            {labels[normalized] ?? labels.low}
+            {__(labels[normalized] ?? labels.low)}
         </span>
     );
 }

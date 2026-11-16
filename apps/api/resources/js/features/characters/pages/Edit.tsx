@@ -1,3 +1,4 @@
+import { __ } from '../../../shared/lib/i18n';
 import { Head, Link } from '@inertiajs/react';
 import ProjectLayout from '../../../layouts/ProjectLayout';
 import CharacterForm from '../components/CharacterForm';
@@ -12,15 +13,15 @@ interface CharacterEditProps {
 export default function Edit({ project, character }: CharacterEditProps) {
     return (
         <ProjectLayout
-            title={`Editar ${character.name}`}
+            title={__('Edit :name', { name: character.name })}
             actions={
                 <Link href={`/projects/${project.id}/characters`} className="border border-zinc-700 px-4 py-2 text-sm hover:border-amber-500">
-                    Volver
+                    {__('Back')}
                 </Link>
             }
         >
-            <Head title={`Editar ${character.name}`} />
-            <CharacterForm projectId={project.id} character={character} method="put" submitLabel="Guardar cambios" />
+            <Head title={__('Edit :name', { name: character.name })} />
+            <CharacterForm projectId={project.id} character={character} method="put" submitLabel={__('Save changes')} />
         </ProjectLayout>
     );
 }

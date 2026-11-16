@@ -1,3 +1,4 @@
+import { __ } from '../../../shared/lib/i18n';
 import { router } from '@inertiajs/react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { api, ApiError } from '../api';
@@ -98,7 +99,7 @@ export function useBranchingGraph(projectId: number, initial: BranchingGraph) {
 
     const handleError = useCallback(
         (caught: unknown, target: Pick<SaveError, 'nodeId' | 'optionId'> = {}) => {
-            const apiError = caught instanceof ApiError ? caught : new ApiError('No se pudo guardar. Revisa tu conexion.', 0);
+            const apiError = caught instanceof ApiError ? caught : new ApiError(__('Could not save. Check your connection.'), 0);
             const first = Object.values(apiError.errors)[0]?.[0];
 
             setError({ ...target, message: first ?? apiError.message, fields: apiError.errors });
@@ -113,22 +114,25 @@ export function useBranchingGraph(projectId: number, initial: BranchingGraph) {
             setSavedOnce(true);
 
             if (response.sync?.created_nodes.length) {
-                notify('info', `Se crearon nodos por referencia: ${response.sync.created_nodes.map((node) => node.title).join(', ')}.`);
+                notify('info', __('Nodes created by reference: :list.', { list: response.sync.created_nodes.map((node) => node.title).join(', ') }));
             }
 
             if (response.sync?.removed_options.length) {
-                notify('info', `Se quitaron opciones administradas: ${response.sync.removed_options.map((option) => option.player_option).join(', ')}.`);
+                notify('info', __('Managed options removed: :list.', { list: response.sync.removed_options.map((option) => option.player_option).join(', ') }));
             }
 
             if (response.renamed?.length) {
-                notify('warning', `Referencias actualizadas en: ${response.renamed.map((node) => node.title).join(', ')}.`);
+                notify('warning', __('References updated in: :list.', { list: response.renamed.map((node) => node.title).join(', ') }));
             }
 
             if (response.broken_options?.length) {
                 notify(
                     'warning',
-                    `Opciones que quedaron sin destino: ${response.broken_options.map((option) => `"${option.player_option}" en ${option.source_title}`).join('; ')}. ` +
-                        'Si su texto aun contiene {{referencia}}, el nodo se recreara al guardar ese texto.',
+                    __('Options left without a target: :list.', {
+                        list: response.broken_options.map((option) => __('":option" in :node', { option: option.player_option, node: option.source_title })).join('; '),
+                    }) +
+                        ' ' +
+                        __('If their text still contains {{reference}}, the node will be recreated when that text is saved.'),
                 );
             }
         },

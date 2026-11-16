@@ -1,3 +1,4 @@
+import { __, choice } from '../../../shared/lib/i18n';
 import {
     Background,
     BackgroundVariant,
@@ -199,23 +200,23 @@ function Canvas({ graph, displayNode, selectedId, focusNonce, onSelect, onMove, 
 
                 <Panel position="top-left" className="flex flex-wrap gap-2">
                     <button type="button" className={buttonClass} onClick={() => void fitView({ padding: 0.25, duration: 300 })}>
-                        <Maximize size={14} /> Ajustar vista
+                        <Maximize size={14} /> {__('Fit view')}
                     </button>
                     <button type="button" className={buttonClass} disabled={selectedId === null} onClick={() => center(selectedId)}>
-                        <Crosshair size={14} /> Centrar en seleccionado
+                        <Crosshair size={14} /> {__('Center on selected')}
                     </button>
                     <button type="button" className={`${buttonClass} !border-amber-600 !text-amber-100`} onClick={createAtCenter}>
-                        <Plus size={14} /> Nuevo nodo
+                        <Plus size={14} /> {__('New node')}
                     </button>
                 </Panel>
 
                 <Panel position="bottom-center" className="flex flex-wrap gap-3 border border-zinc-800 bg-zinc-900/90 px-3 py-1.5 text-[11px] text-zinc-400">
-                    <span>{graph.nodes.length} nodos</span>
-                    <span>{graph.edges.length} conexiones</span>
-                    <span className={counts.isolated ? 'text-amber-300' : ''}>{counts.isolated} aislados</span>
-                    <span>{counts.incoming} sin entrada</span>
-                    <span>{counts.outgoing} sin salida</span>
-                    <span className={counts.broken ? 'text-rose-300' : ''}>{counts.broken} opciones sin destino</span>
+                    <span>{choice(':count node|:count nodes', graph.nodes.length)}</span>
+                    <span>{choice(':count connection|:count connections', graph.edges.length)}</span>
+                    <span className={counts.isolated ? 'text-amber-300' : ''}>{__(':count isolated', { count: counts.isolated })}</span>
+                    <span>{__(':count without incoming', { count: counts.incoming })}</span>
+                    <span>{__(':count without outgoing', { count: counts.outgoing })}</span>
+                    <span className={counts.broken ? 'text-rose-300' : ''}>{__(':count options without target', { count: counts.broken })}</span>
                 </Panel>
             </ReactFlow>
         </div>

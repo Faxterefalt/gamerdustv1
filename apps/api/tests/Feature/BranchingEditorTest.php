@@ -34,7 +34,7 @@ class BranchingEditorTest extends TestCase
         return $user->projects()->create([
             'title' => $title,
             'game_genre' => 'RPG',
-            'language' => 'Espanol',
+            'language' => 'es',
             'narrative_type' => 'balanced',
         ]);
     }

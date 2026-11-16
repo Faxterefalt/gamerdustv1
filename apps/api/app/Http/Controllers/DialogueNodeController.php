@@ -47,7 +47,7 @@ class DialogueNodeController extends Controller
 
         return redirect()
             ->route('projects.dialogues.index', $project)
-            ->with('success', 'Nodo de dialogo creado.');
+            ->with('success', __('Dialogue node created.'));
     }
 
     public function edit(Project $project, DialogueNode $dialogue): Response
@@ -80,7 +80,7 @@ class DialogueNodeController extends Controller
 
         return redirect()
             ->route('projects.dialogues.index', $project)
-            ->with('success', 'Nodo de dialogo actualizado.');
+            ->with('success', __('Dialogue node updated.'));
     }
 
     public function destroy(Project $project, DialogueNode $dialogue): RedirectResponse
@@ -89,7 +89,7 @@ class DialogueNodeController extends Controller
 
         $dialogue->delete();
 
-        return back()->with('success', 'Nodo de dialogo eliminado.');
+        return back()->with('success', __('Dialogue node deleted.'));
     }
 
     private function syncOptions(DialogueNode $dialogue, array $options): void

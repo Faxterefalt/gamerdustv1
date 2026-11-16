@@ -1,3 +1,4 @@
+import { __ } from '../../../shared/lib/i18n';
 import { Head, Link } from '@inertiajs/react';
 import ProjectLayout from '../../../layouts/ProjectLayout';
 import SceneCard from '../components/SceneCard';
@@ -12,19 +13,19 @@ interface ScenesIndexProps {
 export default function Index({ project, scenes }: ScenesIndexProps) {
     return (
         <ProjectLayout
-            title={`Escenas - ${project.title}`}
+            title={`${__('Scenes')} - ${project.title}`}
             actions={
                 <div className="flex gap-2">
                     <Link href={`/projects/${project.id}`} className="border border-zinc-700 px-4 py-2 text-sm hover:border-amber-500">
-                        Panel
+                        {__('Dashboard')}
                     </Link>
                     <Link href={`/projects/${project.id}/scenes/create`} className="border border-amber-600 px-4 py-2 text-sm text-amber-100 hover:bg-amber-950">
-                        Nueva escena
+                        {__('New scene')}
                     </Link>
                 </div>
             }
         >
-            <Head title={`Escenas - ${project.title}`} />
+            <Head title={`${__('Scenes')} - ${project.title}`} />
             <div className="grid gap-4 lg:grid-cols-2">
                 {scenes.data.map((scene) => (
                     <SceneCard key={scene.id} scene={scene} />

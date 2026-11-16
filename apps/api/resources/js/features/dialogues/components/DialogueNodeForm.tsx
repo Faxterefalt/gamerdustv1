@@ -1,5 +1,7 @@
+import { __ } from '../../../shared/lib/i18n';
 import { useForm } from '@inertiajs/react';
 import type { FormEvent, ReactNode } from 'react';
+import { DIALOGUE_TYPE_STYLE, dialogueTypeLabel } from '../../branching/layout';
 import type { Character } from '../../characters/characters.types';
 import type { DialogueNode, DialogueOption, DialogueType } from '../dialogues.types';
 import type { Scene } from '../../scenes/scenes.types';
@@ -56,27 +58,27 @@ export default function DialogueNodeForm({ projectId, dialogue, scenes, characte
     return (
         <form onSubmit={submit} className="space-y-5 border border-zinc-800 bg-zinc-900 p-5">
             <div className="grid gap-4 md:grid-cols-3">
-                <Field label="Clave del nodo" error={errors.node_key}>
+                <Field label={__('Node key')} error={errors.node_key}>
                     <input value={data.node_key} onChange={(event) => setData('node_key', event.target.value)} className={inputClass} />
                 </Field>
-                <Field label="Tipo" error={errors.dialogue_type}>
+                <Field label={__('Type')} error={errors.dialogue_type}>
                     <select value={data.dialogue_type} onChange={(event) => setData('dialogue_type', event.target.value as DialogueType)} className={inputClass}>
-                        {['cutscene', 'ambient', 'bark', 'interactive_no_branch', 'interactive_rubber_banding', 'interactive_alternative_paths'].map((type) => (
+                        {(Object.keys(DIALOGUE_TYPE_STYLE) as DialogueType[]).map((type) => (
                             <option key={type} value={type}>
-                                {type}
+                                {dialogueTypeLabel(type)}
                             </option>
                         ))}
                     </select>
                 </Field>
-                <Field label="Tono emocional" error={errors.emotional_tone}>
+                <Field label={__('Emotional tone')} error={errors.emotional_tone}>
                     <input value={data.emotional_tone} onChange={(event) => setData('emotional_tone', event.target.value)} className={inputClass} />
                 </Field>
             </div>
 
             <div className="grid gap-4 md:grid-cols-2">
-                <Field label="Escena" error={errors.scene_id}>
+                <Field label={__('Scene')} error={errors.scene_id}>
                     <select value={data.scene_id} onChange={(event) => setData('scene_id', event.target.value ? Number(event.target.value) : '')} className={inputClass}>
-                        <option value="">Sin escena</option>
+                        <option value="">{__('No scene')}</option>
                         {scenes.map((scene) => (
                             <option key={scene.id} value={scene.id}>
                                 {scene.title}
@@ -84,9 +86,9 @@ export default function DialogueNodeForm({ projectId, dialogue, scenes, characte
                         ))}
                     </select>
                 </Field>
-                <Field label="Personaje" error={errors.character_id}>
+                <Field label={__('Character')} error={errors.character_id}>
                     <select value={data.character_id} onChange={(event) => setData('character_id', event.target.value ? Number(event.target.value) : '')} className={inputClass}>
-                        <option value="">Sin personaje</option>
+                        <option value="">{__('No character')}</option>
                         {characters.map((character) => (
                             <option key={character.id} value={character.id}>
                                 {character.name}
@@ -96,22 +98,22 @@ export default function DialogueNodeForm({ projectId, dialogue, scenes, characte
                 </Field>
             </div>
 
-            <Field label="Texto" error={errors.text}>
+            <Field label={__('Text')} error={errors.text}>
                 <textarea value={data.text} onChange={(event) => setData('text', event.target.value)} rows={5} className={inputClass} />
             </Field>
-            <Field label="Condicion de disparo" error={errors.trigger_condition}>
+            <Field label={__('Trigger condition')} error={errors.trigger_condition}>
                 <textarea value={data.trigger_condition} onChange={(event) => setData('trigger_condition', event.target.value)} rows={3} className={inputClass} />
             </Field>
 
             <section className="space-y-3">
                 <div className="flex items-center justify-between gap-4">
-                    <h2 className="font-semibold text-white">Opciones del jugador</h2>
+                    <h2 className="font-semibold text-white">{__('Player options')}</h2>
                     <button
                         type="button"
                         onClick={() => setData('options', [...data.options, { player_option: '', next_dialogue_node_id: '', consequence: '', required_condition: '' }])}
                         className="border border-zinc-700 px-3 py-2 text-sm hover:border-amber-500"
                     >
-                        Agregar opcion
+                        {__('Add option')}
                     </button>
                 </div>
 
@@ -119,20 +121,20 @@ export default function DialogueNodeForm({ projectId, dialogue, scenes, characte
                     <div key={index} className="space-y-3 border border-zinc-800 bg-zinc-950 p-3">
                         <div className="flex justify-end">
                             <button type="button" onClick={() => removeOption(index)} className="text-sm text-rose-300 hover:text-rose-100">
-                                Quitar
+                                {__('Remove')}
                             </button>
                         </div>
-                        <Field label="Opcion" error={errors[`options.${index}.player_option`]}>
+                        <Field label={__('Option')} error={errors[`options.${index}.player_option`]}>
                             <input value={option.player_option} onChange={(event) => updateOption(index, 'player_option', event.target.value)} className={inputClass} />
                         </Field>
                         <div className="grid gap-4 md:grid-cols-2">
-                            <Field label="Siguiente nodo" error={errors[`options.${index}.next_dialogue_node_id`]}>
+                            <Field label={__('Next node')} error={errors[`options.${index}.next_dialogue_node_id`]}>
                                 <select
                                     value={option.next_dialogue_node_id}
                                     onChange={(event) => updateOption(index, 'next_dialogue_node_id', event.target.value ? Number(event.target.value) : '')}
                                     className={inputClass}
                                 >
-                                    <option value="">Sin salto</option>
+                                    <option value="">{__('No jump')}</option>
                                     {dialogues.map((node) => (
                                         <option key={node.id} value={node.id}>
                                             {node.node_key}
@@ -140,11 +142,11 @@ export default function DialogueNodeForm({ projectId, dialogue, scenes, characte
                                     ))}
                                 </select>
                             </Field>
-                            <Field label="Condicion requerida" error={errors[`options.${index}.required_condition`]}>
+                            <Field label={__('Required condition')} error={errors[`options.${index}.required_condition`]}>
                                 <input value={option.required_condition} onChange={(event) => updateOption(index, 'required_condition', event.target.value)} className={inputClass} />
                             </Field>
                         </div>
-                        <Field label="Consecuencia" error={errors[`options.${index}.consequence`]}>
+                        <Field label={__('Consequence')} error={errors[`options.${index}.consequence`]}>
                             <textarea value={option.consequence} onChange={(event) => updateOption(index, 'consequence', event.target.value)} rows={2} className={inputClass} />
                         </Field>
                     </div>

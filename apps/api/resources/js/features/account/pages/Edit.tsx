@@ -1,3 +1,4 @@
+import { __ } from '../../../shared/lib/i18n';
 import { Head, useForm, usePage } from '@inertiajs/react';
 import type { FormEvent, ReactNode } from 'react';
 import ProjectLayout from '../../../layouts/ProjectLayout';
@@ -32,21 +33,21 @@ export default function Edit() {
     };
 
     return (
-        <ProjectLayout title="Cuenta">
-            <Head title="Cuenta" />
+        <ProjectLayout title={__('Account')}>
+            <Head title={__('Account')} />
 
             <div className="grid gap-6 lg:grid-cols-2">
                 <section className="border border-zinc-800 bg-zinc-900 p-5">
                     <div>
-                        <h2 className="text-lg font-semibold text-white">Perfil</h2>
-                        <p className="mt-1 text-sm text-zinc-400">Actualiza el nombre visible y el correo de acceso.</p>
+                        <h2 className="text-lg font-semibold text-white">{__('Profile')}</h2>
+                        <p className="mt-1 text-sm text-zinc-400">{__('Update your display name and login email.')}</p>
                     </div>
 
                     <form onSubmit={submitProfile} className="mt-5 space-y-4">
-                        <Field label="Nombre" error={profileForm.errors.name}>
+                        <Field label={__('Name')} error={profileForm.errors.name}>
                             <input value={profileForm.data.name} onChange={(event) => profileForm.setData('name', event.target.value)} className={inputClass} />
                         </Field>
-                        <Field label="Correo" error={profileForm.errors.email}>
+                        <Field label={__('Email')} error={profileForm.errors.email}>
                             <input type="email" value={profileForm.data.email} onChange={(event) => profileForm.setData('email', event.target.value)} className={inputClass} />
                         </Field>
 
@@ -55,19 +56,19 @@ export default function Edit() {
                             disabled={profileForm.processing}
                             className="border border-amber-600 px-4 py-2 text-sm font-medium text-amber-100 hover:bg-amber-950 disabled:opacity-50"
                         >
-                            Guardar perfil
+                            {__('Save profile')}
                         </button>
                     </form>
                 </section>
 
                 <section className="border border-zinc-800 bg-zinc-900 p-5">
                     <div>
-                        <h2 className="text-lg font-semibold text-white">Contraseña</h2>
-                        <p className="mt-1 text-sm text-zinc-400">Confirma tu contraseña actual antes de guardar uno nuevo.</p>
+                        <h2 className="text-lg font-semibold text-white">{__('Password')}</h2>
+                        <p className="mt-1 text-sm text-zinc-400">{__('Confirm your current password before saving a new one.')}</p>
                     </div>
 
                     <form onSubmit={submitPassword} className="mt-5 space-y-4">
-                        <Field label="Contraseña actual" error={passwordForm.errors.current_password}>
+                        <Field label={__('Current password')} error={passwordForm.errors.current_password}>
                             <input
                                 type="password"
                                 value={passwordForm.data.current_password}
@@ -75,10 +76,10 @@ export default function Edit() {
                                 className={inputClass}
                             />
                         </Field>
-                        <Field label="Nueva contraseña" error={passwordForm.errors.password}>
+                        <Field label={__('New password')} error={passwordForm.errors.password}>
                             <input type="password" value={passwordForm.data.password} onChange={(event) => passwordForm.setData('password', event.target.value)} className={inputClass} />
                         </Field>
-                        <Field label="Confirmar nueva contraseña" error={passwordForm.errors.password_confirmation}>
+                        <Field label={__('Confirm new password')} error={passwordForm.errors.password_confirmation}>
                             <input
                                 type="password"
                                 value={passwordForm.data.password_confirmation}
@@ -92,7 +93,7 @@ export default function Edit() {
                             disabled={passwordForm.processing}
                             className="border border-amber-600 px-4 py-2 text-sm font-medium text-amber-100 hover:bg-amber-950 disabled:opacity-50"
                         >
-                            Cambiar contraseña
+                            {__('Change password')}
                         </button>
                     </form>
                 </section>

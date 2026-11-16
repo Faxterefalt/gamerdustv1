@@ -23,7 +23,7 @@ class UpdateProjectRequest extends FormRequest
             'title' => ['required', 'string', 'max:255'],
             // Legacy projects may hold a value outside the current lists; keeping it unchanged stays valid.
             'game_genre' => ['required', Rule::in([...StoreProjectRequest::GENRES, $project->game_genre])],
-            'language' => ['required', Rule::in([...StoreProjectRequest::LANGUAGES, $project->language])],
+            'language' => ['required', Rule::in(StoreProjectRequest::LANGUAGES)],
             'narrative_type' => ['required', Rule::in(StoreProjectRequest::NARRATIVE_TYPES)],
             'premise' => ['nullable', 'string', 'max:2000'],
         ];

@@ -1,6 +1,8 @@
+import { __ } from '../../../shared/lib/i18n';
 import { useForm } from '@inertiajs/react';
 import type { FormEvent, ReactNode } from 'react';
 import type { LoreEntry, LoreType } from '../lore.types';
+import { LORE_TYPES, loreTypeLabel } from '../loreOptions';
 
 interface LoreEntryFormProps {
     projectId: number;
@@ -26,27 +28,27 @@ export default function LoreEntryForm({ projectId, entry, method = 'post', submi
 
     return (
         <form onSubmit={submit} className="space-y-5 border border-zinc-800 bg-zinc-900 p-5">
-            <Field label="Titulo" error={errors.title}>
+            <Field label={__('Title')} error={errors.title}>
                 <input value={data.title} onChange={(event) => setData('title', event.target.value)} className={inputClass} />
             </Field>
             <div className="grid gap-4 md:grid-cols-2">
-                <Field label="Tipo" error={errors.type}>
+                <Field label={__('Type')} error={errors.type}>
                     <select value={data.type} onChange={(event) => setData('type', event.target.value as LoreType)} className={inputClass}>
-                        {['rule', 'history', 'faction', 'location', 'object', 'event', 'concept'].map((type) => (
+                        {LORE_TYPES.map((type) => (
                             <option key={type} value={type}>
-                                {type}
+                                {loreTypeLabel(type)}
                             </option>
                         ))}
                     </select>
                 </Field>
-                <Field label="Tono emocional" error={errors.emotional_tone}>
+                <Field label={__('Emotional tone')} error={errors.emotional_tone}>
                     <input value={data.emotional_tone} onChange={(event) => setData('emotional_tone', event.target.value)} className={inputClass} />
                 </Field>
             </div>
-            <Field label="Descripcion" error={errors.description}>
+            <Field label={__('Description')} error={errors.description}>
                 <textarea value={data.description} onChange={(event) => setData('description', event.target.value)} rows={5} className={inputClass} />
             </Field>
-            <Field label="Funcion narrativa" error={errors.narrative_function}>
+            <Field label={__('Narrative function')} error={errors.narrative_function}>
                 <textarea value={data.narrative_function} onChange={(event) => setData('narrative_function', event.target.value)} rows={4} className={inputClass} />
             </Field>
             <button type="submit" disabled={processing} className="border border-amber-600 px-4 py-2 text-sm text-amber-100 hover:bg-amber-950 disabled:opacity-50">

@@ -24,7 +24,7 @@ class NarrativeValidationController extends Controller
 
         $service->run($project);
 
-        return back()->with('success', 'Validaciones narrativas actualizadas.');
+        return back()->with('success', __('Narrative validations updated.'));
     }
 
     public function update(Project $project, NarrativeValidation $validation): RedirectResponse
@@ -34,6 +34,6 @@ class NarrativeValidationController extends Controller
 
         $validation->update(['resolved' => true]);
 
-        return back()->with('success', 'Validacion marcada como resuelta.');
+        return back()->with('success', __('Validation marked as resolved.'));
     }
 }

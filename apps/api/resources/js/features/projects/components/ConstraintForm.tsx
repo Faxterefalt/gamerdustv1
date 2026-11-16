@@ -1,3 +1,4 @@
+import { __ } from '../../../shared/lib/i18n';
 import { useForm } from '@inertiajs/react';
 import type { FormEvent, ReactNode } from 'react';
 import type { Project } from '../projects.types';
@@ -25,78 +26,78 @@ export default function ConstraintForm({ project }: ConstraintFormProps) {
     return (
         <form onSubmit={submit} className="space-y-4 border border-zinc-800 bg-zinc-900 p-5">
             <div>
-                <h2 className="font-semibold text-white">Planteamiento narrativo</h2>
-                <p className="mt-1 text-sm text-zinc-400">Todos los campos son opcionales: complétalos progresivamente durante el desarrollo.</p>
+                <h2 className="font-semibold text-white">{__('Narrative setup')}</h2>
+                <p className="mt-1 text-sm text-zinc-400">{__('All fields are optional: fill them in gradually during development.')}</p>
             </div>
 
-            <Field label="Premisa" help="Resumen breve de la idea principal." error={errors.premise}>
+            <Field label={__('Premise')} help={__('Brief summary of the main idea.')} error={errors.premise}>
                 <textarea
                     value={data.premise}
                     onChange={(event) => setData('premise', event.target.value)}
                     rows={2}
                     maxLength={2000}
-                    placeholder="Ej.: Una archivista debe reconstruir la memoria de una colonia antes de que su mito fundador se derrumbe."
+                    placeholder={__('E.g.: An archivist must rebuild the memory of a colony before its founding myth collapses.')}
                     className={inputClass}
                 />
             </Field>
 
             <div className="grid gap-4 md:grid-cols-2">
-                <Field label="Tema central" help="Idea que aborda la historia." error={errors.central_theme}>
+                <Field label={__('Central theme')} help={__('The idea the story explores.')} error={errors.central_theme}>
                     <input
                         value={data.central_theme}
                         onChange={(event) => setData('central_theme', event.target.value)}
                         maxLength={255}
-                        placeholder="Ej.: memoria, identidad, pérdida"
+                        placeholder={__('E.g.: memory, identity, loss')}
                         className={inputClass}
                     />
                 </Field>
-                <Field label="Ambientación" help="Contexto, lugar o época." error={errors.setting}>
+                <Field label={__('Setting')} help={__('Context, place or era.')} error={errors.setting}>
                     <input
                         value={data.setting}
                         onChange={(event) => setData('setting', event.target.value)}
                         maxLength={2000}
-                        placeholder="Ej.: Colonia aislada en un planeta de polvo"
+                        placeholder={__('E.g.: An isolated colony on a dust planet')}
                         className={inputClass}
                     />
                 </Field>
-                <Field label="Conflicto principal" help="Problema u oposición que impulsa los hechos." error={errors.central_conflict}>
+                <Field label={__('Main conflict')} help={__('The problem or opposition that drives events.')} error={errors.central_conflict}>
                     <textarea
                         value={data.central_conflict}
                         onChange={(event) => setData('central_conflict', event.target.value)}
                         rows={2}
                         maxLength={2000}
-                        placeholder="Ej.: La verdad puede salvar a la colonia o destruir su identidad."
+                        placeholder={__('E.g.: The truth can save the colony or destroy its identity.')}
                         className={inputClass}
                     />
                 </Field>
-                <Field label="Objetivo principal" help="Qué intenta conseguir el protagonista o el jugador." error={errors.player_objective}>
+                <Field label={__('Main objective')} help={__('What the protagonist or the player is trying to achieve.')} error={errors.player_objective}>
                     <textarea
                         value={data.player_objective}
                         onChange={(event) => setData('player_objective', event.target.value)}
                         rows={2}
                         maxLength={2000}
-                        placeholder="Ej.: Reconstruir la memoria de la colonia."
+                        placeholder={__('E.g.: Rebuild the memory of the colony.')}
                         className={inputClass}
                     />
                 </Field>
             </div>
 
-            <Field label="Desenlace previsto" help="Resultado o posibles desenlaces hacia los que se orienta la historia." error={errors.expected_outcome}>
+            <Field label={__('Expected outcome')} help={__('The outcome or possible endings the story is heading towards.')} error={errors.expected_outcome}>
                 <textarea
                     value={data.expected_outcome}
                     onChange={(event) => setData('expected_outcome', event.target.value)}
                     rows={2}
                     maxLength={2000}
-                    placeholder="Ej.: El mito se derrumba, o se reescribe con una verdad compartida."
+                    placeholder={__('E.g.: The myth collapses, or is rewritten with a shared truth.')}
                     className={inputClass}
                 />
             </Field>
 
             <div className="flex items-center gap-3">
                 <button type="submit" disabled={processing} className="border border-amber-600 px-4 py-2 text-sm text-amber-100 hover:bg-amber-950 disabled:opacity-50">
-                    {processing ? 'Guardando...' : 'Guardar planteamiento'}
+                    {processing ? __('Saving...') : __('Save setup')}
                 </button>
-                {recentlySuccessful && <span className="text-sm text-emerald-300">Cambios guardados correctamente.</span>}
+                {recentlySuccessful && <span className="text-sm text-emerald-300">{__('Changes saved successfully.')}</span>}
             </div>
         </form>
     );

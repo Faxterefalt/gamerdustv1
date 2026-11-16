@@ -2,7 +2,6 @@
 
 namespace Tests\Feature;
 
-use App\Models\Project;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -14,7 +13,7 @@ class ProjectSetupTest extends TestCase
     private array $payload = [
         'title' => 'Dustfall Protocol',
         'game_genre' => 'RPG',
-        'language' => 'Español',
+        'language' => 'es',
         'narrative_type' => 'balanced',
         'premise' => 'Una archivista debe reconstruir la memoria de una colonia.',
     ];
@@ -45,13 +44,13 @@ class ProjectSetupTest extends TestCase
         $project = $user->projects()->create($this->payload);
 
         $this->actingAs($user)->put("/projects/{$project->id}", [
-            ...$this->payload, 'narrative_type' => 'linear', 'language' => 'English',
+            ...$this->payload, 'narrative_type' => 'linear', 'language' => 'en',
         ])->assertSessionHasNoErrors();
 
         $project->refresh();
         $this->assertSame('linear', $project->narrative_type);
         $this->assertFalse($project->branching_enabled);
-        $this->assertSame('English', $project->language);
+        $this->assertSame('en', $project->language);
     }
 
     public function test_narrative_setup_shares_premise_and_keeps_general_data(): void

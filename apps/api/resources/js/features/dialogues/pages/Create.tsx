@@ -1,3 +1,4 @@
+import { __ } from '../../../shared/lib/i18n';
 import { Head, Link } from '@inertiajs/react';
 import ProjectLayout from '../../../layouts/ProjectLayout';
 import DialogueNodeForm from '../components/DialogueNodeForm';
@@ -16,15 +17,15 @@ interface DialogueCreateProps {
 export default function Create({ project, scenes, characters, dialogues }: DialogueCreateProps) {
     return (
         <ProjectLayout
-            title="Nuevo nodo de dialogo"
+            title={__('New dialogue node')}
             actions={
                 <Link href={`/projects/${project.id}/dialogues`} className="border border-zinc-700 px-4 py-2 text-sm hover:border-amber-500">
-                    Volver
+                    {__('Back')}
                 </Link>
             }
         >
-            <Head title="Nuevo nodo de dialogo" />
-            <DialogueNodeForm projectId={project.id} scenes={scenes} characters={characters} dialogues={dialogues} submitLabel="Crear nodo" />
+            <Head title={__('New dialogue node')} />
+            <DialogueNodeForm projectId={project.id} scenes={scenes} characters={characters} dialogues={dialogues} submitLabel={__('Create node')} />
         </ProjectLayout>
     );
 }

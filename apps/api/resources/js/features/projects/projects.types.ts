@@ -16,6 +16,7 @@ export interface UserSummary {
 }
 
 export interface PageProps {
+    locale?: string;
     auth: {
         user: UserSummary | null;
     };

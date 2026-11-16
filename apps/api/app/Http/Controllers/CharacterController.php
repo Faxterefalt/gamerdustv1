@@ -38,7 +38,7 @@ class CharacterController extends Controller
 
         return redirect()
             ->route('projects.characters.index', $project)
-            ->with('success', 'Personaje creado.');
+            ->with('success', __('Character created.'));
     }
 
     public function edit(Project $project, NarrativeCharacter $character): Response
@@ -59,7 +59,7 @@ class CharacterController extends Controller
 
         return redirect()
             ->route('projects.characters.index', $project)
-            ->with('success', 'Personaje actualizado.');
+            ->with('success', __('Character updated.'));
     }
 
     public function destroy(Project $project, NarrativeCharacter $character): RedirectResponse
@@ -68,7 +68,7 @@ class CharacterController extends Controller
 
         $character->delete();
 
-        return back()->with('success', 'Personaje eliminado.');
+        return back()->with('success', __('Character deleted.'));
     }
 
     private function authorizeCharacter(Project $project, NarrativeCharacter $character): void

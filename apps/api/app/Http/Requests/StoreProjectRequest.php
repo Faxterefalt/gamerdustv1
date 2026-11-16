@@ -9,7 +9,7 @@ class StoreProjectRequest extends FormRequest
 {
     public const GENRES = ['Aventura', 'RPG', 'Novela visual', 'Aventura gráfica', 'Acción-aventura', 'Otro'];
 
-    public const LANGUAGES = ['Español', 'English'];
+    public const LANGUAGES = ['es', 'en'];
 
     public const NARRATIVE_TYPES = ['linear', 'balanced', 'branching'];
 

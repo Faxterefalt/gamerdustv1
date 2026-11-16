@@ -31,11 +31,11 @@ class EmotionalAnalysisController extends Controller
         $source = $this->resolveSource($project, $validated['source_type'], (int) $validated['source_id']);
         $text = $source instanceof Scene ? ($source->summary ?? '') : $source->text;
 
-        abort_if(blank($text), 422, 'No hay texto suficiente para analizar.');
+        abort_if(blank($text), 422, __('There is not enough text to analyze.'));
 
         $service->createFor($project, $source, $text);
 
-        return back()->with('success', 'Analisis emocional simulado guardado.');
+        return back()->with('success', __('Simulated emotional analysis saved.'));
     }
 
     private function resolveSource(Project $project, string $type, int $id): Scene|DialogueNode

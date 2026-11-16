@@ -29,8 +29,8 @@ class GraphInspector
                         'code' => 'broken_option',
                         'severity' => 'error',
                         'message' => $option->isManaged()
-                            ? "La referencia {{{$option->player_option}}} no tiene destino; se recreara al guardar el texto."
-                            : "La opcion \"{$option->player_option}\" no tiene destino.",
+                            ? __('The reference {{:option}} has no target; it will be recreated when the text is saved.', ['option' => $option->player_option])
+                            : __('The option ":option" has no target.', ['option' => $option->player_option]),
                     ];
 
                     continue;
@@ -49,11 +49,11 @@ class GraphInspector
             $isStart = $node->id === $startId;
 
             if (! $hasIn && ! $hasOut && $nodes->count() > 1) {
-                $warnings[] = ['node_id' => $node->id, 'code' => 'isolated', 'severity' => 'warning', 'message' => 'Nodo aislado: sin conexiones.'];
+                $warnings[] = ['node_id' => $node->id, 'code' => 'isolated', 'severity' => 'warning', 'message' => __('Isolated node: no connections.')];
             } elseif (! $hasIn && ! $isStart) {
-                $warnings[] = ['node_id' => $node->id, 'code' => 'no_incoming', 'severity' => 'info', 'message' => 'Ningun nodo lleva hasta aqui.'];
+                $warnings[] = ['node_id' => $node->id, 'code' => 'no_incoming', 'severity' => 'info', 'message' => __('No node leads here.')];
             } elseif (! $hasOut) {
-                $warnings[] = ['node_id' => $node->id, 'code' => 'no_outgoing', 'severity' => 'info', 'message' => 'Sin salida: la rama termina aqui.'];
+                $warnings[] = ['node_id' => $node->id, 'code' => 'no_outgoing', 'severity' => 'info', 'message' => __('No outgoing: the branch ends here.')];
             }
         }
 

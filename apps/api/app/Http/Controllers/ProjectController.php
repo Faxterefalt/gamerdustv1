@@ -42,7 +42,7 @@ class ProjectController extends Controller
 
         return redirect()
             ->route('projects.show', $project)
-            ->with('success', 'Proyecto narrativo creado.');
+            ->with('success', __('Narrative project created.'));
     }
 
     public function show(Project $project, NarrativeValidationService $validationService): Response
@@ -82,7 +82,7 @@ class ProjectController extends Controller
 
         return redirect()
             ->route('projects.show', $project)
-            ->with('success', 'Proyecto actualizado.');
+            ->with('success', __('Project updated.'));
     }
 
     public function toggleFavorite(Project $project): RedirectResponse
@@ -102,6 +102,6 @@ class ProjectController extends Controller
 
         return redirect()
             ->route('projects.index')
-            ->with('success', 'Proyecto eliminado.');
+            ->with('success', __('Project deleted.'));
     }
 }

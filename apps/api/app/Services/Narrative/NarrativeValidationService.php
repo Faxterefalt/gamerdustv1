@@ -23,8 +23,8 @@ class NarrativeValidationService
             $findings[] = [
                 'validation_type' => 'missing_project_premise',
                 'severity' => 'high',
-                'message' => 'El proyecto no tiene premisa definida.',
-                'recommendation' => 'Resume el nucleo dramatico en una premisa breve antes de expandir escenas.',
+                'message' => __('The project has no defined premise.'),
+                'recommendation' => __('Summarize the dramatic core in a short premise before expanding scenes.'),
             ];
         }
 
@@ -33,8 +33,8 @@ class NarrativeValidationService
                 $findings[] = [
                     'validation_type' => 'character_without_motivation',
                     'severity' => 'medium',
-                    'message' => "El personaje {$character->name} no tiene motivacion.",
-                    'recommendation' => 'Define que quiere, por que lo quiere y que esta dispuesto a sacrificar.',
+                    'message' => __('The character :name has no motivation.', ['name' => $character->name]),
+                    'recommendation' => __('Define what they want, why they want it and what they are willing to sacrifice.'),
                 ];
             }
         }
@@ -44,8 +44,8 @@ class NarrativeValidationService
                 $findings[] = [
                     'validation_type' => 'scene_without_conflict',
                     'severity' => 'medium',
-                    'message' => "La escena {$scene->title} no tiene conflicto claro.",
-                    'recommendation' => 'Agrega una tension, obstaculo o decision que empuje la escena.',
+                    'message' => __('The scene :title has no clear conflict.', ['title' => $scene->title]),
+                    'recommendation' => __('Add a tension, obstacle or decision that drives the scene.'),
                 ];
             }
         }
@@ -55,8 +55,8 @@ class NarrativeValidationService
                 $findings[] = [
                     'validation_type' => 'lore_without_function',
                     'severity' => 'low',
-                    'message' => "La entrada de lore {$entry->title} no declara funcion narrativa.",
-                    'recommendation' => 'Conecta esta pieza de mundo con personajes, conflicto o decisiones del jugador.',
+                    'message' => __('The lore entry :title does not state a narrative function.', ['title' => $entry->title]),
+                    'recommendation' => __('Connect this piece of the world with characters, conflict or player decisions.'),
                 ];
             }
         }

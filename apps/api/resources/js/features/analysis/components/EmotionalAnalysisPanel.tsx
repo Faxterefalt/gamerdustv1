@@ -1,7 +1,9 @@
+import { __ } from '../../../shared/lib/i18n';
 import { useForm } from '@inertiajs/react';
 import type { FormEvent } from 'react';
 import type { DialogueNode } from '../../dialogues/dialogues.types';
 import type { EmotionalAnalysis } from '../emotion.types';
+import { emotionLabel } from '../labels';
 import type { Scene } from '../../scenes/scenes.types';
 
 interface EmotionalAnalysisPanelProps {
@@ -27,19 +29,19 @@ export default function EmotionalAnalysisPanel({ projectId, analysis, scenes = [
     return (
         <section className="border border-zinc-800 bg-zinc-900 p-4">
             <div className="flex flex-col gap-1">
-                <h2 className="font-semibold text-white">Analisis emocional</h2>
-                <p className="text-sm text-zinc-400">Placeholder local con palabras clave, listo para conectar IA despues.</p>
+                <h2 className="font-semibold text-white">{__('Emotional analysis')}</h2>
+                <p className="text-sm text-zinc-400">{__('Local keyword-based placeholder, ready to connect AI later.')}</p>
             </div>
 
             {analysis ? (
                 <div className="mt-4 space-y-2 text-sm text-zinc-300">
                     <div>
-                        Emocion dominante: <span className="text-amber-200">{analysis.dominant_emotion}</span>
+                        {__('Dominant emotion:')} <span className="text-amber-200">{emotionLabel(analysis.dominant_emotion)}</span>
                     </div>
                     {analysis.interpretation && <p>{analysis.interpretation}</p>}
                 </div>
             ) : (
-                <p className="mt-4 text-sm text-zinc-400">Todavia no hay analisis guardados.</p>
+                <p className="mt-4 text-sm text-zinc-400">{__('No saved analyses yet.')}</p>
             )}
 
             <form onSubmit={submit} className="mt-4 grid gap-3 sm:grid-cols-[160px_1fr_auto]">
@@ -52,8 +54,8 @@ export default function EmotionalAnalysisPanel({ projectId, analysis, scenes = [
                     }}
                     className="border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm"
                 >
-                    <option value="scene">Escena</option>
-                    <option value="dialogue">Dialogo</option>
+                    <option value="scene">{__('Scene')}</option>
+                    <option value="dialogue">{__('Dialogue')}</option>
                 </select>
                 <select
                     value={data.source_id}
@@ -67,7 +69,7 @@ export default function EmotionalAnalysisPanel({ projectId, analysis, scenes = [
                     ))}
                 </select>
                 <button type="submit" disabled={processing || sources.length === 0} className="border border-amber-600 px-4 py-2 text-sm text-amber-100 hover:bg-amber-950 disabled:opacity-50">
-                    Analizar
+                    {__('Analyze')}
                 </button>
             </form>
         </section>

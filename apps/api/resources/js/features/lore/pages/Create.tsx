@@ -1,3 +1,4 @@
+import { __ } from '../../../shared/lib/i18n';
 import { Head, Link } from '@inertiajs/react';
 import ProjectLayout from '../../../layouts/ProjectLayout';
 import LoreEntryForm from '../components/LoreEntryForm';
@@ -10,15 +11,15 @@ interface LoreCreateProps {
 export default function Create({ project }: LoreCreateProps) {
     return (
         <ProjectLayout
-            title="Nueva entrada de lore"
+            title={__('New lore entry')}
             actions={
                 <Link href={`/projects/${project.id}/lore`} className="border border-zinc-700 px-4 py-2 text-sm hover:border-amber-500">
-                    Volver
+                    {__('Back')}
                 </Link>
             }
         >
-            <Head title="Nueva entrada de lore" />
-            <LoreEntryForm projectId={project.id} submitLabel="Crear entrada" />
+            <Head title={__('New lore entry')} />
+            <LoreEntryForm projectId={project.id} submitLabel={__('Create entry')} />
         </ProjectLayout>
     );
 }

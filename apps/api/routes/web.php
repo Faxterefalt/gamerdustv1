@@ -7,6 +7,7 @@ use App\Http\Controllers\CharacterController;
 use App\Http\Controllers\CostEstimationController;
 use App\Http\Controllers\DialogueNodeController;
 use App\Http\Controllers\EmotionalAnalysisController;
+use App\Http\Controllers\LocaleController;
 use App\Http\Controllers\LoreEntryController;
 use App\Http\Controllers\NarrativeValidationController;
 use App\Http\Controllers\ProjectConstraintController;
@@ -16,6 +17,8 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 Route::get('/', fn () => Inertia::render('Landing'));
+
+Route::get('locale/{locale}', LocaleController::class)->name('locale.update');
 
 Route::middleware('guest')->group(function (): void {
     Route::get('login', [AuthController::class, 'create'])->name('login');

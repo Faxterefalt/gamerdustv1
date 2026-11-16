@@ -27,7 +27,7 @@ class AuthController extends Controller
 
         if (! Auth::attempt($credentials, $request->boolean('remember'))) {
             return back()
-                ->withErrors(['email' => 'Las credenciales no coinciden.'])
+                ->withErrors(['email' => __('auth.failed')])
                 ->onlyInput('email');
         }
 

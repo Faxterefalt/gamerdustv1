@@ -22,9 +22,7 @@ use Inertia\Response;
 
 class BranchingGraphController extends Controller
 {
-    public function __construct(private readonly BranchingNodeService $nodes)
-    {
-    }
+    public function __construct(private readonly BranchingNodeService $nodes) {}
 
     public function index(Request $request, Project $project): Response
     {
@@ -135,7 +133,7 @@ class BranchingGraphController extends Controller
         $this->authorize('update', $project);
         $this->ensureNode($project, $node);
 
-        abort_if(blank($node->text), 422, 'No hay texto suficiente para analizar.');
+        abort_if(blank($node->text), 422, __('There is not enough text to analyze.'));
 
         $analysis = $service->createFor($project, $node, $node->text);
 

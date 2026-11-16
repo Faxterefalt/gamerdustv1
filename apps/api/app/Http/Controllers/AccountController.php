@@ -20,7 +20,7 @@ class AccountController extends Controller
     {
         $request->user()->update($request->validated());
 
-        return back()->with('success', 'Perfil actualizado.');
+        return back()->with('success', __('Profile updated.'));
     }
 
     public function updatePassword(UpdateAccountPasswordRequest $request): RedirectResponse
@@ -29,6 +29,6 @@ class AccountController extends Controller
             'password' => Hash::make($request->validated('password')),
         ]);
 
-        return back()->with('success', 'Password actualizado.');
+        return back()->with('success', __('Password updated.'));
     }
 }

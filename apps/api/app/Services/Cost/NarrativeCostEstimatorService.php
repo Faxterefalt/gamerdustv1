@@ -19,7 +19,7 @@ class NarrativeCostEstimatorService
                 'cost_level' => 'low',
                 'cost_score' => 1,
                 'cost_factors' => ['generic_narrative_asset'],
-                'explanation' => 'Estimacion basica para un elemento narrativo simple.',
+                'explanation' => __('Basic estimate for a simple narrative element.'),
             ],
         };
     }
@@ -57,7 +57,7 @@ class NarrativeCostEstimatorService
             'cost_level' => $score >= 6 ? 'high' : ($score >= 3 ? 'medium' : 'low'),
             'cost_score' => $score,
             'cost_factors' => $factors,
-            'explanation' => 'Estimacion basada en decisiones, consecuencias y cantidad de dialogos asociados.',
+            'explanation' => __('Estimate based on decisions, consequences and the number of associated dialogues.'),
         ];
     }
 
@@ -79,7 +79,7 @@ class NarrativeCostEstimatorService
                 $dialogue->dialogue_type,
                 $optionCount > 1 ? 'branching_options' : null,
             ]),
-            'explanation' => 'Estimacion basada en tipo de dialogo y ramificacion declarada.',
+            'explanation' => __('Estimate based on dialogue type and declared branching.'),
         ];
     }
 }

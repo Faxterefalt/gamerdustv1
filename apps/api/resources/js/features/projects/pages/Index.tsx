@@ -1,3 +1,4 @@
+import { __ } from '../../../shared/lib/i18n';
 import { Head, Link, usePage } from '@inertiajs/react';
 import { ArrowLeft, Grid2X2, List, Plus, Search, Sparkles } from 'lucide-react';
 import { useState } from 'react';
@@ -13,31 +14,31 @@ interface ProjectsIndexProps {
 export default function Index({ projects }: ProjectsIndexProps) {
     const { props } = usePage<PageProps>();
     const [query, setQuery] = useState('');
-    const [filter, setFilter] = useState<'Todos' | 'Favoritos'>('Todos');
+    const [filter, setFilter] = useState<'all' | 'favorites'>('all');
     const [list, setList] = useState(false);
 
     const visible = projects.data.filter(
-        (project) => project.title.toLowerCase().includes(query.toLowerCase()) && (filter !== 'Favoritos' || project.favorite),
+        (project) => project.title.toLowerCase().includes(query.toLowerCase()) && (filter !== 'favorites' || project.favorite),
     );
 
     return (
         <SiteLayout>
-            <Head title="Mis proyectos" />
+            <Head title={__('My projects')} />
             <div className="mx-auto min-h-[78vh] max-w-[1400px] px-6 py-12 lg:px-16">
                 <Link href="/" className="inline-flex items-center gap-2 text-xs text-[#89967f]">
-                    <ArrowLeft size={14} /> Volver al universo GAMERDUST
+                    <ArrowLeft size={14} /> {__('Back to the GAMERDUST universe')}
                 </Link>
                 <div className="mt-9 flex flex-wrap items-end justify-between gap-6">
                     <div>
-                        <span className="font-mono text-[10px] tracking-[.16em] text-primary">EL ESTUDIO / TU ESPACIO CREATIVO</span>
+                        <span className="font-mono text-[10px] tracking-[.16em] text-primary">{__('THE STUDIO / YOUR CREATIVE SPACE')}</span>
                         <h1 className="mt-3 font-display text-4xl md:text-5xl">
-                            Tus mundos,{' '}
-                            <span className="font-['Pixelify_Sans',monospace] font-bold tracking-normal text-primary">en expansión.</span>
+                            {__('Your worlds,')}{' '}
+                            <span className="font-['Pixelify_Sans',monospace] font-bold tracking-normal text-primary">{__('expanding.')}</span>
                         </h1>
-                        <p className="mt-4 text-sm text-[#98a58e]">Todo gran videojuego empieza con una idea. Continúa la tuya.</p>
+                        <p className="mt-4 text-sm text-[#98a58e]">{__('Every great video game starts with an idea. Continue yours.')}</p>
                     </div>
                     <Link href="/projects/create" className={button}>
-                        <Plus size={17} /> Nuevo proyecto
+                        <Plus size={17} /> {__('New project')}
                     </Link>
                 </div>
 
@@ -47,15 +48,15 @@ export default function Index({ projects }: ProjectsIndexProps) {
 
                 <div className="mt-10 flex flex-wrap items-center justify-between gap-5 border-b border-border pb-4">
                     <div className="flex gap-7">
-                        {(['Todos', 'Favoritos'] as const).map((tab) => (
+                        {(['all', 'favorites'] as const).map((tab) => (
                             <button
                                 key={tab}
                                 type="button"
                                 onClick={() => setFilter(tab)}
                                 className={`text-sm ${filter === tab ? 'text-primary' : 'text-[#8f9c86]'}`}
                             >
-                                {tab}
-                                {tab === 'Todos' && <span className="ml-2 rounded bg-white/5 px-2 py-1 text-[10px]">{projects.total}</span>}
+                                {tab === 'all' ? __('All') : __('Favorites')}
+                                {tab === 'all' && <span className="ml-2 rounded bg-white/5 px-2 py-1 text-[10px]">{projects.total}</span>}
                             </button>
                         ))}
                     </div>
@@ -63,8 +64,8 @@ export default function Index({ projects }: ProjectsIndexProps) {
                         <label className="flex items-center gap-2 rounded border border-border px-3 py-2">
                             <Search size={15} className="text-[#8f9c86]" />
                             <input
-                                aria-label="Buscar proyectos"
-                                placeholder="Buscar un mundo..."
+                                aria-label={__('Search projects')}
+                                placeholder={__('Search for a world...')}
                                 className="w-36 bg-transparent text-xs outline-none sm:w-48"
                                 value={query}
                                 onChange={(event) => setQuery(event.target.value)}
@@ -72,7 +73,7 @@ export default function Index({ projects }: ProjectsIndexProps) {
                         </label>
                         <button
                             type="button"
-                            aria-label="Vista de cuadrícula"
+                            aria-label={__('Grid view')}
                             onClick={() => setList(false)}
                             className={`rounded p-2 ${!list ? 'bg-primary/10 text-primary' : 'text-[#8f9c86]'}`}
                         >
@@ -80,7 +81,7 @@ export default function Index({ projects }: ProjectsIndexProps) {
                         </button>
                         <button
                             type="button"
-                            aria-label="Vista de lista"
+                            aria-label={__('List view')}
                             onClick={() => setList(true)}
                             className={`rounded p-2 ${list ? 'bg-primary/10 text-primary' : 'text-[#8f9c86]'}`}
                         >
@@ -93,26 +94,26 @@ export default function Index({ projects }: ProjectsIndexProps) {
                     {visible.map((project) => (
                         <ProjectCard key={project.id} project={project} list={list} />
                     ))}
-                    {!list && !query && filter === 'Todos' && (
+                    {!list && !query && filter === 'all' && (
                         <Link
                             href="/projects/create"
                             className="flex min-h-72 flex-col items-center justify-center gap-4 rounded-lg border border-dashed border-[#3e4a35] text-[#839378] transition hover:border-primary hover:text-primary"
                         >
                             <Plus size={28} strokeWidth={1} />
-                            <span className="text-sm">Un nuevo mundo por descubrir</span>
-                            <span className="font-mono text-[9px]">CREAR PROYECTO</span>
+                            <span className="text-sm">{__('A new world to discover')}</span>
+                            <span className="font-mono text-[9px]">{__('CREATE PROJECT')}</span>
                         </Link>
                     )}
                 </div>
 
-                {visible.length === 0 && <div className="py-20 text-center text-[#98a58e]">No hay proyectos que coincidan con tu búsqueda.</div>}
+                {visible.length === 0 && <div className="py-20 text-center text-[#98a58e]">{__('No projects match your search.')}</div>}
 
                 <Pagination links={projects.links} />
 
                 <div className="mt-12 flex items-center gap-3 rounded-lg border border-primary/15 bg-primary/5 p-5">
                     <Sparkles size={20} className="text-primary" />
                     <p className="text-xs leading-5 text-[#aab79f]">
-                        <span className="text-primary">Tu imaginación, amplificada.</span> Empieza por una premisa. El resto del universo llegará después.
+                        <span className="text-primary">{__('Your imagination, amplified.')}</span> {__('Start with a premise. The rest of the universe will come later.')}
                     </p>
                 </div>
             </div>
