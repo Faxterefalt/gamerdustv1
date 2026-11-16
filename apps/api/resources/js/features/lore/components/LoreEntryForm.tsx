@@ -14,7 +14,8 @@ interface LoreEntryFormProps {
 export default function LoreEntryForm({ projectId, entry, method = 'post', submitLabel }: LoreEntryFormProps) {
     const { data, setData, post, put, processing, errors } = useForm({
         title: entry?.title ?? '',
-        type: entry?.type ?? 'concept',
+        // ?type=location (p. ej. desde la Biblia narrativa) preselecciona el tipo de una entrada nueva.
+        type: entry?.type ?? initialType(),
         description: entry?.description ?? '',
         narrative_function: entry?.narrative_function ?? '',
         emotional_tone: entry?.emotional_tone ?? '',
@@ -68,4 +69,10 @@ function Field({ label, error, children }: { label: string; error?: string; chil
             {error && <span className="mt-1 block text-sm text-rose-300">{error}</span>}
         </label>
     );
+}
+
+function initialType(): LoreType {
+    const requested = new URLSearchParams(window.location.search).get('type');
+
+    return LORE_TYPES.includes(requested as LoreType) ? (requested as LoreType) : 'concept';
 }

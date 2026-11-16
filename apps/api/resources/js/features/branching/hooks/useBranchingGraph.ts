@@ -1,7 +1,7 @@
 import { __ } from '../../../shared/lib/i18n';
 import { router } from '@inertiajs/react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { api, ApiError } from '../api';
+import { api, ApiError } from '../../../shared/lib/api';
 import type {
     BranchingGraph,
     GraphNode,

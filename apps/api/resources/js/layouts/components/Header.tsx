@@ -1,21 +1,42 @@
 import { Link, router, usePage } from '@inertiajs/react';
-import { ArrowUpRight, Menu } from 'lucide-react';
+import { ArrowUpRight, Ellipsis, Menu } from 'lucide-react';
 import { useState } from 'react';
 import type { PageProps } from '../../features/projects/projects.types';
 import { __ } from '../../shared/lib/i18n';
 import Brand from './Brand';
 import LocaleSwitcher from './LocaleSwitcher';
 
-export default function Header() {
+interface HeaderProps {
+    /** En el estudio de proyecto: botón hamburguesa que abre/pliega el sidebar. */
+    onToggleSidebar?: () => void;
+    sidebarExpanded?: boolean;
+}
+
+export default function Header({ onToggleSidebar, sidebarExpanded }: HeaderProps) {
     const { url, props } = usePage<PageProps>();
     const [open, setOpen] = useState(false);
     const user = props.auth?.user;
+    const workspace = onToggleSidebar !== undefined;
     const active = (path: string) => (url === path || (path !== '/' && url.startsWith(path)) ? 'text-white' : 'hover:text-white');
 
     return (
-        <header className="relative z-20 border-b border-border">
-            <div className="mx-auto flex h-[88px] max-w-[1400px] items-center justify-between px-6 lg:px-16">
-                <Brand />
+        <header className={`z-30 border-b border-border ${workspace ? 'sticky top-0 bg-background' : 'relative'}`}>
+            <div className={`mx-auto flex h-[88px] items-center justify-between ${workspace ? 'px-4 sm:px-6' : 'max-w-[1400px] px-6 lg:px-16'}`}>
+                <div className="flex items-center gap-4">
+                    {workspace && (
+                        <button
+                            type="button"
+                            onClick={onToggleSidebar}
+                            aria-label={__('Toggle project menu')}
+                            aria-expanded={sidebarExpanded}
+                            aria-controls="desktop-project-sidebar mobile-project-sidebar"
+                            className="flex h-10 w-10 items-center justify-center rounded-md border border-border text-[#c6d1bf] transition hover:border-primary/50 hover:text-primary"
+                        >
+                            <Menu size={19} />
+                        </button>
+                    )}
+                    <Brand />
+                </div>
                 <nav className="hidden items-center gap-9 text-[13px] text-[#afb5ac] md:flex">
                     <Link className={active('/')} href="/">
                         {__('Home')}
@@ -44,8 +65,8 @@ export default function Header() {
                         </Link>
                     )}
                 </div>
-                <button aria-label={__('Open navigation')} className="md:hidden" onClick={() => setOpen(!open)}>
-                    <Menu />
+                <button type="button" aria-label={__('Open navigation')} aria-expanded={open} className="md:hidden" onClick={() => setOpen(!open)}>
+                    {workspace ? <Ellipsis /> : <Menu />}
                 </button>
             </div>
             {open && (
@@ -53,6 +74,16 @@ export default function Header() {
                     <Link href="/">{__('Home')}</Link>
                     <Link href="/projects">{__('My projects')}</Link>
                     <a href="/#herramientas">{__('The GAMERDUST universe')}</a>
+                    {user && (
+                        <>
+                            <Link href="/account" className="sm:hidden">
+                                {user.name}
+                            </Link>
+                            <button type="button" onClick={() => router.post('/logout')} className="text-left sm:hidden">
+                                {__('Log out')}
+                            </button>
+                        </>
+                    )}
                     <LocaleSwitcher className="sm:hidden" />
                 </nav>
             )}

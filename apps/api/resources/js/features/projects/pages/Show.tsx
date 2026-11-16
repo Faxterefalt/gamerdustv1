@@ -104,6 +104,7 @@ export default function Show({ project }: ProjectShowProps) {
 
 function QuickLinks({ projectId }: { projectId: number }) {
     const links = [
+        [__('Script editor'), `/projects/${projectId}/script`],
         [__('Create lore'), `/projects/${projectId}/lore/create`],
         [__('Create character'), `/projects/${projectId}/characters/create`],
         [__('Create scene'), `/projects/${projectId}/scenes/create`],
@@ -112,7 +113,7 @@ function QuickLinks({ projectId }: { projectId: number }) {
     ];
 
     return (
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-6">
             {links.map(([label, href]) => (
                 <Link key={href} href={href} className="border border-zinc-800 bg-zinc-900 px-4 py-3 text-sm text-zinc-200 hover:border-amber-500">
                     {label}

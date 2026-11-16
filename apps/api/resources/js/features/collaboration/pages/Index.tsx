@@ -1,0 +1,59 @@
+import { Head } from '@inertiajs/react';
+import { Lock, Users } from 'lucide-react';
+import ProjectLayout from '../../../layouts/ProjectLayout';
+import { PageHeading } from '../../../shared/components/ui';
+import { __ } from '../../../shared/lib/i18n';
+import { card } from '../../../shared/lib/styles';
+import type { Project } from '../../projects/projects.types';
+import type { ProjectComment } from '../collaboration.types';
+import CommentsPanel from '../components/CommentsPanel';
+
+interface CollaborationProps {
+    project: Project;
+    comments: ProjectComment[];
+}
+
+export default function Index({ project, comments }: CollaborationProps) {
+    const authors = [...new Set(comments.map((comment) => comment.author))];
+
+    return (
+        <ProjectLayout>
+            <Head title={`${__('Collaboration')} - ${project.title}`} />
+            <PageHeading title={__('Collaboration')} description={__('Another perspective, a new possibility. Gather the conversations of your story.')} />
+
+            <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_300px]">
+                <section className={`${card} p-5 sm:p-7`}>
+                    <h2 className="mb-6 font-display text-lg">
+                        {__('Project conversations')} <span className="ml-2 font-mono text-xs text-primary">{comments.length}</span>
+                    </h2>
+                    <CommentsPanel projectId={project.id} comments={comments} />
+                </section>
+
+                <aside className="space-y-5">
+                    <div className={`${card} p-6`}>
+                        <Lock size={23} className="text-primary" />
+                        <h2 className="mt-4 font-display text-lg">{__('A private project')}</h2>
+                        <p className="mt-3 text-xs leading-7 text-[#a9ba9d]">
+                            {__('For now only your account can see this project and its comments. Use them as notes on scenes and ideas to revisit.')}
+                        </p>
+                        <p className="mt-3 text-[10px] leading-6 text-[#9aaf8c]">{__('Comments on a scene also appear in the Script editor, in the Comments tab.')}</p>
+                    </div>
+                    <div className={`${card} p-6`}>
+                        <h2 className="flex items-center gap-2 font-display text-base">
+                            <Users size={17} className="text-primary" /> {__('Voices in the conversation')}
+                        </h2>
+                        <div className="mt-4 space-y-3">
+                            {authors.map((author) => (
+                                <p key={author} className="flex items-center gap-3 text-xs text-[#bfceb4]">
+                                    <span className="flex h-7 w-7 items-center justify-center rounded-full bg-primary/10 text-[10px] text-primary">{author.slice(0, 2).toUpperCase()}</span>
+                                    {author}
+                                </p>
+                            ))}
+                        </div>
+                        {!authors.length && <p className="mt-4 text-xs text-[#9eb392]">{__('Your comment can be the first.')}</p>}
+                    </div>
+                </aside>
+            </div>
+        </ProjectLayout>
+    );
+}

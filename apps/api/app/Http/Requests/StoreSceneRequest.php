@@ -18,6 +18,7 @@ class StoreSceneRequest extends FormRequest
     {
         return [
             'title' => ['required', 'string', 'max:255'],
+            'act' => ['nullable', 'string', 'max:100'],
             'order' => ['required', 'integer', 'min:1'],
             'summary' => ['nullable', 'string'],
             'conflict' => ['nullable', 'string'],

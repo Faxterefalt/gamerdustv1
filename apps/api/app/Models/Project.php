@@ -84,6 +84,16 @@ class Project extends Model
         return $this->hasMany(CostEstimation::class)->latest();
     }
 
+    public function comments(): HasMany
+    {
+        return $this->hasMany(Comment::class)->latest('id');
+    }
+
+    public function mechanics(): HasMany
+    {
+        return $this->hasMany(Mechanic::class);
+    }
+
     public function aiGenerations(): HasMany
     {
         return $this->hasMany(AiGeneration::class)->latest();

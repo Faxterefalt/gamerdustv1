@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 
@@ -12,6 +13,7 @@ class Scene extends Model
     protected $fillable = [
         'project_id',
         'title',
+        'act',
         'order',
         'summary',
         'conflict',
@@ -21,6 +23,8 @@ class Scene extends Model
         'player_decision',
         'consequence',
         'estimated_cost',
+        'script',
+        'location_id',
     ];
 
     protected function casts(): array
@@ -28,7 +32,32 @@ class Scene extends Model
         return [
             'order' => 'integer',
             'interest_level' => 'integer',
+            'script' => 'array',
+            'location_id' => 'integer',
         ];
+    }
+
+    public function characters(): BelongsToMany
+    {
+        return $this->belongsToMany(Character::class);
+    }
+
+    public function location(): BelongsTo
+    {
+        return $this->belongsTo(LoreEntry::class, 'location_id');
+    }
+
+    public function versions(): HasMany
+    {
+        return $this->hasMany(SceneVersion::class)->latest('id');
+    }
+
+    /**
+     * Texto plano del guion (para métricas y análisis).
+     */
+    public function scriptText(): string
+    {
+        return trim(collect($this->script ?? [])->pluck('text')->filter()->implode("\n"));
     }
 
     public function project(): BelongsTo

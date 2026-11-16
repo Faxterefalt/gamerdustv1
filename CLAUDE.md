@@ -40,6 +40,18 @@ Los controladores devuelven `Inertia::render('Modulo/Pagina')`. [resolve-page.ts
 - Idioma activo: `config('app.locale')` (`es`) salvo que la cookie `locale` indique otro de `config('app.supported_locales')`; lo aplica el middleware `SetLocale`. `LocaleSwitcher` enlaza a `GET /locale/{locale}` (enlace normal, no Inertia: la página se recarga y el frontend lee el idioma de `<html lang>`).
 - **Idioma del proyecto ≠ idioma de la interfaz**: `projects.language` (`es`/`en`) indica en qué idioma se escribe la narrativa. Los textos que generan los servicios de análisis y se guardan en BD quedan en el idioma de la interfaz del momento en que se generaron.
 
+### Estudio de proyecto (sidebar)
+- `ProjectLayout` detecta si la página recibe una prop `project` (con `id` y `title`): en ese caso la envuelve en el estudio (cabecera con hamburguesa + `ProjectSidebar` + ruta). Sin `project` (p. ej. Cuenta) se muestra como página simple. Las páginas nuevas de proyecto solo tienen que pasar `project` desde el controlador.
+- Secciones en `PROJECT_SECTIONS` (`layouts/components/ProjectSidebar.tsx`): Panel (`Projects/Show`), Biblia Narrativa, Guion, Escenas, Diálogos (ramificación), Mecánicas, Colaboración, Análisis IA, Reportes. `also` marca rutas clásicas que activan una sección (personajes/lore → Biblia; dialogues → Diálogos).
+- En escritorio el sidebar se pliega (preferencia en `localStorage`); en móvil es un `<dialog>`. `bare` en `ProjectLayout` quita márgenes y título (lo usa el editor de guion).
+- Lecturas combinadas en `StudioController` (biblia, análisis, colaboración, reportes y descarga Markdown); `MechanicController` y `CommentController` son CRUD Inertia.
+
+### Editor de guion
+- Rutas `projects/{project}/script/*`: `index` es Inertia, el resto JSON (como ramificación) vía `shared/lib/api.ts`. `print` es una vista Blade con formato de guion que el navegador imprime/guarda como PDF.
+- Cada escena guarda sus bloques en `scenes.script` (JSON `[{id, kind, text}]`, tipos en `ScriptService::KINDS`), `act`, `location_id` (entrada de lore) y personajes en la pivote `character_scene`. El código visible (E01…) se calcula por `order`, no se guarda.
+- Concurrencia: el cliente reenvía `updated_at`; si no coincide, el servidor responde 409 y no pisa. Cada guardado o restauración crea una `SceneVersion` (se conservan 30 por escena).
+- El cliente guarda borradores por escena con deshacer/rehacer local y solo persiste al pulsar Guardar (Ctrl/⌘+S); `useUnsaved` avisa antes de salir. Los comentarios recargan solo la prop `comments` para no perder borradores.
+
 ### Autorización por proyecto
 Todo cuelga de `Project` (propiedad de `User`); todas las tablas de dominio tienen `project_id` con `cascadeOnDelete`. `ProjectPolicy` solo comprueba `project->user_id === user->id`. Las rutas anidadas (`projects.lore`, `projects.characters`, ...) deben además verificar que el hijo pertenece al proyecto (`abort_unless(... project_id === $project->id, 404)`); ver `ensureNode/ensureOption` en `BranchingGraphController` y `BranchingRequest::authorize()`.
 

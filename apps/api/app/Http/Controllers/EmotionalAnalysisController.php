@@ -29,7 +29,8 @@ class EmotionalAnalysisController extends Controller
         ]);
 
         $source = $this->resolveSource($project, $validated['source_type'], (int) $validated['source_id']);
-        $text = $source instanceof Scene ? ($source->summary ?? '') : $source->text;
+        // Una escena se analiza con su resumen y el texto de su guion.
+        $text = $source instanceof Scene ? trim(($source->summary ?? '')."\n".$source->scriptText()) : $source->text;
 
         abort_if(blank($text), 422, __('There is not enough text to analyze.'));
 

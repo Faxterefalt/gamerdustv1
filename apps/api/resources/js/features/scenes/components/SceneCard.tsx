@@ -32,7 +32,10 @@ export default function SceneCard({ scene }: SceneCardProps) {
                 {scene.scene_type && <span>{scene.scene_type}</span>}
                 {typeof scene.dialogue_nodes_count === 'number' && <span>{choice(':count dialogue|:count dialogues', scene.dialogue_nodes_count)}</span>}
             </div>
-            <div className="mt-4 flex gap-2">
+            <div className="mt-4 flex flex-wrap gap-2">
+                <Link href={`/projects/${scene.project_id}/script?scene=${scene.id}`} className="border border-primary/40 px-3 py-2 text-sm text-primary hover:bg-primary/10">
+                    {__('Write script')}
+                </Link>
                 <Link href={`/projects/${scene.project_id}/scenes/${scene.id}/edit`} className="border border-zinc-700 px-3 py-2 text-sm hover:border-amber-500">
                     {__('Edit')}
                 </Link>

@@ -4,15 +4,19 @@ use App\Http\Controllers\AccountController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BranchingGraphController;
 use App\Http\Controllers\CharacterController;
+use App\Http\Controllers\CommentController;
 use App\Http\Controllers\CostEstimationController;
 use App\Http\Controllers\DialogueNodeController;
 use App\Http\Controllers\EmotionalAnalysisController;
 use App\Http\Controllers\LocaleController;
 use App\Http\Controllers\LoreEntryController;
+use App\Http\Controllers\MechanicController;
 use App\Http\Controllers\NarrativeValidationController;
 use App\Http\Controllers\ProjectConstraintController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\SceneController;
+use App\Http\Controllers\ScriptController;
+use App\Http\Controllers\StudioController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -75,6 +79,28 @@ Route::middleware(['auth', 'verified'])->group(function (): void {
             Route::get('nodes/{node}/context', 'context')->name('nodes.context');
             Route::post('nodes/{node}/analysis', 'analyze')->name('nodes.analysis');
         });
+
+    // Estudio del proyecto (secciones del sidebar).
+    Route::prefix('projects/{project}')->name('projects.')->group(function (): void {
+        Route::get('bible', [StudioController::class, 'bible'])->name('bible');
+        Route::get('analysis', [StudioController::class, 'analysis'])->name('analysis');
+        Route::get('collaboration', [StudioController::class, 'collaboration'])->name('collaboration');
+        Route::get('reports', [StudioController::class, 'reports'])->name('reports');
+        Route::get('reports/markdown', [StudioController::class, 'markdown'])->name('reports.markdown');
+
+        Route::resource('mechanics', MechanicController::class)->only(['index', 'store', 'update', 'destroy']);
+        Route::resource('comments', CommentController::class)->only(['store', 'destroy']);
+
+        // Editor de guion: index es Inertia, el resto JSON.
+        Route::controller(ScriptController::class)->prefix('script')->name('script.')->group(function (): void {
+            Route::get('/', 'index')->name('index');
+            Route::get('print', 'print')->name('print');
+            Route::post('scenes', 'storeScene')->name('scenes.store');
+            Route::put('scenes/{scene}', 'updateScene')->name('scenes.update');
+            Route::get('scenes/{scene}/versions', 'versions')->name('versions.index');
+            Route::post('scenes/{scene}/versions/{version}/restore', 'restoreVersion')->name('versions.restore');
+        });
+    });
 
     Route::get('projects/{project}/emotional-analysis', [EmotionalAnalysisController::class, 'index'])
         ->name('projects.emotional-analysis.index');

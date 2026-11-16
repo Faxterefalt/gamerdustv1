@@ -13,6 +13,7 @@ interface SceneFormProps {
 export default function SceneForm({ projectId, scene, method = 'post', submitLabel }: SceneFormProps) {
     const { data, setData, post, put, processing, errors } = useForm({
         title: scene?.title ?? '',
+        act: scene?.act ?? '',
         order: scene?.order?.toString() ?? '1',
         summary: scene?.summary ?? '',
         conflict: scene?.conflict ?? '',
@@ -32,9 +33,12 @@ export default function SceneForm({ projectId, scene, method = 'post', submitLab
 
     return (
         <form onSubmit={submit} className="space-y-5 border border-zinc-800 bg-zinc-900 p-5">
-            <div className="grid gap-4 md:grid-cols-[1fr_120px]">
+            <div className="grid gap-4 md:grid-cols-[1fr_1fr_120px]">
                 <Field label={__('Title')} error={errors.title}>
                     <input value={data.title} onChange={(event) => setData('title', event.target.value)} className={inputClass} />
+                </Field>
+                <Field label={__('Act')} error={errors.act}>
+                    <input value={data.act} maxLength={100} placeholder={__('Act 1 - The arrival')} onChange={(event) => setData('act', event.target.value)} className={inputClass} />
                 </Field>
                 <Field label={__('Order')} error={errors.order}>
                     <input type="number" min="1" value={data.order} onChange={(event) => setData('order', event.target.value)} className={inputClass} />

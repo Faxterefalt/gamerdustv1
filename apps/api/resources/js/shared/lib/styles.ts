@@ -4,6 +4,15 @@ export const button =
 export const field =
     'mt-2 w-full rounded-md border border-border bg-background px-4 py-3 text-sm text-foreground outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/10';
 
+export const secondary =
+    'inline-flex min-h-10 items-center justify-center gap-2 rounded-md border border-border bg-white/[.02] px-3 py-2 text-xs text-[#becbb6] transition hover:border-primary/40 hover:bg-primary/5 focus-visible:outline-2 focus-visible:outline-primary disabled:cursor-not-allowed disabled:opacity-35';
+
+/** Botón principal compacto (estudio de proyecto). */
+export const primarySm =
+    'inline-flex min-h-10 items-center justify-center gap-2 rounded-md bg-primary px-4 py-2.5 text-xs font-semibold text-[#172012] transition hover:bg-[#d3f3aa] disabled:cursor-wait disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary';
+
+export const card = 'rounded-xl border border-border bg-[#161d17]';
+
 export const genres = ['Aventura', 'Fantasía oscura', 'Ciencia ficción', 'Misterio', 'Terror', 'Otro'];
 
 const images = {

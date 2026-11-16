@@ -1,45 +1,135 @@
-import { usePage } from '@inertiajs/react';
-import type { PropsWithChildren, ReactNode } from 'react';
+import { Link, usePage } from '@inertiajs/react';
+import { ChevronRight, Lock } from 'lucide-react';
+import { useCallback, useEffect, useState, type PropsWithChildren, type ReactNode } from 'react';
 import type { PageProps } from '../features/projects/projects.types';
+import { __ } from '../shared/lib/i18n';
 import Footer from './components/Footer';
 import Header from './components/Header';
+import ProjectSidebar, { activeSection, type WorkspaceProject } from './components/ProjectSidebar';
 
 interface AppShellProps extends PropsWithChildren {
     title?: string;
     actions?: ReactNode;
     fullWidth?: boolean;
+    /** Sin márgenes, título ni avisos: la página ocupa todo el área (p. ej. el editor de guion). */
+    bare?: boolean;
 }
 
-export default function ProjectLayout({ title, actions, fullWidth = false, children }: AppShellProps) {
-    const { props } = usePage<PageProps>();
+const SIDEBAR_KEY = 'gamerdust.sidebar-expanded';
+
+function workspaceProject(value: unknown): WorkspaceProject | null {
+    const project = value as Partial<WorkspaceProject> | null | undefined;
+
+    return project && typeof project.id === 'number' && typeof project.title === 'string' ? (project as WorkspaceProject) : null;
+}
+
+/**
+ * Layout de las páginas autenticadas. Si la página recibe una prop `project`, se muestra dentro del
+ * estudio de proyecto (sidebar + ruta); si no (p. ej. Cuenta), como página simple con pie.
+ */
+export default function ProjectLayout({ title, actions, fullWidth = false, bare = false, children }: AppShellProps) {
+    const { props, url } = usePage<PageProps>();
+    const project = workspaceProject(props.project);
+
+    const content = (
+        <>
+            {(title || actions) && (
+                <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                    {title && <h1 className="text-2xl font-semibold text-white">{title}</h1>}
+                    {actions}
+                </div>
+            )}
+
+            {props.flash.success && <div className="mb-5 rounded-md border border-primary/30 bg-primary/5 px-4 py-3 text-sm text-primary">{props.flash.success}</div>}
+
+            {props.flash.error && <div className="mb-5 rounded-md border border-rose-700 bg-rose-950/60 px-4 py-3 text-sm text-rose-100">{props.flash.error}</div>}
+
+            {children}
+        </>
+    );
+
+    if (!project) {
+        return (
+            <div className="min-h-screen bg-background text-foreground">
+                <Header />
+                <main className={fullWidth ? 'px-4 py-4 sm:px-6' : 'mx-auto max-w-7xl px-4 py-6 sm:px-6'}>{content}</main>
+                <Footer />
+            </div>
+        );
+    }
+
+    return (
+        <WorkspaceShell project={project} url={url}>
+            {bare ? children : <div className={fullWidth ? 'px-4 py-4 sm:px-6' : 'mx-auto max-w-[1350px] px-5 py-8 sm:px-8'}>{content}</div>}
+        </WorkspaceShell>
+    );
+}
+
+function WorkspaceShell({ project, url, children }: PropsWithChildren<{ project: WorkspaceProject; url: string }>) {
+    const [expanded, setExpanded] = useState(() => {
+        try {
+            return localStorage.getItem(SIDEBAR_KEY) !== 'false';
+        } catch {
+            return true;
+        }
+    });
+    const [mobileOpen, setMobileOpen] = useState(false);
+    const [desktop, setDesktop] = useState(true);
+    const section = activeSection(url, project.id);
+    const close = useCallback(() => setMobileOpen(false), []);
+
+    useEffect(() => {
+        const query = matchMedia('(min-width: 1024px)');
+        const sync = () => setDesktop(query.matches);
+        sync();
+        query.addEventListener('change', sync);
+
+        return () => query.removeEventListener('change', sync);
+    }, []);
+
+    const toggle = () => {
+        if (matchMedia('(min-width: 1024px)').matches) {
+            setExpanded((value) => {
+                try {
+                    localStorage.setItem(SIDEBAR_KEY, String(!value));
+                } catch {
+                    // Preferencia opcional: sin almacenamiento simplemente no se recuerda.
+                }
+
+                return !value;
+            });
+        } else {
+            setMobileOpen(true);
+        }
+    };
 
     return (
         <div className="min-h-screen bg-background text-foreground">
-            <Header />
-
-            <main className={fullWidth ? 'px-4 py-4 sm:px-6' : 'mx-auto max-w-7xl px-4 py-6 sm:px-6'}>
-                {(title || actions) && (
-                    <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                        {title && <h1 className="text-2xl font-semibold text-white">{title}</h1>}
-                        {actions}
+            <Header onToggleSidebar={toggle} sidebarExpanded={desktop ? expanded : mobileOpen} />
+            <div className="flex min-h-[calc(100dvh-88px)]">
+                <ProjectSidebar project={project} url={url} expanded={expanded} open={mobileOpen} onClose={close} />
+                <main id="studio-content" className="min-w-0 flex-1">
+                    <div className="flex h-[50px] items-center justify-between gap-4 border-b border-border px-5 sm:px-7">
+                        <nav aria-label={__('Project breadcrumb')} className="flex min-w-0 items-center gap-2 text-[10px] sm:gap-3 sm:text-[11px]">
+                            <Link href="/projects" className="hidden shrink-0 text-[#91a086] hover:text-primary sm:inline">
+                                {__('My projects')}
+                            </Link>
+                            <ChevronRight size={11} className="hidden shrink-0 text-[#6f7e65] sm:block" />
+                            <Link href={`/projects/${project.id}`} className="truncate text-[#afbea5] hover:text-primary">
+                                {project.title}
+                            </Link>
+                            <ChevronRight size={11} className="shrink-0 text-[#6f7e65]" />
+                            <span aria-current="page" className="shrink-0 text-primary">
+                                {section ? __(section.label) : __('Project')}
+                            </span>
+                        </nav>
+                        <span className="hidden shrink-0 items-center gap-2 font-mono text-[8px] tracking-wider text-[#94a589] md:flex">
+                            <Lock size={12} /> {__('PRIVATE PROJECT')}
+                        </span>
                     </div>
-                )}
-
-                {props.flash.success && (
-                    <div className="mb-5 border border-emerald-700 bg-emerald-950/60 px-4 py-3 text-sm text-emerald-100">
-                        {props.flash.success}
-                    </div>
-                )}
-
-                {props.flash.error && (
-                    <div className="mb-5 border border-rose-700 bg-rose-950/60 px-4 py-3 text-sm text-rose-100">
-                        {props.flash.error}
-                    </div>
-                )}
-
-                {children}
-            </main>
-            <Footer />
+                    {children}
+                </main>
+            </div>
         </div>
     );
 }

@@ -1,7 +1,7 @@
 import { __, choice } from '../../../shared/lib/i18n';
 import { useEffect, useState } from 'react';
 import { Brain } from 'lucide-react';
-import { api } from '../api';
+import { api } from '../../../shared/lib/api';
 import type { AnalysisResponse, ContextResponse, NodeContext } from '../branching.types';
 import type { EmotionalAnalysis } from '../../analysis/emotion.types';
 import { emotionLabel } from '../../analysis/labels';

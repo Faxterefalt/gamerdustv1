@@ -2,6 +2,7 @@ export interface Scene {
     id: number;
     project_id: number;
     title: string;
+    act?: string | null;
     order: number;
     summary?: string | null;
     conflict?: string | null;
