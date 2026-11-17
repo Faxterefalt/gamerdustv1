@@ -16,7 +16,7 @@ class EmotionChangeDetectorTest extends TestCase
         $this->detector = new EmotionChangeDetector;
     }
 
-    public function test_threshold_is_exclusive(): void
+    public function test_el_umbral_es_exclusivo(): void
     {
         $from = ['v' => 0.5, 'a' => 0.5, 'd' => 0.5];
 
@@ -29,7 +29,7 @@ class EmotionChangeDetectorTest extends TestCase
         $this->assertSame([0.41, true, EmotionChangeDetector::RED], [$above['delta'], $above['abrupt'], $above['alert']]);
     }
 
-    public function test_the_rule_decides_and_the_ai_only_explains(): void
+    public function test_la_regla_decide_y_la_ia_solo_explica(): void
     {
         $from = ['v' => 0.8, 'a' => 0.3, 'd' => 0.6];
         $abrupt = ['v' => 0.1, 'a' => 0.9, 'd' => 0.2];
@@ -43,12 +43,12 @@ class EmotionChangeDetectorTest extends TestCase
         $this->assertNull($this->detector->compare($from, $soft, true)['alert']);
     }
 
-    public function test_without_previous_state_there_is_no_change(): void
+    public function test_sin_estado_previo_no_hay_cambio(): void
     {
         $this->assertSame(['delta' => 0.0, 'abrupt' => false, 'alert' => null], $this->detector->compare(null, ['v' => 0.1, 'a' => 0.9, 'd' => 0.1], false));
     }
 
-    public function test_threshold_comes_from_config(): void
+    public function test_el_umbral_sale_de_la_configuracion(): void
     {
         config(['gamerdust.emotion.abrupt_threshold' => 0.2]);
 

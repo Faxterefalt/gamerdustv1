@@ -49,6 +49,10 @@
             "@php artisan config:clear --ansi @no_additional_args",
             "@php artisan test"
         ],
+        "test:es": [
+            "@php artisan config:clear --ansi @no_additional_args",
+            "@php artisan gamerdust:test"
+        ],
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
             "@php artisan package:discover --ansi"

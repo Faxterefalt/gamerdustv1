@@ -27,7 +27,7 @@ class InitialEmotionTest extends TestCase
         $this->project = $this->user->projects()->create(['title' => 'Faro', 'game_genre' => 'RPG', 'language' => 'es', 'narrative_type' => 'linear']);
     }
 
-    public function test_sheet_saves_initial_emotion_and_page_receives_the_catalog(): void
+    public function test_la_ficha_guarda_la_emocion_inicial_y_la_pagina_recibe_el_catalogo(): void
     {
         $this->actingAs($this->user)
             ->post("/projects/{$this->project->id}/characters", [
@@ -50,7 +50,7 @@ class InitialEmotionTest extends TestCase
                 ->missing('emotionCatalog.emotions.hope.v'));
     }
 
-    public function test_multipart_update_clears_intensity_without_emotion(): void
+    public function test_al_actualizar_con_archivo_se_borra_la_intensidad_si_no_hay_emocion(): void
     {
         $mara = $this->project->characters()->create(['name' => 'Mara', 'initial_emotion' => 'fear', 'initial_intensity' => 'low']);
 
@@ -69,7 +69,7 @@ class InitialEmotionTest extends TestCase
         $this->assertNull($mara->initial_intensity);
     }
 
-    public function test_rejects_unknown_emotion_and_intensity(): void
+    public function test_rechaza_emociones_e_intensidades_desconocidas(): void
     {
         app()->setLocale('es');
 
@@ -85,7 +85,7 @@ class InitialEmotionTest extends TestCase
         $this->assertStringContainsString('emoción inicial', session('errors')->first('initial_emotion'));
     }
 
-    public function test_emotional_states_are_unique_per_scene_and_cascade(): void
+    public function test_los_estados_emocionales_son_unicos_por_escena_y_se_borran_en_cascada(): void
     {
         $mara = $this->project->characters()->create(['name' => 'Mara']);
         $scene = $this->project->scenes()->create(['title' => 'Puerto', 'order' => 1]);
@@ -118,7 +118,7 @@ class InitialEmotionTest extends TestCase
         $this->assertSame(0, CharacterEmotionalState::count());
     }
 
-    public function test_legacy_keyword_analysis_still_saves_without_new_fields(): void
+    public function test_el_analisis_antiguo_por_palabras_clave_se_guarda_sin_los_campos_nuevos(): void
     {
         $scene = $this->project->scenes()->create(['title' => 'Puerto', 'order' => 1]);
 

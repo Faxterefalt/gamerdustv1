@@ -62,7 +62,7 @@ class EmotionTimelineTest extends TestCase
         ])]);
     }
 
-    public function test_timeline_has_scene_gaps_and_character_start_points(): void
+    public function test_la_linea_temporal_muestra_huecos_de_escenas_y_puntos_iniciales_de_personajes(): void
     {
         $this->analyze($this->scenes[0]);
         $this->analyze($this->scenes[2]);
@@ -99,7 +99,7 @@ class EmotionTimelineTest extends TestCase
         $this->assertSame($this->scenes[0]->id, $reviews[0]['scene_id']);
     }
 
-    public function test_editing_a_scene_marks_its_points_stale(): void
+    public function test_editar_una_escena_marca_sus_puntos_como_desactualizados(): void
     {
         $this->analyze($this->scenes[0]);
 
@@ -112,7 +112,7 @@ class EmotionTimelineTest extends TestCase
         $this->assertTrue($mara['points'][1]['stale']);
     }
 
-    public function test_empty_project_and_authorization(): void
+    public function test_proyecto_vacio_y_control_de_acceso(): void
     {
         $this->actingAs($this->user)->getJson($this->url())
             ->assertOk()
@@ -124,7 +124,7 @@ class EmotionTimelineTest extends TestCase
         Http::assertNothingSent();
     }
 
-    public function test_evolution_page_and_metrics_page_without_the_old_panel(): void
+    public function test_las_paginas_de_evolucion_y_metricas_no_muestran_el_panel_antiguo(): void
     {
         $this->actingAs($this->user)
             ->get("/projects/{$this->project->id}/analysis/evolution")

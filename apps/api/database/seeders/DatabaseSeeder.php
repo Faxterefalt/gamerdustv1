@@ -102,5 +102,8 @@ class DatabaseSeeder extends Seeder
             'consequence' => 'Mara gana tiempo, pero aumenta el riesgo de ser descubierta.',
             'required_condition' => null,
         ]);
+
+        // Proyecto de demostración completo (portada de montaña, guion, ramificación, emociones y contradicciones).
+        $this->call(CumbreMudaSeeder::class);
     }
 }

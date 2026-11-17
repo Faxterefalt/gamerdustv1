@@ -36,7 +36,7 @@ class GroqClientTest extends TestCase
         $this->project = $this->user->projects()->create(['title' => 'Faro', 'game_genre' => 'adventure']);
     }
 
-    public function test_sends_strict_schema_request_and_logs_the_generation(): void
+    public function test_envia_la_peticion_con_esquema_estricto_y_registra_la_generacion(): void
     {
         Http::fake([self::URL => Http::response($this->completion(['ok' => true]))]);
 
@@ -68,7 +68,7 @@ class GroqClientTest extends TestCase
         $this->assertStringNotContainsString('test-secret-key', json_encode($generation->getAttributes()));
     }
 
-    public function test_rate_limit_on_primary_falls_back_to_secondary_model(): void
+    public function test_el_limite_de_peticiones_del_modelo_principal_pasa_al_de_respaldo(): void
     {
         Http::fakeSequence()
             ->push(['error' => ['message' => 'Rate limit reached', 'type' => 'tokens']], 429)
@@ -84,7 +84,7 @@ class GroqClientTest extends TestCase
         $this->assertSame(['primary-model', 'fallback-model'], $models);
     }
 
-    public function test_schema_validation_failure_and_invalid_json_are_retried(): void
+    public function test_un_fallo_de_esquema_o_un_json_invalido_se_reintentan(): void
     {
         Http::fakeSequence()
             ->push(['error' => ['message' => 'Generated JSON does not match the expected schema.', 'code' => 'json_validate_failed']], 400)
@@ -99,7 +99,7 @@ class GroqClientTest extends TestCase
         Http::assertSentCount(4);
     }
 
-    public function test_timeout_is_retried_with_the_fallback_model(): void
+    public function test_un_tiempo_agotado_se_reintenta_con_el_modelo_de_respaldo(): void
     {
         Http::fakeSequence()
             ->pushFailedConnection()
@@ -108,7 +108,7 @@ class GroqClientTest extends TestCase
         $this->assertSame('fallback-model', $this->client()->chatJson('s', 'u', $this->schema(), 'check')->model);
     }
 
-    public function test_both_models_failing_throws_and_logs_an_error(): void
+    public function test_si_fallan_ambos_modelos_lanza_una_excepcion_y_registra_el_error(): void
     {
         Http::fake([self::URL => Http::response(['error' => ['message' => 'down']], 503)]);
 
@@ -126,7 +126,7 @@ class GroqClientTest extends TestCase
         Http::assertSentCount(2);
     }
 
-    public function test_authentication_errors_are_not_retried(): void
+    public function test_los_errores_de_autenticacion_no_se_reintentan(): void
     {
         Http::fake([self::URL => Http::response(['error' => ['message' => 'Invalid API Key']], 401)]);
 
@@ -139,7 +139,7 @@ class GroqClientTest extends TestCase
         }
     }
 
-    public function test_without_api_key_no_request_is_made(): void
+    public function test_sin_clave_de_api_no_se_hace_ninguna_peticion(): void
     {
         config(['services.groq.key' => '']);
         Http::fake();
@@ -156,7 +156,7 @@ class GroqClientTest extends TestCase
         Http::assertNothingSent();
     }
 
-    public function test_mark_degraded_updates_the_logged_status(): void
+    public function test_marcar_como_degradado_actualiza_el_estado_registrado(): void
     {
         Http::fake([self::URL => Http::response(['error' => ['message' => 'down']], 500)]);
 
@@ -169,7 +169,7 @@ class GroqClientTest extends TestCase
         $this->assertSame('degraded', AiGeneration::sole()->status);
     }
 
-    public function test_groq_check_command_reports_ok(): void
+    public function test_el_comando_groq_check_informa_que_todo_va_bien(): void
     {
         Http::fake([self::URL => Http::response($this->completion(['ok' => true, 'word' => 'gamerdust']))]);
 
@@ -177,7 +177,7 @@ class GroqClientTest extends TestCase
         $this->assertSame(0, AiGeneration::count());
     }
 
-    public function test_groq_check_command_fails_without_key(): void
+    public function test_el_comando_groq_check_falla_sin_clave(): void
     {
         config(['services.groq.key' => null]);
         Http::fake();
@@ -186,7 +186,7 @@ class GroqClientTest extends TestCase
         Http::assertNothingSent();
     }
 
-    public function test_test_environment_has_no_real_key(): void
+    public function test_el_entorno_de_pruebas_no_tiene_una_clave_real(): void
     {
         $this->assertSame('', (string) env('GROQ_API_KEY'));
         $this->assertSame('keywords', config('gamerdust.ai.driver'));

@@ -14,12 +14,12 @@ class KeywordEmotionAnalyzerTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_container_resolves_the_keyword_analyzer_without_a_key(): void
+    public function test_sin_clave_el_contenedor_usa_el_analizador_por_palabras_clave(): void
     {
         $this->assertInstanceOf(KeywordEmotionAnalyzer::class, app(EmotionAnalyzer::class));
     }
 
-    public function test_converts_the_simulated_analysis_to_the_unit_scale(): void
+    public function test_convierte_el_analisis_simulado_a_la_escala_de_0_a_1(): void
     {
         $scene = $this->scene([
             ['id' => '1', 'kind' => 'action', 'text' => 'El miedo y el terror llenan el puerto.'],
@@ -37,7 +37,7 @@ class KeywordEmotionAnalyzerTest extends TestCase
         $this->assertSame(['kind', 'text', 'why'], array_keys($result->suggestions[0]));
     }
 
-    public function test_legacy_tension_maps_to_anxiety(): void
+    public function test_la_emocion_antigua_tension_se_traduce_a_ansiedad(): void
     {
         $scene = $this->scene([
             ['id' => '1', 'kind' => 'action', 'text' => 'Un conflicto, un riesgo y un secreto.'],
@@ -46,7 +46,7 @@ class KeywordEmotionAnalyzerTest extends TestCase
         $this->assertSame('anxiety', app(EmotionAnalyzer::class)->analyzeScene($scene)->scene['emotion']);
     }
 
-    public function test_long_scenes_are_truncated(): void
+    public function test_las_escenas_largas_se_recortan(): void
     {
         config(['gamerdust.ai.max_scene_words' => 5]);
         $scene = $this->scene([
@@ -58,7 +58,7 @@ class KeywordEmotionAnalyzerTest extends TestCase
         $this->assertSame(["uno dos tres\ncuatro cinco …", true], app(ScenePlainText::class)->limit("uno dos tres\ncuatro cinco seis siete", 5));
     }
 
-    public function test_degraded_copy_keeps_the_result(): void
+    public function test_la_copia_degradada_conserva_el_resultado(): void
     {
         $result = KeywordEmotionAnalyzer::fromKeywords([
             'dominant_emotion' => 'joy', 'valence' => 0.75, 'arousal' => 0.5, 'dominance' => 0.6,

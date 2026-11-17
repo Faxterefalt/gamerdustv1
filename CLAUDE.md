@@ -20,6 +20,7 @@ composer dev               # serve + queue:listen + pail + vite en paralelo
 php artisan serve          # o: npm run dev  (en otra terminal)
 npm run build              # build de producción de Vite
 php artisan test           # toda la suite (composer test limpia config antes)
+php artisan gamerdust:test [--filter=...]                # la misma suite con la salida en español y APP_LOCALE=es (composer test:es)
 php artisan test --filter=BranchingEditorTest            # una clase
 php artisan test --filter=test_nombre_del_metodo         # un test
 vendor/bin/pint            # formateo PHP (Laravel Pint)
@@ -94,3 +95,5 @@ Tablas de dominio en `2026_06_04_000000_create_gamerdust_tables.php` más migrac
 - `.editorconfig`: 4 espacios, LF (YAML 2 espacios).
 - Validación en FormRequests (`app/Http/Requests`, los de ramificación heredan de `Branching/BranchingRequest`).
 - Tests de feature con `RefreshDatabase`; los proyectos se crean vía `$user->projects()->create([...])` (solo existe `UserFactory`).
+- Los métodos de test se nombran en español (`test_crea_el_proyecto_...`): Collision usa el nombre como descripción en consola.
+- `CumbreMudaSeeder` (lo llama `DatabaseSeeder`) crea un proyecto de demostración completo para `test@example.com`; sus análisis emocionales están redactados en `CumbreMudaAnalyses` (sin red).

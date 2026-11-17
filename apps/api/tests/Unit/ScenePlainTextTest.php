@@ -8,7 +8,7 @@ use PHPUnit\Framework\TestCase;
 
 class ScenePlainTextTest extends TestCase
 {
-    public function test_keeps_who_speaks_each_line(): void
+    public function test_conserva_quien_dice_cada_linea(): void
     {
         $scene = new Scene;
         $scene->script = [
@@ -29,7 +29,7 @@ class ScenePlainTextTest extends TestCase
         );
     }
 
-    public function test_empty_script_gives_empty_text(): void
+    public function test_un_guion_vacio_da_un_texto_vacio(): void
     {
         $this->assertSame('', (new ScenePlainText)->build(new Scene));
         $this->assertSame(['a b', false], (new ScenePlainText)->limit('a b', 5));

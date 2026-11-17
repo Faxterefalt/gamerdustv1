@@ -69,7 +69,7 @@ class SceneEmotionAnalysisTest extends TestCase
         ], [$this->mara->id, $this->iker->id], $port->id);
     }
 
-    public function test_analysis_saves_scene_characters_and_generation_in_narrative_language(): void
+    public function test_el_analisis_guarda_escena_personajes_y_generacion_en_lenguaje_narrativo(): void
     {
         Http::fake([self::URL => Http::response($this->completion($this->aiResult()))]);
 
@@ -130,7 +130,7 @@ class SceneEmotionAnalysisTest extends TestCase
         });
     }
 
-    public function test_unchanged_scene_reuses_the_analysis_and_reanalyze_forces_a_call(): void
+    public function test_una_escena_sin_cambios_reutiliza_el_analisis_y_reanalizar_fuerza_la_llamada(): void
     {
         Http::fake([self::URL => Http::response($this->completion($this->aiResult()))]);
 
@@ -144,7 +144,7 @@ class SceneEmotionAnalysisTest extends TestCase
         $this->assertSame(2, CharacterEmotionalState::count());
     }
 
-    public function test_latest_marks_the_analysis_stale_after_editing(): void
+    public function test_tras_editar_el_ultimo_analisis_queda_desactualizado(): void
     {
         Http::fake([self::URL => Http::response($this->completion($this->aiResult()))]);
 
@@ -160,7 +160,7 @@ class SceneEmotionAnalysisTest extends TestCase
         Http::assertSentCount(1);
     }
 
-    public function test_rate_limit_on_primary_uses_the_fallback_model(): void
+    public function test_con_limite_en_el_modelo_principal_se_usa_el_de_respaldo(): void
     {
         Http::fakeSequence()
             ->push(['error' => ['message' => 'Rate limit reached']], 429)
@@ -170,7 +170,7 @@ class SceneEmotionAnalysisTest extends TestCase
         $this->assertSame('fallback', AiGeneration::sole()->status);
     }
 
-    public function test_when_both_models_fail_it_degrades_to_keywords_and_retries_later(): void
+    public function test_si_fallan_ambos_modelos_degrada_a_palabras_clave_y_reintenta_despues(): void
     {
         Http::fake([self::URL => Http::response(['error' => ['message' => 'down']], 503)]);
 
@@ -188,14 +188,14 @@ class SceneEmotionAnalysisTest extends TestCase
         Http::assertSentCount(4);
     }
 
-    public function test_invalid_ai_payload_degrades(): void
+    public function test_una_respuesta_invalida_de_la_ia_degrada_el_analisis(): void
     {
         Http::fake([self::URL => Http::response($this->completion(['characters' => []]))]);
 
         $this->analyze()->assertOk()->assertJsonPath('analysis.degraded', true);
     }
 
-    public function test_keywords_driver_never_calls_groq(): void
+    public function test_el_motor_de_palabras_clave_nunca_llama_a_groq(): void
     {
         config(['gamerdust.ai.driver' => 'keywords']);
         Http::fake();
@@ -204,7 +204,7 @@ class SceneEmotionAnalysisTest extends TestCase
         Http::assertNothingSent();
     }
 
-    public function test_previous_ai_state_and_previous_scene_feed_the_next_scene(): void
+    public function test_el_estado_previo_y_la_escena_anterior_alimentan_la_siguiente(): void
     {
         Http::fake([self::URL => Http::response($this->completion($this->aiResult()))]);
         $this->analyze();
@@ -217,7 +217,7 @@ class SceneEmotionAnalysisTest extends TestCase
             && str_contains($request['messages'][1]['content'], 'ESCENA ANTERIOR: E01 "La huida": fear'));
     }
 
-    public function test_empty_scene_is_rejected_without_calling_the_ai(): void
+    public function test_una_escena_vacia_se_rechaza_sin_llamar_a_la_ia(): void
     {
         Http::fake();
         $empty = $this->writeScene('Vacía', [['id' => '1', 'kind' => 'action', 'text' => '  ']], [], null);
@@ -230,7 +230,7 @@ class SceneEmotionAnalysisTest extends TestCase
         Http::assertNothingSent();
     }
 
-    public function test_foreign_project_is_forbidden_and_foreign_scene_not_found(): void
+    public function test_un_proyecto_ajeno_da_403_y_una_escena_ajena_da_404(): void
     {
         Http::fake();
         $intruder = User::factory()->create();
@@ -245,7 +245,7 @@ class SceneEmotionAnalysisTest extends TestCase
         Http::assertNothingSent();
     }
 
-    public function test_ai_calls_are_rate_limited_per_user(): void
+    public function test_las_llamadas_a_la_ia_tienen_limite_por_usuario(): void
     {
         config(['gamerdust.ai.rate_limit_per_minute' => 1]);
         Http::fake([self::URL => Http::response($this->completion($this->aiResult()))]);
@@ -255,7 +255,7 @@ class SceneEmotionAnalysisTest extends TestCase
         Http::assertSentCount(1);
     }
 
-    public function test_script_page_receives_the_emotion_catalog(): void
+    public function test_la_pagina_del_guion_recibe_el_catalogo_de_emociones(): void
     {
         $this->actingAs($this->user)
             ->get("/projects/{$this->project->id}/script")

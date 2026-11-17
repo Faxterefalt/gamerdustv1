@@ -68,7 +68,7 @@ class BranchingEditorTest extends TestCase
         return DialogueOption::where('dialogue_node_id', $node->id)->orderBy('id')->get();
     }
 
-    public function test_reference_creates_target_and_option(): void
+    public function test_una_referencia_crea_el_nodo_destino_y_la_opcion(): void
     {
         $inicio = $this->node('Inicio');
 
@@ -83,7 +83,7 @@ class BranchingEditorTest extends TestCase
         $this->assertSame('bosque', $bosque->node_key);
     }
 
-    public function test_two_references_create_two_targets_and_options(): void
+    public function test_dos_referencias_crean_dos_destinos_y_dos_opciones(): void
     {
         $inicio = $this->node('Inicio');
 
@@ -93,7 +93,7 @@ class BranchingEditorTest extends TestCase
         $this->assertSame(['Bosque', 'Castillo'], $this->optionsOf($inicio)->pluck('player_option')->all());
     }
 
-    public function test_reference_reuses_existing_target_from_another_node(): void
+    public function test_una_referencia_reutiliza_un_destino_existente_de_otro_nodo(): void
     {
         $inicio = $this->node('Inicio', '');
         $otro = $this->node('Otro');
@@ -108,7 +108,7 @@ class BranchingEditorTest extends TestCase
         );
     }
 
-    public function test_removing_reference_deletes_only_managed_option(): void
+    public function test_quitar_una_referencia_borra_solo_la_opcion_administrada(): void
     {
         $inicio = $this->node('Inicio');
         $manual = $inicio->options()->create(['player_option' => 'Manual', 'consequence' => 'Pierde algo']);
@@ -121,7 +121,7 @@ class BranchingEditorTest extends TestCase
         $this->assertDatabaseHas('dialogue_nodes', ['title' => 'Castillo']);
     }
 
-    public function test_rename_keeps_key_and_id_and_updates_references(): void
+    public function test_renombrar_conserva_clave_e_id_y_actualiza_las_referencias(): void
     {
         $inicio = $this->node('Inicio', '');
         $this->save($inicio, ['text' => 'Ir al {{Bosque}}'])->assertOk();
@@ -145,7 +145,7 @@ class BranchingEditorTest extends TestCase
         $this->assertSame('tiene_llave', $option->required_condition);
     }
 
-    public function test_duplicate_title_is_rejected_with_422(): void
+    public function test_un_titulo_duplicado_se_rechaza_con_422(): void
     {
         $inicio = $this->node('Inicio');
         $this->node('Bosque');
@@ -154,7 +154,7 @@ class BranchingEditorTest extends TestCase
         $this->assertSame('Inicio', $inicio->fresh()->title);
     }
 
-    public function test_untitled_legacy_node_falls_back_to_node_key_and_resolves_references(): void
+    public function test_un_nodo_antiguo_sin_titulo_usa_su_clave_y_resuelve_referencias(): void
     {
         $legacy = DialogueNode::create([
             'project_id' => $this->project->id,
@@ -171,7 +171,7 @@ class BranchingEditorTest extends TestCase
         $this->assertContains('archive_intro_001', array_column($graph->json('nodes'), 'display_title'));
     }
 
-    public function test_saving_positions_persists_them(): void
+    public function test_las_posiciones_guardadas_se_conservan(): void
     {
         $a = $this->node('A');
         $b = $this->node('B');
@@ -185,7 +185,7 @@ class BranchingEditorTest extends TestCase
         $this->assertNull($b->fresh()->pos_x);
     }
 
-    public function test_option_with_consequence_and_target_persists(): void
+    public function test_una_opcion_con_consecuencia_y_destino_se_guarda(): void
     {
         $a = $this->node('A');
         $b = $this->node('B');
@@ -206,7 +206,7 @@ class BranchingEditorTest extends TestCase
         ]);
     }
 
-    public function test_managed_option_target_cannot_be_changed_but_consequence_can(): void
+    public function test_el_destino_de_una_opcion_administrada_no_cambia_pero_su_consecuencia_si(): void
     {
         $a = $this->node('A');
         $other = $this->node('Other');
@@ -221,7 +221,7 @@ class BranchingEditorTest extends TestCase
         $this->assertSame('X', $option->fresh()->consequence);
     }
 
-    public function test_graph_returns_nodes_texts_edges_and_positions(): void
+    public function test_el_grafo_devuelve_nodos_textos_conexiones_y_posiciones(): void
     {
         $a = $this->node('A', '', null, ['pos_x' => 10, 'pos_y' => 20]);
         $this->save($a, ['text' => 'Hacia {{B}}'])->assertOk();
@@ -234,7 +234,7 @@ class BranchingEditorTest extends TestCase
         $this->assertNotNull($graph->json('nodes.1.pos_x'), 'El nodo creado nace junto a su origen.');
     }
 
-    public function test_other_user_gets_403_and_foreign_nodes_are_not_touched(): void
+    public function test_otro_usuario_recibe_403_y_los_nodos_ajenos_no_se_tocan(): void
     {
         $intruder = User::factory()->create();
         $a = $this->node('A', 'texto');
@@ -247,7 +247,7 @@ class BranchingEditorTest extends TestCase
         $this->assertSame('texto', $a->fresh()->text);
     }
 
-    public function test_nodes_and_references_never_cross_projects(): void
+    public function test_nodos_y_referencias_nunca_se_cruzan_entre_proyectos(): void
     {
         $otherProject = $this->makeProject($this->user, 'Otro');
         $foreign = $this->node('Bosque', 'intacto', $otherProject);
@@ -270,7 +270,7 @@ class BranchingEditorTest extends TestCase
             ->assertStatus(422);
     }
 
-    public function test_scene_and_character_are_preserved_and_context_is_available(): void
+    public function test_escena_y_personaje_se_conservan_y_el_contexto_esta_disponible(): void
     {
         $scene = Scene::create(['project_id' => $this->project->id, 'title' => 'Archivo', 'conflict' => 'Memoria rota']);
         $character = Character::create(['project_id' => $this->project->id, 'name' => 'Ira', 'motivation' => 'Recordar']);
@@ -296,7 +296,7 @@ class BranchingEditorTest extends TestCase
             ->assertJsonPath('context.lore.0.title', 'La Caida');
     }
 
-    public function test_analysis_does_not_change_content(): void
+    public function test_el_analisis_no_cambia_el_contenido(): void
     {
         $a = $this->node('A', 'El miedo y la traicion {{B}}');
         $this->save($a, ['text' => 'El miedo y la traicion {{B}}'])->assertOk();
@@ -310,7 +310,7 @@ class BranchingEditorTest extends TestCase
         $this->assertSame($before, $after);
     }
 
-    public function test_sync_is_idempotent_and_ignores_unclosed_references(): void
+    public function test_la_sincronizacion_es_idempotente_e_ignora_referencias_sin_cerrar(): void
     {
         $a = $this->node('A');
         $service = app(ReferenceSyncService::class);
@@ -330,7 +330,7 @@ class BranchingEditorTest extends TestCase
         $this->assertDatabaseMissing('dialogue_nodes', ['title' => 'Busc']);
     }
 
-    public function test_delete_node_keeps_incoming_options_as_broken_and_reports_them(): void
+    public function test_borrar_un_nodo_deja_rotas_las_opciones_entrantes_y_las_avisa(): void
     {
         $a = $this->node('A');
         $this->save($a, ['text' => 'Ir a {{B}}'])->assertOk();
@@ -347,7 +347,7 @@ class BranchingEditorTest extends TestCase
         $this->assertContains('broken_option', array_column($response->json('graph.warnings'), 'code'));
     }
 
-    public function test_graph_flags_isolated_nodes(): void
+    public function test_el_grafo_marca_los_nodos_aislados(): void
     {
         $this->node('A');
         $this->node('B');
@@ -357,7 +357,7 @@ class BranchingEditorTest extends TestCase
         $this->assertSame(['isolated', 'isolated'], $codes);
     }
 
-    public function test_editor_page_renders_for_owner(): void
+    public function test_el_editor_se_muestra_al_propietario(): void
     {
         $this->node('A');
         config(['inertia.testing.ensure_pages_exist' => false]);
@@ -367,7 +367,7 @@ class BranchingEditorTest extends TestCase
         );
     }
 
-    public function test_legacy_option_form_keeps_managed_marker(): void
+    public function test_el_formulario_clasico_de_opciones_conserva_la_marca_de_administrada(): void
     {
         $a = $this->node('A');
         $this->save($a, ['text' => '{{B}}'])->assertOk();

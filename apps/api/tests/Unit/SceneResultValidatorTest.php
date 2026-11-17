@@ -17,7 +17,7 @@ class SceneResultValidatorTest extends TestCase
         $this->validator = new SceneResultValidator(new EmotionTranslator);
     }
 
-    public function test_clamps_values_and_fixes_unknown_emotions(): void
+    public function test_acota_los_valores_y_corrige_emociones_desconocidas(): void
     {
         $result = $this->validator->validate([
             'scene' => ['v' => -0.4, 'a' => 1.7, 'd' => 'x', 'emotion' => 'rage', 'summary' => ' Breve. ', 'evidence' => 'hola'],
@@ -32,7 +32,7 @@ class SceneResultValidatorTest extends TestCase
         $this->assertNull($result['scene']['change_justified']);
     }
 
-    public function test_drops_characters_outside_the_scene_and_duplicates(): void
+    public function test_descarta_personajes_ajenos_a_la_escena_y_duplicados(): void
     {
         $character = fn (mixed $id) => ['character_id' => $id, 'name' => 'X', 'v' => 0.5, 'a' => 0.5, 'd' => 0.5, 'emotion' => 'calm', 'evidence' => str_repeat('palabra ', 40)];
 
@@ -47,7 +47,7 @@ class SceneResultValidatorTest extends TestCase
         $this->assertFalse($result['characters'][0]['out_of_character']);
     }
 
-    public function test_limits_suggestions_and_normalizes_enums(): void
+    public function test_limita_las_sugerencias_y_normaliza_los_valores_permitidos(): void
     {
         $result = $this->validator->validate([
             'scene' => ['v' => 0.5, 'a' => 0.5, 'd' => 0.5, 'emotion' => 'neutral'],
@@ -60,7 +60,7 @@ class SceneResultValidatorTest extends TestCase
         $this->assertSame('medium', $result['inconsistencies'][0]['severity']);
     }
 
-    public function test_missing_scene_is_unusable(): void
+    public function test_sin_escena_la_respuesta_no_sirve(): void
     {
         $this->assertNull($this->validator->validate(['characters' => []], []));
     }

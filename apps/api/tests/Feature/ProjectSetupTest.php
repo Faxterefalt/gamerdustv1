@@ -18,7 +18,7 @@ class ProjectSetupTest extends TestCase
         'premise' => 'Una archivista debe reconstruir la memoria de una colonia.',
     ];
 
-    public function test_creates_project_with_five_fields_and_ignores_extras(): void
+    public function test_crea_el_proyecto_con_cinco_campos_e_ignora_los_extra(): void
     {
         $user = User::factory()->create();
 
@@ -31,14 +31,14 @@ class ProjectSetupTest extends TestCase
         $this->assertNull($project->description);
     }
 
-    public function test_requires_mandatory_fields(): void
+    public function test_exige_los_campos_obligatorios(): void
     {
         $this->actingAs(User::factory()->create())
             ->post('/projects', ['premise' => 'x'])
             ->assertSessionHasErrors(['title', 'game_genre', 'language', 'narrative_type']);
     }
 
-    public function test_updates_general_data_and_narrative_type(): void
+    public function test_actualiza_los_datos_generales_y_el_tipo_narrativo(): void
     {
         $user = User::factory()->create();
         $project = $user->projects()->create($this->payload);
@@ -53,7 +53,7 @@ class ProjectSetupTest extends TestCase
         $this->assertSame('en', $project->language);
     }
 
-    public function test_narrative_setup_shares_premise_and_keeps_general_data(): void
+    public function test_la_configuracion_narrativa_comparte_la_premisa_y_conserva_los_datos_generales(): void
     {
         $user = User::factory()->create();
         $project = $user->projects()->create($this->payload);

@@ -49,7 +49,7 @@ class AiAssistTest extends TestCase
         ], [$this->mara->id], null, $this->user->id);
     }
 
-    public function test_character_draft_fills_fields_without_saving(): void
+    public function test_el_borrador_de_personaje_rellena_la_ficha_sin_guardar(): void
     {
         Http::fake([self::URL => Http::response($this->completion([
             'name' => 'Íker', 'role' => 'Aliado', 'archetype' => 'Pícaro', 'age' => 230, 'gender' => '',
@@ -81,7 +81,7 @@ class AiAssistTest extends TestCase
             && $request['response_format']['json_schema']['schema']['properties']['age']['type'] === ['integer', 'null']);
     }
 
-    public function test_character_draft_flags_an_existing_name_and_fails_kindly(): void
+    public function test_el_borrador_avisa_de_un_nombre_repetido_y_falla_con_un_mensaje_amable(): void
     {
         Http::fakeSequence()
             ->push($this->completion(['name' => ' mara ', 'initial_emotion' => 'rage']))
@@ -105,7 +105,7 @@ class AiAssistTest extends TestCase
         $this->actingAs(User::factory()->create())->postJson("/projects/{$this->project->id}/ai/character-draft", ['idea' => 'Hola'])->assertForbidden();
     }
 
-    public function test_refine_proposes_text_without_touching_the_scene(): void
+    public function test_refinar_propone_texto_sin_tocar_la_escena(): void
     {
         Http::fake([self::URL => Http::response($this->completion([
             'proposal' => 'Ya no hay vuelta atrás, y lo sabes.',
@@ -140,7 +140,7 @@ class AiAssistTest extends TestCase
             && str_contains($request['messages'][1]['content'], "[character_id:{$this->mara->id}] Mara"));
     }
 
-    public function test_refine_validation_and_authorization(): void
+    public function test_refinar_valida_los_datos_y_el_acceso(): void
     {
         Http::fake();
         $block = ['id' => 'b1', 'kind' => 'action', 'text' => 'Mara suelta las amarras.'];
@@ -163,7 +163,7 @@ class AiAssistTest extends TestCase
         Http::assertNothingSent();
     }
 
-    public function test_feedback_is_saved_once_per_item_and_shown_in_the_panel(): void
+    public function test_la_valoracion_se_guarda_una_vez_por_sugerencia_y_se_muestra_en_el_panel(): void
     {
         $analysis = $this->project->emotionalAnalyses()->create([
             'analyzable_type' => Scene::class, 'analyzable_id' => $this->scene->id, 'input_text' => 'x', 'dominant_emotion' => 'fear',
@@ -190,7 +190,7 @@ class AiAssistTest extends TestCase
         $this->actingAs($this->user)->postJson($url, ['item_index' => 0, 'useful' => true])->assertUnprocessable();
     }
 
-    public function test_metrics_command_exports_a_csv(): void
+    public function test_el_comando_de_metricas_exporta_un_csv(): void
     {
         AiGeneration::create(['project_id' => $this->project->id, 'user_id' => $this->user->id, 'generation_type' => 'scene_analysis', 'status' => 'ok', 'total_tokens' => 1000, 'latency_ms' => 2000]);
         AiGeneration::create(['project_id' => $this->project->id, 'user_id' => $this->user->id, 'generation_type' => 'scene_analysis', 'status' => 'degraded', 'latency_ms' => 9000]);

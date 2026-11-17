@@ -7,11 +7,7 @@ use App\Models\Scene;
 use App\Services\Ai\AiUnavailableException;
 use App\Services\Ai\GroqClient;
 
-/**
- * Análisis emocional con IA real (Groq): contexto de la Biblia → LLM con salida estructurada
- * → validación en PHP. Si Groq no responde con ninguno de los dos modelos, degrada al
- * análisis por palabras clave (degraded = true) para no bloquear nunca la edición.
- */
+
 class GroqEmotionAnalyzer implements EmotionAnalyzer
 {
     public function __construct(
