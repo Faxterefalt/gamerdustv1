@@ -12,9 +12,11 @@ import { CreateIn, EntryFooter, EntryStatus } from '../../bible/components/Entry
 import ImageField from '../../bible/components/ImageField';
 import LinkRow from '../../bible/components/LinkRow';
 import useEntryEditor from '../../bible/hooks/useEntryEditor';
+import type { EmotionCatalog } from '../../analysis/emotion.types';
 import type { Project } from '../../projects/projects.types';
 import { sceneCodes } from '../../script/script.types';
 import { ROLE_SUGGESTIONS, type CharacterSheet } from '../characters.types';
+import InitialEmotionField from '../components/InitialEmotionField';
 
 interface CharactersProps {
     project: Project;
@@ -22,6 +24,7 @@ interface CharactersProps {
     selected: number | null;
     startNew: boolean;
     scenes: { id: number; title: string; order: number }[];
+    emotionCatalog: EmotionCatalog;
 }
 
 type Draft = {
@@ -40,6 +43,8 @@ type Draft = {
     emotional_arc: string;
     visual_description: string;
     voice_notes: string;
+    initial_emotion: string;
+    initial_intensity: string;
     image: File | null;
     remove_image: boolean;
     scene_ids: number[];
@@ -73,6 +78,8 @@ function draftOf(entry: CharacterSheet | null): Draft {
         emotional_arc: entry?.emotional_arc ?? '',
         visual_description: entry?.visual_description ?? '',
         voice_notes: entry?.voice_notes ?? '',
+        initial_emotion: entry?.initial_emotion ?? '',
+        initial_intensity: entry?.initial_intensity ?? '',
         image: null,
         remove_image: false,
         scene_ids: [...(entry?.scene_ids ?? [])],
@@ -80,7 +87,7 @@ function draftOf(entry: CharacterSheet | null): Draft {
     };
 }
 
-export default function Index({ project, entries, selected, startNew, scenes }: CharactersProps) {
+export default function Index({ project, entries, selected, startNew, scenes, emotionCatalog }: CharactersProps) {
     const { form, active, selectedId, dirty, saved, choose, cancel, update, submit, destroy } = useEntryEditor<CharacterSheet, Draft>({
         url: `/projects/${project.id}/characters`,
         entries,
@@ -208,6 +215,16 @@ export default function Index({ project, entries, selected, startNew, scenes }: 
                         </div>
 
                         {text('limits', __('Limits and exceptions'), __('What would they never do, and when would they do it anyway?'), 2)}
+
+                        <InitialEmotionField
+                            catalog={emotionCatalog}
+                            emotion={form.data.initial_emotion}
+                            intensity={form.data.initial_intensity}
+                            onChange={(emotion, intensity) => {
+                                update('initial_emotion', emotion);
+                                update('initial_intensity', intensity);
+                            }}
+                        />
 
                         <section className="rounded-lg border border-[#3a4a33] bg-background/40 p-4 sm:p-5">
                             <h3 className="mb-5 flex items-center gap-2 text-xs font-medium text-[#dce6d5]">

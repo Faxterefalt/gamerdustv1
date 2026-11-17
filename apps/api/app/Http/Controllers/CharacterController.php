@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreCharacterRequest;
 use App\Models\Character as NarrativeCharacter;
 use App\Models\Project;
+use App\Services\Emotion\EmotionTranslator;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
@@ -20,7 +21,7 @@ use Throwable;
  */
 class CharacterController extends Controller
 {
-    public function index(Request $request, Project $project): Response
+    public function index(Request $request, Project $project, EmotionTranslator $emotions): Response
     {
         $this->authorize('view', $project);
 
@@ -34,6 +35,7 @@ class CharacterController extends Controller
             // Abrir con una ficha vacía (enlaces antiguos a "crear personaje").
             'startNew' => $request->boolean('new'),
             'scenes' => $project->scenes()->orderBy('order')->orderBy('id')->get(['id', 'title', 'order']),
+            'emotionCatalog' => $emotions->catalog(),
         ]);
     }
 
@@ -103,6 +105,11 @@ class CharacterController extends Controller
         $previousImage = $character->image_path;
         $newImage = $request->file('image')?->store("projects/{$project->id}/characters", NarrativeCharacter::IMAGE_DISK);
         $fields = Arr::except($data, ['image', 'remove_image', 'scene_ids']);
+
+        // Sin emoción inicial no tiene sentido guardar su intensidad.
+        if (array_key_exists('initial_emotion', $fields) && blank($fields['initial_emotion'])) {
+            $fields['initial_intensity'] = null;
+        }
 
         if ($newImage) {
             $fields['image_path'] = $newImage;

@@ -16,6 +16,9 @@ export interface Character {
     visual_description?: string | null;
     voice_notes?: string | null;
     limits?: string | null;
+    /** Emoción con la que empieza la historia (clave de config/gamerdust.php). */
+    initial_emotion?: string | null;
+    initial_intensity?: 'low' | 'medium' | 'high' | null;
 }
 
 /** Ficha del personaje en la Biblia (Character::toSheetPayload). */

@@ -232,6 +232,8 @@ return [
         'visual_description' => 'descripción visual',
         'voice_notes' => 'notas de voz',
         'limits' => 'límites y excepciones',
+        'initial_emotion' => 'emoción inicial',
+        'initial_intensity' => 'intensidad inicial',
 
         // Escenas
         'order' => 'orden',

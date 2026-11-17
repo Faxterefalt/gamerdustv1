@@ -12,3 +12,13 @@ export interface EmotionalAnalysis {
     interpretation?: string | null;
     suggestions?: string[] | null;
 }
+
+/** Banda de una etiqueta narrativa: [límite superior exclusivo, clave i18n]; null = resto. */
+export type LabelBand = [number | null, string];
+
+/** Catálogo emocional que envía el servidor (EmotionTranslator::catalog). */
+export interface EmotionCatalog {
+    emotions: Record<string, { color: string }>;
+    labels: { tone: LabelBand[]; tension: LabelBand[]; control: LabelBand[] };
+    intensities: string[];
+}

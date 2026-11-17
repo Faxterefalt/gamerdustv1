@@ -32,7 +32,7 @@ return [
         'labels' => [
             'tone' => [[0.2, 'Very negative'], [0.4, 'Negative'], [0.6, 'Neutral'], [0.8, 'Positive'], [null, 'Very positive']],
             'tension' => [[0.35, 'Low'], [0.65, 'Medium'], [null, 'High']],
-            'control' => [[0.35, 'Vulnerable'], [0.65, 'Balanced'], [null, 'In control']],
+            'control' => [[0.35, 'Vulnerable'], [0.65, 'On equal footing'], [null, 'In control']],
         ],
 
         /*

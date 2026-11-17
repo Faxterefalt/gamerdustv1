@@ -1,10 +1,30 @@
 import { __ } from '../../shared/lib/i18n';
 
 // Claves de traducción (inglés) para los identificadores que devuelven los servicios de análisis.
-const EMOTION_LABELS: Record<string, string> = { joy: 'Joy', fear: 'Fear', anger: 'Anger', sadness: 'Sadness', tension: 'Tension' };
+// La lista de emociones y sus colores llegan del servidor (config/gamerdust.php); aquí solo sus etiquetas.
+const EMOTION_LABELS: Record<string, string> = {
+    joy: 'Joy',
+    hope: 'Hope',
+    tenderness: 'Tenderness',
+    calm: 'Calm',
+    surprise: 'Surprise',
+    neutral: 'Neutral',
+    anxiety: 'Anxiety',
+    fear: 'Fear',
+    sadness: 'Sadness',
+    guilt: 'Guilt',
+    anger: 'Anger',
+    disgust: 'Disgust',
+    // Análisis simulado antiguo.
+    tension: 'Tension',
+};
 
 const SEVERITY_LABELS: Record<string, string> = { low: 'Low', medium: 'Medium', high: 'High' };
+
+const INTENSITY_LABELS: Record<string, string> = { low: 'Low', medium: 'Medium', high: 'High' };
 
 export const emotionLabel = (emotion: string) => __(EMOTION_LABELS[emotion] ?? emotion);
 
 export const severityLabel = (severity: string) => __(SEVERITY_LABELS[severity] ?? severity);
+
+export const intensityLabel = (intensity: string) => __(INTENSITY_LABELS[intensity] ?? intensity);

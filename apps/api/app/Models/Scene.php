@@ -75,6 +75,11 @@ class Scene extends Model
         return $this->morphMany(EmotionalAnalysis::class, 'analyzable')->latest();
     }
 
+    public function emotionalStates(): HasMany
+    {
+        return $this->hasMany(CharacterEmotionalState::class);
+    }
+
     public function costEstimations(): MorphMany
     {
         return $this->morphMany(CostEstimation::class, 'costable')->latest();

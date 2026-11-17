@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 class EmotionalAnalysis extends Model
@@ -20,6 +21,13 @@ class EmotionalAnalysis extends Model
         'emotion_scores',
         'interpretation',
         'suggestions',
+        'source',
+        'model',
+        'content_hash',
+        'result',
+        'truncated',
+        'degraded',
+        'scene_version_id',
     ];
 
     protected function casts(): array
@@ -30,6 +38,9 @@ class EmotionalAnalysis extends Model
             'dominance' => 'decimal:2',
             'emotion_scores' => 'array',
             'suggestions' => 'array',
+            'result' => 'array',
+            'truncated' => 'boolean',
+            'degraded' => 'boolean',
         ];
     }
 
@@ -41,5 +52,15 @@ class EmotionalAnalysis extends Model
     public function analyzable(): MorphTo
     {
         return $this->morphTo();
+    }
+
+    public function sceneVersion(): BelongsTo
+    {
+        return $this->belongsTo(SceneVersion::class);
+    }
+
+    public function characterStates(): HasMany
+    {
+        return $this->hasMany(CharacterEmotionalState::class);
     }
 }

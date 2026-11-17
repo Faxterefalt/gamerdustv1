@@ -33,6 +33,9 @@ class StoreCharacterRequest extends FormRequest
             'visual_description' => ['nullable', 'string', 'max:5000'],
             'voice_notes' => ['nullable', 'string', 'max:5000'],
             'limits' => ['nullable', 'string', 'max:5000'],
+            // Estado emocional inicial elegido por el autor (sin valores numéricos).
+            'initial_emotion' => ['nullable', 'string', Rule::in(array_keys(config('gamerdust.emotion.emotions')))],
+            'initial_intensity' => ['nullable', 'string', Rule::in(array_keys(config('gamerdust.emotion.intensity')))],
             // Concept art del personaje (opcional).
             'image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
             'remove_image' => ['nullable', 'boolean'],

@@ -27,6 +27,8 @@ class Character extends Model
         'fear',
         'desire',
         'emotional_arc',
+        'initial_emotion',
+        'initial_intensity',
         'visual_description',
         'voice_notes',
         'limits',
@@ -67,6 +69,18 @@ class Character extends Model
         return $this->belongsToMany(Scene::class);
     }
 
+    /** Fichas de lore vinculadas; en las reglas, `role` indica si la rompe o la impone. */
+    public function loreEntries(): BelongsToMany
+    {
+        return $this->belongsToMany(LoreEntry::class)->withPivot('role');
+    }
+
+    /** Estados emocionales detectados por la IA, uno por escena analizada. */
+    public function emotionalStates(): HasMany
+    {
+        return $this->hasMany(CharacterEmotionalState::class);
+    }
+
     /**
      * Ficha del personaje para la Biblia Narrativa. Requiere cargada la relación scenes.
      */
@@ -76,6 +90,7 @@ class Character extends Model
             ...$this->only([
                 'id', 'project_id', 'name', 'role', 'archetype', 'age', 'gender', 'background', 'personality', 'speech_style',
                 'motivation', 'fear', 'desire', 'emotional_arc', 'visual_description', 'voice_notes', 'limits',
+                'initial_emotion', 'initial_intensity',
             ]),
             'image_url' => $this->image_path
                 ? route('projects.characters.image', [$this->project_id, $this->id, 'v' => $this->updated_at?->timestamp])
