@@ -8,7 +8,7 @@ Gamerdust es una app web de asistencia al diseño narrativo de videojuegos (proy
 
 - `apps/api/` — **la única app funcional**: Laravel 13 (PHP 8.3+) + frontend React 19 / TypeScript servido con Inertia v2, Vite 8 y Tailwind 4. Todos los comandos se ejecutan desde aquí.
 - `apps/web/` — vacío, reservado para una futura SPA separada. No poner código del frontend aquí.
-- `apps/narrative-engine/` — esqueleto Python (FastAPI previsto); todos los `.py` están vacíos. Hoy el "análisis" lo hacen servicios PHP simulados (ver abajo).
+- `apps/narrative-engine/` — esqueleto Python (FastAPI previsto); todos los `.py` están vacíos. Hoy el análisis emocional lo hace PHP con Groq (o por palabras clave sin clave) detrás del contrato `EmotionAnalyzer` (ver abajo).
 - `compose.yaml` — solo MySQL 8.4 (BD `gamerdust`). En local se usa Laragon apuntando a `apps/api/public`.
 - `docs/` — documentación (`docs/architecture/Gamerdust_Documentacion.ipynb`); `tests/e2e/` vacío.
 
@@ -25,6 +25,7 @@ php artisan test --filter=test_nombre_del_metodo         # un test
 vendor/bin/pint            # formateo PHP (Laravel Pint)
 npx tsc --noEmit           # chequeo de tipos TS (no hay script npm ni ESLint)
 php artisan gamerdust:groq-check [--model=...]          # llamada real mínima a Groq (clave, tokens, latencia)
+php artisan gamerdust:ai-metrics {project?} [--output=f.csv]  # métricas de uso y valoración de la IA a CSV (OE4)
 ```
 
 Variables de IA en `.env` (valores por defecto en `config/services.php` → `groq` y `config/gamerdust.php`): `GROQ_API_KEY`, `GROQ_MODEL` (`openai/gpt-oss-120b`), `GROQ_FALLBACK_MODEL` (`openai/gpt-oss-20b`), `GROQ_TIMEOUT` (15 s), `GAMERDUST_AI_DRIVER` (`groq`|`keywords`; por defecto `groq` si hay clave) y `GAMERDUST_AI_MAX_TOKENS`. La clave nunca sale del servidor.
@@ -49,6 +50,7 @@ Los controladores devuelven `Inertia::render('Modulo/Pagina')`. [resolve-page.ts
 - Secciones en `PROJECT_SECTIONS` (`layouts/components/ProjectSidebar.tsx`): Panel (`Projects/Show`), Biblia Narrativa, Guion, Escenas, Diálogos (ramificación), Mecánicas, Colaboración, Análisis IA, Reportes. `also` marca rutas clásicas que activan una sección (personajes/lore → Biblia; dialogues → Diálogos).
 - En escritorio el sidebar se pliega (preferencia en `localStorage`); en móvil es un `<dialog>`. `bare` en `ProjectLayout` quita márgenes y título (lo usa el editor de guion).
 - Lecturas combinadas en `StudioController` (biblia, análisis, colaboración, reportes y descarga Markdown); `MechanicController` y `CommentController` son CRUD Inertia.
+- Análisis IA con pestañas (`AnalysisTabs`): métricas y coherencia (`/analysis`) y evolución emocional (`/analysis/evolution`, Vistas A y B con Recharts cargado con `React.lazy`; datos de `GET analysis/emotion-timeline`, `EmotionTimelineService`, solo lectura).
 - Biblia Narrativa con pestañas (`features/bible/components/BibleTabs`): Esencia (`/bible`), Personajes (`/characters`), Lugares y Reglas del mundo (`/bible/{locations|rules}`, `BibleEntryController`). Las tres fichas son catálogo + formulario en una página (`useEntryEditor`, `EntryCatalog`, `LinkRow`); `characters/create` y `/{id}/edit` solo redirigen a `?new=1` / `?character=id`.
 - Personajes: concept art en el disco privado `local`, servido por `projects.characters.image` tras autorizar (no hace falta `storage:link`); escenas en la pivote `character_scene` (la misma del guion). Con archivo el formulario va en multipart (POST + `_method=put`), donde una lista vacía no viaja: la ficha envía `sync_scenes` para vaciar escenas.
 - Lugares y reglas son entradas de lore (`type` location/rule) con campos propios (`subtype`, `parent_id`, `statement`, `rigidity`...). El lugar de una escena es `scenes.location_id` (vincular escenas a un lugar lo cambia); lugar ↔ regla/lore en `lore_entry_links`, guardado **en ambos sentidos**; personajes en `character_lore_entry` (`role` breaks/enforces en reglas). `shared/components/LinkPicker` se comparte con Mecánicas.
@@ -58,12 +60,13 @@ Los controladores devuelven `Inertia::render('Modulo/Pagina')`. [resolve-page.ts
 - Cada escena guarda sus bloques en `scenes.script` (JSON `[{id, kind, text}]`, tipos en `ScriptService::KINDS`), `act`, `location_id` (entrada de lore) y personajes en la pivote `character_scene`. El código visible (E01…) se calcula por `order`, no se guarda.
 - Concurrencia: el cliente reenvía `updated_at`; si no coincide, el servidor responde 409 y no pisa. Cada guardado o restauración crea una `SceneVersion` (se conservan 30 por escena).
 - El cliente guarda borradores por escena con deshacer/rehacer local y solo persiste al pulsar Guardar (Ctrl/⌘+S); `useUnsaved` avisa antes de salir. Los comentarios recargan solo la prop `comments` para no perder borradores.
+- IA en el editor (JSON): `GET|POST script/scenes/{scene}/analysis|analyze` (`SceneEmotionController`, panel `EmotionPanel`; exige escena guardada: analiza la versión guardada) y `POST script/scenes/{scene}/refine` (`AiAssistController`, `RefineDialog`). Borrador de personaje: `POST ai/character-draft`; votos: `POST ai/feedback`.
 
 ### Autorización por proyecto
 Todo cuelga de `Project` (propiedad de `User`); todas las tablas de dominio tienen `project_id` con `cascadeOnDelete`. `ProjectPolicy` solo comprueba `project->user_id === user->id`. Las rutas anidadas (`projects.lore`, `projects.characters`, ...) deben además verificar que el hijo pertenece al proyecto (`abort_unless(... project_id === $project->id, 404)`); ver `ensureNode/ensureOption` en `BranchingGraphController` y `BranchingRequest::authorize()`.
 
 ### Editor de ramificación (la parte más compleja)
-Rutas `projects/{project}/branching/*`: `index` es una página Inertia, el resto son endpoints **JSON** (bootstrap/app.php fuerza respuestas de error JSON para esas rutas cuando `wantsJson`). El frontend ([features/branching](apps/api/resources/js/features/branching)) usa `@xyflow/react` y un `fetch` propio con XSRF (`api.ts`), no `router` de Inertia.
+Rutas `projects/{project}/branching/*`: `index` es una página Inertia, el resto son endpoints **JSON** (bootstrap/app.php fuerza respuestas de error JSON cuando `wantsJson` para `branching/*`, `script/*`, `analysis/*` y `ai/*`). El frontend ([features/branching](apps/api/resources/js/features/branching)) usa `@xyflow/react` y un `fetch` propio con XSRF (`api.ts`), no `router` de Inertia.
 
 - **El servidor es la fuente de verdad**: cada mutación devuelve el grafo completo (`BranchingGraphResource`) y el cliente lo reemplaza. `useBranchingGraph` guarda borradores con debounce (texto 800 ms, posiciones 500 ms), en serie.
 - **Referencias `{{Título}}`**: escribir `{{Nombre}}` en el texto de un nodo crea/enlaza automáticamente el nodo destino y una `DialogueOption` *administrada* (`source_ref` = título normalizado). `ReferenceParser` es puro (sin BD); `ReferenceSyncService` sincroniza dentro de transacciones con bloqueo del proyecto. Las opciones manuales (`source_ref` null) nunca se tocan en la sincronización.
@@ -71,15 +74,21 @@ Rutas `projects/{project}/branching/*`: `index` es una página Inertia, el resto
 - `GraphInspector` (solo lectura) calcula nodo inicial (menor id) y avisos: `broken_option`, `isolated`, `no_incoming`, `no_outgoing`.
 - `BranchingNodeService` orquesta crear/actualizar/borrar nodos y opciones sobre los servicios anteriores. Existe además un CRUD clásico de diálogos (`DialogueNodeController`, formularios Inertia) que gestiona opciones por su cuenta.
 
-### Servicios de "análisis" (simulados)
-- `EmotionalAnalysisService`: puntuación por palabras clave → emoción dominante + VAD. Se guarda en `emotional_analyses` (polimórfica `analyzable`). El análisis desde el editor nunca modifica el texto, es solo sugerencia.
-- `NarrativeValidationService`: reglas simples (premisa, motivación, conflicto, función del lore). Se ejecuta en cada `ProjectController@show` y **borra y recrea** las validaciones no resueltas.
-- `NarrativeCostEstimatorService`: heurística de coste para `Scene`/`DialogueNode` (polimórfica `costable`), invocada al crear/editar.
-
-Están pensados para ser sustituidos por `apps/narrative-engine`.
+### IA emocional (Groq) y servicios de análisis
+Documentación completa del modelo (pipeline, centroides, prompt, esquema, decisiones) en [docs/modelo-asistencia-emocional.md](docs/modelo-asistencia-emocional.md).
+- **Regla de oro:** la IA solo se llama cuando el usuario pulsa un botón (Analizar emociones, Reanalizar, Refinar con IA, Borrador con IA). Nunca desde `ProjectController@show`, al guardar, ni con observers/eventos. Propone; nunca modifica el guion ni guarda fichas sin confirmación.
+- **Contrato** `App\Contracts\EmotionAnalyzer` (`analyzeScene(Scene)` → `SceneEmotionResult`, `source()`), elegido en `AppServiceProvider` por `config('gamerdust.ai.driver')`: `GroqEmotionAnalyzer` (si hay `GROQ_API_KEY`) o `KeywordEmotionAnalyzer` (adapta el `EmotionalAnalysisService` simulado, sin red). El contrato permite sustituirlo por `apps/narrative-engine`.
+- **`GroqClient`** (`app/Services/Ai`): `chat/completions` con `json_schema` strict, `reasoning_effort: low`, `include_reasoning: false`. Ante 429/5xx/timeout/JSON inválido reintenta una vez con el modelo de respaldo; si vuelve a fallar lanza `AiUnavailableException`. Cada llamada con proyecto queda en `ai_generations` (`status` ok|fallback|degraded|error, tokens, `latency_ms`, `input_hash`; nunca la clave). La respuesta siempre se valida en PHP (`SceneResultValidator`).
+- **Análisis de escena** (`SceneEmotionService`): caché por `content_hash` (`SceneContextBuilder::contentHash`: guion, vínculos, `updated_at` de fichas y reglas, esencia, locale; "Reanalizar" la ignora; un análisis degradado no se reutiliza) → analizador → `EmotionChangeDetector` → guarda `emotional_analyses` (`source`, `result` completo, `degraded`, `scene_version_id`) y sustituye las filas de `character_emotional_states` de la escena. Si Groq falla con ambos modelos se degrada a palabras clave (`degraded: true`); la edición nunca se bloquea.
+- **Contexto** (`SceneContextBuilder`): esencia del proyecto, lugar (`location_id`) y sus reglas (`lore_entry_links`), personajes de `character_scene` con sus reglas (`character_lore_entry`), máx. `gamerdust.ai.max_context_items`, texto de `ScenePlainText` (conserva quién habla) recortado a `max_scene_words`. **Estado previo** de un personaje: su estado en la escena anterior analizada más cercana (por `order`) → si no, su estado inicial del autor (`characters.initial_emotion/initial_intensity` + `EmotionTranslator::fromAuthor`) → si no, ninguno.
+- **"VAD invisible":** internamente v/a/d en 0-1; en la interfaz solo Tono/Tensión/Control del personaje y la emoción (`EmotionTranslator`, clase pura). Umbrales, centroides, colores, intensidades y umbral de cambio abrupto viven **solo** en `config/gamerdust.php`; el frontend los recibe por la prop `emotionCatalog` (sin números en TS). El modo técnico (localStorage) muestra los valores crudos. Las filas antiguas de `emotional_analyses` sin `content_hash` son de la simulación (valencia -1..1) y no se mezclan.
+- **Regla vs. IA:** `EmotionChangeDetector` decide (cambio abrupto si `max(|Δv|,|Δa|,|Δd|) > 0.40`); la IA solo explica (`change_justified`). Rojo = abrupto y no justificado; ámbar = abrupto y justificado. También a nivel de escena frente a la escena anterior analizada.
+- **Generar y refinar** (`app/Services/Assist`): `CharacterDraftService` (borrador que rellena la ficha nueva vía `useEntryEditor().fillNew`, sin guardar) y `BlockRefineService` (propuesta para un bloque; "Aplicar" solo toca el borrador local y entra en deshacer/rehacer). Sin degradación: 503 con mensaje amable. Valoraciones 👍/👎 en `ai_feedback` (`emotional_analysis_id` + `item_index` o `ai_generation_id`).
+- **Límite propio:** `RateLimiter` `ai` (10/min por usuario) en las rutas que llaman a la IA.
+- `NarrativeValidationService` (reglas simples, se ejecuta en `ProjectController@show` y en Análisis IA y **borra y recrea** las validaciones no resueltas) y `NarrativeCostEstimatorService` (heurística de coste al crear/editar) siguen siendo simulados. El análisis de nodos de diálogo en ramificación y el panel del Panel del proyecto usan aún `EmotionalAnalysisService` (palabras clave).
 
 ### Esquema
-Tablas de dominio en `2026_06_04_000000_create_gamerdust_tables.php` más migraciones incrementales posteriores (idioma/favorito, campos de setup narrativo, `expected_outcome` en restricciones, campos de ramificación: `title`, `node_key`, `pos_x/pos_y`, `source_ref`). `project_constraints` es 1:1 con proyecto (store y update usan el mismo método `store`). `ai_generations` existe pero aún no se usa.
+Tablas de dominio en `2026_06_04_000000_create_gamerdust_tables.php` más migraciones incrementales posteriores (idioma/favorito, campos de setup narrativo, `expected_outcome` en restricciones, campos de ramificación: `title`, `node_key`, `pos_x/pos_y`, `source_ref`). `project_constraints` es 1:1 con proyecto (store y update usan el mismo método `store`). IA emocional: columnas de seguimiento en `ai_generations`, columnas de IA en `emotional_analyses`, `character_emotional_states` (una fila por personaje y escena analizada), `characters.initial_emotion/initial_intensity` y `ai_feedback`.
 
 ## Convenciones
 - `.editorconfig`: 4 espacios, LF (YAML 2 espacios).
