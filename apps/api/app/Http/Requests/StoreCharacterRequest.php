@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use App\Models\Project;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreCharacterRequest extends FormRequest
 {
@@ -22,15 +23,22 @@ class StoreCharacterRequest extends FormRequest
             'archetype' => ['nullable', 'string', 'max:255'],
             'age' => ['nullable', 'integer', 'min:0', 'max:200'],
             'gender' => ['nullable', 'string', 'max:255'],
-            'background' => ['nullable', 'string'],
-            'personality' => ['nullable', 'string'],
-            'speech_style' => ['nullable', 'string'],
-            'motivation' => ['nullable', 'string'],
-            'fear' => ['nullable', 'string'],
-            'desire' => ['nullable', 'string'],
-            'emotional_arc' => ['nullable', 'string'],
-            'visual_description' => ['nullable', 'string'],
-            'voice_notes' => ['nullable', 'string'],
+            'background' => ['nullable', 'string', 'max:5000'],
+            'personality' => ['nullable', 'string', 'max:5000'],
+            'speech_style' => ['nullable', 'string', 'max:5000'],
+            'motivation' => ['nullable', 'string', 'max:5000'],
+            'fear' => ['nullable', 'string', 'max:5000'],
+            'desire' => ['nullable', 'string', 'max:5000'],
+            'emotional_arc' => ['nullable', 'string', 'max:5000'],
+            'visual_description' => ['nullable', 'string', 'max:5000'],
+            'voice_notes' => ['nullable', 'string', 'max:5000'],
+            'limits' => ['nullable', 'string', 'max:5000'],
+            // Concept art del personaje (opcional).
+            'image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
+            'remove_image' => ['nullable', 'boolean'],
+            // Escenas en las que aparece: deben ser del mismo proyecto.
+            'scene_ids' => ['nullable', 'array', 'max:200'],
+            'scene_ids.*' => ['integer', 'distinct', Rule::exists('scenes', 'id')->where('project_id', $this->route('project')->id)],
         ];
     }
 }

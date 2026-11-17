@@ -2,6 +2,7 @@ import { Head, Link, router, useForm } from '@inertiajs/react';
 import { ArrowRight, Check, ChevronRight, Link2, Plus, Save, Search, Settings2, ShieldCheck, Trash2, X } from 'lucide-react';
 import { useState, type FormEvent } from 'react';
 import ProjectLayout from '../../../layouts/ProjectLayout';
+import LinkPicker from '../../../shared/components/LinkPicker';
 import Modal, { FormError, PageHeading, Pending } from '../../../shared/components/ui';
 import useUnsaved from '../../../shared/hooks/useUnsaved';
 import { __, choice } from '../../../shared/lib/i18n';
@@ -427,59 +428,24 @@ export default function Index({ project, mechanics, selected, scenes, characters
                         </div>
                     ) : (
                         <LinkPicker
-                            projectId={project.id}
-                            kind={picker}
                             options={picker === 'scenes' ? scenes.map((scene) => ({ id: scene.id, label: sceneLabel(scene) })) : characters.map((character) => ({ id: character.id, label: character.name }))}
                             checked={picker === 'scenes' ? form.data.scene_ids : form.data.character_ids}
                             onToggle={(id, on) => toggleLink(picker, id, on)}
                             onDone={() => setPicker(null)}
+                            note={__('Press Save mechanic to keep the links.')}
+                            empty={
+                                <>
+                                    {picker === 'scenes' ? __('There are no scenes in this project yet.') : __('There are no characters in this project yet.')} {__('You can create them in')}{' '}
+                                    <Link className="text-primary underline" href={`/projects/${project.id}/${picker}`}>
+                                        {picker === 'scenes' ? __('Scenes') : __('Characters')}
+                                    </Link>
+                                    .
+                                </>
+                            }
                         />
                     )}
                 </Modal>
             )}
         </ProjectLayout>
-    );
-}
-
-function LinkPicker({
-    projectId,
-    kind,
-    options,
-    checked,
-    onToggle,
-    onDone,
-}: {
-    projectId: number;
-    kind: 'scenes' | 'characters';
-    options: { id: number; label: string }[];
-    checked: number[];
-    onToggle: (id: number, on: boolean) => void;
-    onDone: () => void;
-}) {
-    return (
-        <>
-            <div className="space-y-2">
-                {options.map((option) => (
-                    <label key={option.id} className="flex items-start gap-3 rounded-md border border-border p-3 text-xs leading-6">
-                        <input type="checkbox" checked={checked.includes(option.id)} onChange={(event) => onToggle(option.id, event.target.checked)} className="mt-1.5 accent-[#c2e88d]" />
-                        <span>{option.label}</span>
-                    </label>
-                ))}
-            </div>
-            {!options.length && (
-                <p className="text-xs leading-7 text-[#b0c39f]">
-                    {kind === 'scenes' ? __('There are no scenes in this project yet.') : __('There are no characters in this project yet.')} {__('You can create them in')}{' '}
-                    <Link className="text-primary underline" href={`/projects/${projectId}/${kind}`}>
-                        {kind === 'scenes' ? __('Scenes') : __('Characters')}
-                    </Link>
-                    .
-                </p>
-            )}
-            <button type="button" onClick={onDone} className={`${button} mt-6 w-full`}>
-                <Check size={14} />
-                {__('Done')}
-            </button>
-            <p className="mt-3 text-[10px] leading-6 text-[#9ab18c]">{__('Press Save mechanic to keep the links.')}</p>
-        </>
     );
 }

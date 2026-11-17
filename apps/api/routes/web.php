@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\BibleEntryController;
 use App\Http\Controllers\BranchingGraphController;
 use App\Http\Controllers\CharacterController;
 use App\Http\Controllers\CommentController;
@@ -53,6 +54,9 @@ Route::middleware(['auth', 'verified'])->group(function (): void {
         ->parameters(['lore' => 'loreEntry'])
         ->except(['show']);
 
+    // Personajes: create/edit redirigen a la ficha del índice; la imagen se sirve desde el disco privado.
+    Route::get('projects/{project}/characters/{character}/image', [CharacterController::class, 'image'])
+        ->name('projects.characters.image');
     Route::resource('projects.characters', CharacterController::class)
         ->except(['show']);
 
@@ -83,6 +87,18 @@ Route::middleware(['auth', 'verified'])->group(function (): void {
     // Estudio del proyecto (secciones del sidebar).
     Route::prefix('projects/{project}')->name('projects.')->group(function (): void {
         Route::get('bible', [StudioController::class, 'bible'])->name('bible');
+
+        // Fichas de la Biblia: lugares y reglas del mundo.
+        Route::controller(BibleEntryController::class)
+            ->prefix('bible/{kind}')
+            ->name('bible.')
+            ->where(['kind' => implode('|', array_keys(BibleEntryController::KINDS))])
+            ->group(function (): void {
+                Route::get('/', 'index')->name('index');
+                Route::post('/', 'store')->name('store');
+                Route::put('{loreEntry}', 'update')->name('update');
+                Route::delete('{loreEntry}', 'destroy')->name('destroy');
+            });
         Route::get('analysis', [StudioController::class, 'analysis'])->name('analysis');
         Route::get('collaboration', [StudioController::class, 'collaboration'])->name('collaboration');
         Route::get('reports', [StudioController::class, 'reports'])->name('reports');

@@ -17,6 +17,9 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
  */
 class StudioController extends Controller
 {
+    /** Claves de traducción de la rigidez de las reglas (exportación). */
+    private const RIGIDITY_LABELS = ['unbreakable' => 'Unbreakable', 'costly' => 'Breakable at a cost', 'flexible' => 'Flexible'];
+
     public function bible(Project $project): Response
     {
         $this->authorize('view', $project);
@@ -25,6 +28,7 @@ class StudioController extends Controller
             'project' => $project->load('constraint'),
             'characters' => $project->characters()->orderBy('name')->get(['id', 'project_id', 'name', 'role', 'motivation', 'background']),
             'locations' => $project->loreEntries()->where('type', 'location')->orderBy('title')->get(['id', 'project_id', 'title', 'description']),
+            'rules' => $project->loreEntries()->where('type', 'rule')->orderBy('title')->get(['id', 'project_id', 'title', 'statement', 'description']),
             'loreCount' => $project->loreEntries()->count(),
         ]);
     }
@@ -79,7 +83,10 @@ class StudioController extends Controller
 
         $project->load(['constraint', 'characters', 'mechanics.scenes', 'mechanics.characters']);
         $none = __('Not defined.');
-        $locations = $project->loreEntries()->where('type', 'location')->orderBy('title')->get();
+        $locations = $project->loreEntries()->where('type', 'location')->with('parent:id,title')->orderBy('title')->get();
+        $rules = $project->loreEntries()->where('type', 'rule')->with(['linkedEntries:id,title,type', 'characters:id,name'])->orderBy('title')->get();
+        // Texto multilínea (una entrada por línea) como lista separada por comas.
+        $inline = fn (?string $text) => collect(preg_split('/\R/u', $text ?? ''))->map(fn ($line) => trim($line))->filter()->implode(', ');
         $scenes = $project->scenes()->get();
 
         $lines = [
@@ -96,10 +103,30 @@ class StudioController extends Controller
             ...$project->characters->map(fn ($character) => "- {$character->name}: ".($character->motivation ?: $character->background ?: '')),
             '',
             '## '.__('Locations'),
-            ...$locations->map(fn ($location) => "- {$location->title}: ".($location->description ?: '')),
+            ...$locations->map(fn ($location) => "- {$location->title}"
+                .($location->parent ? ' ('.__('inside :place', ['place' => $location->parent->title]).')' : '')
+                .': '.($location->description ?: '')
+                .($location->narrative_function ? ' — '.$location->narrative_function : '')),
             '',
-            '## '.__('Mechanics'),
+            '## '.__('World rules'),
         ];
+
+        foreach ($rules as $rule) {
+            array_push(
+                $lines,
+                "### {$rule->title}",
+                $rule->statement ?: ($rule->description ?: ''),
+                __('Rigidity').': '.($rule->rigidity ? __(self::RIGIDITY_LABELS[$rule->rigidity] ?? $rule->rigidity) : $none),
+                __('Origin').': '.($rule->origin ?: ''),
+                __('Consequence if broken').': '.($rule->consequence ?: ''),
+                __('Exceptions').': '.($rule->exceptions ?: ''),
+                __('Places where it applies').': '.($rule->scope === 'global' ? __('The whole world') : $rule->linkedEntries->where('type', 'location')->pluck('title')->implode(', ')),
+                __('Characters').': '.$rule->characters->pluck('name')->implode(', '),
+                '',
+            );
+        }
+
+        $lines[] = '## '.__('Mechanics');
 
         foreach ($project->mechanics as $mechanic) {
             array_push(
@@ -108,8 +135,8 @@ class StudioController extends Controller
                 $mechanic->description ?: '',
                 __('Activation').': '.($mechanic->activation ?: ''),
                 __('Narrative consequence').': '.($mechanic->narrative_effect ?: ''),
-                __('Playable actions').': '.collect(preg_split('/R/u', $mechanic->playable_actions ?? ''))->map(fn ($line) => trim($line))->filter()->implode(', '),
-                __('Restrictions').': '.collect(preg_split('/R/u', $mechanic->restrictions ?? ''))->map(fn ($line) => trim($line))->filter()->implode(', '),
+                __('Playable actions').': '.$inline($mechanic->playable_actions),
+                __('Restrictions').': '.$inline($mechanic->restrictions),
                 __('Conflict').': '.($mechanic->conflict ?: ''),
                 __('Scenes').': '.$mechanic->scenes->pluck('title')->implode(', '),
                 __('Characters').': '.$mechanic->characters->pluck('name')->implode(', '),

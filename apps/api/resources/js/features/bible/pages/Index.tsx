@@ -1,10 +1,11 @@
 import { Head, Link } from '@inertiajs/react';
-import { ArrowUpRight, MapPin, Plus, ScrollText, UserRound } from 'lucide-react';
+import { ArrowUpRight, MapPin, Plus, Scale, ScrollText, UserRound } from 'lucide-react';
 import ProjectLayout from '../../../layouts/ProjectLayout';
 import { PageHeading } from '../../../shared/components/ui';
 import { __ } from '../../../shared/lib/i18n';
 import { card, secondary } from '../../../shared/lib/styles';
 import ConstraintForm from '../../projects/components/ConstraintForm';
+import BibleTabs from '../components/BibleTabs';
 import type { Project } from '../../projects/projects.types';
 
 interface Reference {
@@ -18,10 +19,11 @@ interface BibleProps {
     project: Project;
     characters: { id: number; name: string; role: string | null; motivation: string | null; background: string | null }[];
     locations: { id: number; title: string; description: string | null }[];
+    rules: { id: number; title: string; statement: string | null; description: string | null }[];
     loreCount: number;
 }
 
-export default function Index({ project, characters, locations, loreCount }: BibleProps) {
+export default function Index({ project, characters, locations, rules, loreCount }: BibleProps) {
     const base = `/projects/${project.id}`;
     const groups = [
         {
@@ -29,25 +31,36 @@ export default function Index({ project, characters, locations, loreCount }: Bib
             label: __('Characters'),
             icon: UserRound,
             empty: __('You have not added characters to this world yet.'),
-            add: __('Add character'),
-            addHref: `${base}/characters/create`,
+            // Sin botón de alta: la pestaña Personajes ya abre la ficha.
+            add: null,
+            addHref: `${base}/characters`,
             allHref: `${base}/characters`,
             records: characters.map<Reference>((character) => ({
                 id: character.id,
                 name: character.name,
                 description: character.role || character.motivation || character.background,
-                href: `${base}/characters/${character.id}/edit`,
+                href: `${base}/characters?character=${character.id}`,
             })),
         },
         {
             key: 'locations',
-            label: __('Locations'),
+            label: __('Places'),
             icon: MapPin,
             empty: __('You have not added locations to this world yet.'),
-            add: __('Add location'),
-            addHref: `${base}/lore/create?type=location`,
-            allHref: `${base}/lore`,
-            records: locations.map<Reference>((location) => ({ id: location.id, name: location.title, description: location.description, href: `${base}/lore/${location.id}/edit` })),
+            add: __('New place'),
+            addHref: `${base}/bible/locations`,
+            allHref: `${base}/bible/locations`,
+            records: locations.map<Reference>((location) => ({ id: location.id, name: location.title, description: location.description, href: `${base}/bible/locations?entry=${location.id}` })),
+        },
+        {
+            key: 'rules',
+            label: __('World rules'),
+            icon: Scale,
+            empty: __('You have not defined the rules of this world yet.'),
+            add: __('New rule'),
+            addHref: `${base}/bible/rules`,
+            allHref: `${base}/bible/rules`,
+            records: rules.map<Reference>((rule) => ({ id: rule.id, name: rule.title, description: rule.statement || rule.description, href: `${base}/bible/rules?entry=${rule.id}` })),
         },
     ];
 
@@ -55,6 +68,7 @@ export default function Index({ project, characters, locations, loreCount }: Bib
         <ProjectLayout>
             <Head title={`${__('Narrative Bible')} - ${project.title}`} />
             <PageHeading title={__('Narrative Bible')} description={__('The memory of your universe. Define its essence and meet those who inhabit it.')} />
+            <BibleTabs projectId={project.id} active="essence" />
 
             <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_320px]">
                 <div id="brief">
@@ -79,12 +93,14 @@ export default function Index({ project, characters, locations, loreCount }: Bib
                             </div>
                             {!records.length && <p className="my-5 text-xs leading-6 text-[#a0b294]">{empty}</p>}
                             <div className="mt-4 flex gap-2">
-                                <Link href={addHref} className={`${secondary} flex-1 border-dashed`}>
-                                    <Plus size={14} /> {add}
-                                </Link>
-                                {records.length > 0 && (
-                                    <Link href={allHref} className={secondary} aria-label={__('View all')}>
-                                        <ArrowUpRight size={14} />
+                                {add && (
+                                    <Link href={addHref} className={`${secondary} flex-1 border-dashed`}>
+                                        <Plus size={14} /> {add}
+                                    </Link>
+                                )}
+                                {(records.length > 0 || !add) && (
+                                    <Link href={allHref} className={`${secondary} ${add ? '' : 'flex-1'}`} aria-label={add ? __('View all') : undefined}>
+                                        <ArrowUpRight size={14} /> {!add && __('Open sheets')}
                                     </Link>
                                 )}
                             </div>

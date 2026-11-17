@@ -13,7 +13,7 @@ class NarrativeValidationService
      */
     public function run(Project $project): Collection
     {
-        $project->loadMissing(['characters', 'scenes', 'loreEntries']);
+        $project->loadMissing(['characters', 'scenes', 'loreEntries.characters:id,name']);
 
         $project->narrativeValidations()->where('resolved', false)->delete();
 
@@ -57,6 +57,31 @@ class NarrativeValidationService
                     'severity' => 'low',
                     'message' => __('The lore entry :title does not state a narrative function.', ['title' => $entry->title]),
                     'recommendation' => __('Connect this piece of the world with characters, conflict or player decisions.'),
+                ];
+            }
+
+            if ($entry->type !== 'rule') {
+                continue;
+            }
+
+            // Reglas del mundo: contradicciones entre su rigidez y sus vínculos.
+            if ($entry->rigidity === 'unbreakable') {
+                foreach ($entry->characters->where('pivot.role', 'breaks') as $character) {
+                    $findings[] = [
+                        'validation_type' => 'unbreakable_rule_broken',
+                        'severity' => 'medium',
+                        'message' => __('The rule :title is unbreakable, but :name breaks it.', ['title' => $entry->title, 'name' => $character->name]),
+                        'recommendation' => __('Change the rigidity of the rule or add the case to its exceptions.'),
+                    ];
+                }
+            }
+
+            if ($entry->rigidity === 'costly' && blank($entry->consequence)) {
+                $findings[] = [
+                    'validation_type' => 'rule_without_consequence',
+                    'severity' => 'low',
+                    'message' => __('The rule :title can be broken at a cost, but the cost is not defined.', ['title' => $entry->title]),
+                    'recommendation' => __('Describe what happens to whoever breaks it so the player feels the risk.'),
                 ];
             }
         }

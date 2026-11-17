@@ -15,4 +15,14 @@ export interface Character {
     emotional_arc?: string | null;
     visual_description?: string | null;
     voice_notes?: string | null;
+    limits?: string | null;
 }
+
+/** Ficha del personaje en la Biblia (Character::toSheetPayload). */
+export interface CharacterSheet extends Character {
+    image_url: string | null;
+    scene_ids: number[];
+}
+
+/** Sugerencias de rol (el rol es texto libre). Claves de traducción en inglés. */
+export const ROLE_SUGGESTIONS = ['Protagonist', 'Antagonist', 'Ally', 'Mentor', 'Secondary', 'Neutral'];

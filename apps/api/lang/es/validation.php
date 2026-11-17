@@ -231,6 +231,7 @@ return [
         'emotional_arc' => 'arco emocional',
         'visual_description' => 'descripción visual',
         'voice_notes' => 'notas de voz',
+        'limits' => 'límites y excepciones',
 
         // Escenas
         'order' => 'orden',
@@ -256,6 +257,33 @@ return [
         'options.*.next_dialogue_node_id' => 'siguiente nodo',
         'options.*.consequence' => 'consecuencia',
         'options.*.required_condition' => 'condición requerida',
+
+        // Mecánicas
+        'icon' => 'icono',
+        'kind' => 'tipo',
+        'activation' => 'activación',
+        'narrative_effect' => 'consecuencia narrativa',
+        'playable_actions' => 'acciones jugables',
+        'restrictions' => 'restricciones',
+
+        // Biblia: lugares y reglas del mundo
+        'subtype' => 'tipo',
+        'parent_id' => 'lugar padre',
+        'access' => 'acceso y peligros',
+        'image' => 'imagen',
+        'statement' => 'enunciado',
+        'rigidity' => 'rigidez',
+        'scope' => 'alcance',
+        'origin' => 'origen',
+        'exceptions' => 'excepciones',
+        'scene_ids.*' => 'escena',
+        'character_ids.*' => 'personaje',
+        'characters.*.id' => 'personaje',
+        'characters.*.role' => 'relación del personaje',
+        'location_ids.*' => 'lugar',
+        'rule_ids.*' => 'regla',
+        'lore_ids.*' => 'entrada de lore',
+        'mechanic_ids.*' => 'mecánica',
     ],
 
 ];
