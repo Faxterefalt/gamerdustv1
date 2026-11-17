@@ -14,12 +14,23 @@ class AiGeneration extends Model
         'prompt',
         'response',
         'model',
+        'status',
+        'prompt_tokens',
+        'completion_tokens',
+        'total_tokens',
+        'latency_ms',
+        'input_hash',
+        'error',
     ];
 
     protected function casts(): array
     {
         return [
             'response' => 'array',
+            'prompt_tokens' => 'integer',
+            'completion_tokens' => 'integer',
+            'total_tokens' => 'integer',
+            'latency_ms' => 'integer',
         ];
     }
 

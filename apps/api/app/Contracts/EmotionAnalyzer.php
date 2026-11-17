@@ -1,0 +1,18 @@
+<?php
+
+namespace App\Contracts;
+
+use App\Models\Scene;
+use App\Services\Emotion\SceneEmotionResult;
+
+/**
+ * Análisis emocional de una escena guardada. Solo lee: nunca modifica el texto.
+ *
+ * Implementaciones: KeywordEmotionAnalyzer (sin red, tests y degradación) y la de Groq.
+ * El contrato permite sustituirlas en el futuro por apps/narrative-engine sin tocar
+ * controladores ni interfaz.
+ */
+interface EmotionAnalyzer
+{
+    public function analyzeScene(Scene $scene): SceneEmotionResult;
+}

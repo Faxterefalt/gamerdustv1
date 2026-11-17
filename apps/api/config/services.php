@@ -35,4 +35,14 @@ return [
         ],
     ],
 
+    // IA emocional (API compatible con OpenAI). La clave solo vive en el servidor.
+    'groq' => [
+        'key' => env('GROQ_API_KEY'),
+        'base_url' => env('GROQ_BASE_URL', 'https://api.groq.com/openai/v1'),
+        'model' => env('GROQ_MODEL', 'openai/gpt-oss-120b'),
+        'fallback_model' => env('GROQ_FALLBACK_MODEL', 'openai/gpt-oss-20b'),
+        // Segundos por petición (el respaldo hace una segunda petición).
+        'timeout' => (int) env('GROQ_TIMEOUT', 15),
+    ],
+
 ];

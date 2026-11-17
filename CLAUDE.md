@@ -24,9 +24,12 @@ php artisan test --filter=BranchingEditorTest            # una clase
 php artisan test --filter=test_nombre_del_metodo         # un test
 vendor/bin/pint            # formateo PHP (Laravel Pint)
 npx tsc --noEmit           # chequeo de tipos TS (no hay script npm ni ESLint)
+php artisan gamerdust:groq-check [--model=...]          # llamada real mínima a Groq (clave, tokens, latencia)
 ```
 
-Los tests usan SQLite en memoria (`phpunit.xml`), no MySQL. No existe `.env.example`; copiar el `.env` existente.
+Variables de IA en `.env` (valores por defecto en `config/services.php` → `groq` y `config/gamerdust.php`): `GROQ_API_KEY`, `GROQ_MODEL` (`openai/gpt-oss-120b`), `GROQ_FALLBACK_MODEL` (`openai/gpt-oss-20b`), `GROQ_TIMEOUT` (15 s), `GAMERDUST_AI_DRIVER` (`groq`|`keywords`; por defecto `groq` si hay clave) y `GAMERDUST_AI_MAX_TOKENS`. La clave nunca sale del servidor.
+
+Los tests usan SQLite en memoria (`phpunit.xml`), no MySQL. `phpunit.xml` vacía `GROQ_API_KEY`, fija el motor `keywords` y desactiva el SSR de Inertia; `Tests\TestCase` llama a `Http::preventStrayRequests()`, así que cualquier test que use Groq debe definir la clave con `config()` y usar `Http::fake()`. No existe `.env.example`; copiar el `.env` existente.
 Con `APP_LOCALE=en` en `.env` fallan 5 tests que esperan textos en español (p. ej. `DÍA` en el guion); ejecutar con `APP_LOCALE=es php artisan test`. En Laragon el CLI necesita PHP ≥ 8.4 (ruta `laragon/bin/php/php-8.5...`).
 
 ## Arquitectura

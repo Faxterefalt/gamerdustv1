@@ -32,5 +32,10 @@
         <env name="PULSE_ENABLED" value="false"/>
         <env name="TELESCOPE_ENABLED" value="false"/>
         <env name="NIGHTWATCH_ENABLED" value="false"/>
+        <!-- Sin clave real: los tests de IA la definen y usan Http::fake(). -->
+        <env name="GROQ_API_KEY" value=""/>
+        <env name="GAMERDUST_AI_DRIVER" value="keywords"/>
+        <!-- Los tests no renderizan en servidor (y no pueden hacer peticiones HTTP reales). -->
+        <env name="INERTIA_SSR_ENABLED" value="false"/>
     </php>
 </phpunit>
