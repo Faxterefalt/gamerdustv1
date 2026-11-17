@@ -3,6 +3,8 @@
 namespace App\Providers;
 
 use App\Contracts\EmotionAnalyzer;
+use App\Services\Ai\GroqClient;
+use App\Services\Emotion\GroqEmotionAnalyzer;
 use App\Services\Emotion\KeywordEmotionAnalyzer;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
@@ -16,9 +18,11 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        // Implementación del análisis emocional. Se elegirá según config('gamerdust.ai.driver');
-        // hasta que exista la implementación con Groq solo hay la de palabras clave.
-        $this->app->bind(EmotionAnalyzer::class, KeywordEmotionAnalyzer::class);
+        // Implementación del análisis emocional según config('gamerdust.ai.driver').
+        // Sin clave de Groq se usa siempre el análisis por palabras clave.
+        $this->app->bind(EmotionAnalyzer::class, fn ($app) => config('gamerdust.ai.driver') === 'groq' && $app->make(GroqClient::class)->isConfigured()
+            ? $app->make(GroqEmotionAnalyzer::class)
+            : $app->make(KeywordEmotionAnalyzer::class));
     }
 
     /**

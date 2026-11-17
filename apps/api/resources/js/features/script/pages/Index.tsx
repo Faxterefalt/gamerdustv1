@@ -17,21 +17,24 @@ import {
     Plus,
     Redo2,
     Save,
+    Sparkles,
     Type,
     Undo2,
     UserRound,
 } from 'lucide-react';
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import ProjectLayout from '../../../layouts/ProjectLayout';
 import Modal, { FormError, Pending } from '../../../shared/components/ui';
 import useUnsaved from '../../../shared/hooks/useUnsaved';
 import { api, ApiError } from '../../../shared/lib/api';
 import { __, locale } from '../../../shared/lib/i18n';
 import { primarySm, secondary } from '../../../shared/lib/styles';
+import type { EmotionCatalog } from '../../analysis/emotion.types';
 import type { ProjectComment } from '../../collaboration/collaboration.types';
 import { languageLabel } from '../../projects/projectOptions';
 import type { Project } from '../../projects/projects.types';
 import BlockInput from '../components/BlockInput';
+import EmotionPanel from '../components/EmotionPanel';
 import SceneContext from '../components/SceneContext';
 import SceneDialog from '../components/SceneDialog';
 import { countWords, sceneCodes, type BlockKind, type LocationReference, type NamedReference, type ScriptBlock, type ScriptScene, type ScriptVersion } from '../script.types';
@@ -43,6 +46,7 @@ interface ScriptIndexProps {
     locations: LocationReference[];
     comments: ProjectComment[];
     initialSceneId: number | null;
+    emotionCatalog: EmotionCatalog;
 }
 
 type Snapshot = { elements: ScriptBlock[]; characters: number[]; location: number | null };
@@ -81,7 +85,7 @@ function errorMessage(caught: unknown): string {
     return __('Could not save. Check your connection.');
 }
 
-export default function Index({ project, scenes, characters, locations, comments, initialSceneId }: ScriptIndexProps) {
+export default function Index({ project, scenes, characters, locations, comments, initialSceneId, emotionCatalog }: ScriptIndexProps) {
     const [docs, setDocs] = useState<Record<number, SceneDoc>>(() => Object.fromEntries(scenes.map((scene) => [scene.id, makeDoc(scene)])));
     const [activeId, setActiveId] = useState<number | null>(() => scenes.find((scene) => scene.id === initialSceneId)?.id ?? scenes[0]?.id ?? null);
     const [focused, setFocused] = useState<string | null>(null);
@@ -96,6 +100,11 @@ export default function Index({ project, scenes, characters, locations, comments
     const [error, setError] = useState('');
     const [notice, setNotice] = useState('');
     const [pending, setPending] = useState(false);
+    const [emotionOpen, setEmotionOpen] = useState(false);
+    // "Analizar emociones" en la barra: el panel analiza al abrirse (solo para la escena activa).
+    const [analyzeRequested, setAnalyzeRequested] = useState(false);
+    const consumeAnalyze = useCallback(() => setAnalyzeRequested(false), []);
+    const closeEmotions = useCallback(() => setEmotionOpen(false), []);
 
     const current = activeId === null ? undefined : docs[activeId];
     const dirty = Object.values(docs).some(isDirty);
@@ -442,6 +451,18 @@ export default function Index({ project, scenes, characters, locations, comments
                             <Redo2 size={15} />
                         </button>
                         <span className="mx-1 h-5 w-px bg-border" />
+                        <button
+                            type="button"
+                            disabled={!current || pending}
+                            title={__('The analysis uses the saved version of the scene.')}
+                            className={`${secondary} !min-h-9 !px-2.5 !text-[10px]`}
+                            onClick={() => {
+                                setEmotionOpen(true);
+                                setAnalyzeRequested(true);
+                            }}
+                        >
+                            <Sparkles size={14} /> {__('Analyze emotions')}
+                        </button>
                         <button type="button" disabled={!current || pending} className={`${secondary} !min-h-9 !px-2.5 !text-[10px]`} onClick={openVersions}>
                             <History size={14} /> {__('Versions')}
                         </button>
@@ -555,6 +576,20 @@ export default function Index({ project, scenes, characters, locations, comments
                     </aside>
                 </div>
             </div>
+
+            {emotionOpen && current && (
+                <EmotionPanel
+                    key={current.scene.id}
+                    projectId={project.id}
+                    sceneId={current.scene.id}
+                    sceneCode={codes.get(current.scene.id) ?? ''}
+                    dirty={currentDirty}
+                    catalog={emotionCatalog}
+                    pendingAnalyze={analyzeRequested}
+                    onConsumed={consumeAnalyze}
+                    onClose={closeEmotions}
+                />
+            )}
 
             {adding && (
                 <SceneDialog

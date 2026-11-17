@@ -31,6 +31,11 @@ class KeywordEmotionAnalyzer implements EmotionAnalyzer
         return self::fromKeywords($this->keywords->analyze($text), $truncated);
     }
 
+    public function source(): string
+    {
+        return 'keywords';
+    }
+
     /**
      * Convierte la salida antigua (valencia de -1 a 1, emoción "tension") a la escala 0-1
      * y a la lista de emociones de config/gamerdust.php.

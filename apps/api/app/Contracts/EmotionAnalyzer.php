@@ -15,4 +15,7 @@ use App\Services\Emotion\SceneEmotionResult;
 interface EmotionAnalyzer
 {
     public function analyzeScene(Scene $scene): SceneEmotionResult;
+
+    /** Origen de los resultados: keywords | groq (un análisis en caché solo vale para el mismo origen). */
+    public function source(): string;
 }

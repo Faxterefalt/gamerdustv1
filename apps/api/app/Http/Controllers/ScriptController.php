@@ -6,6 +6,7 @@ use App\Models\Project;
 use App\Models\Scene;
 use App\Models\SceneVersion;
 use App\Services\Cost\NarrativeCostEstimatorService;
+use App\Services\Emotion\EmotionTranslator;
 use App\Services\Script\ScriptService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -21,7 +22,7 @@ class ScriptController extends Controller
 {
     public function __construct(private readonly ScriptService $script) {}
 
-    public function index(Request $request, Project $project): Response
+    public function index(Request $request, Project $project, EmotionTranslator $emotions): Response
     {
         $this->authorize('view', $project);
 
@@ -32,6 +33,7 @@ class ScriptController extends Controller
             'locations' => $project->loreEntries()->where('type', 'location')->orderBy('title')->get(['id', 'title']),
             'comments' => fn () => $project->comments()->with(['user:id,name', 'scene:id,title'])->get()->map->toPayload(),
             'initialSceneId' => $request->integer('scene') ?: null,
+            'emotionCatalog' => $emotions->catalog(),
         ]);
     }
 

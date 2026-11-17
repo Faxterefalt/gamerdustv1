@@ -16,6 +16,7 @@ use App\Http\Controllers\NarrativeValidationController;
 use App\Http\Controllers\ProjectConstraintController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\SceneController;
+use App\Http\Controllers\SceneEmotionController;
 use App\Http\Controllers\ScriptController;
 use App\Http\Controllers\StudioController;
 use Illuminate\Support\Facades\Route;
@@ -115,6 +116,12 @@ Route::middleware(['auth', 'verified'])->group(function (): void {
             Route::put('scenes/{scene}', 'updateScene')->name('scenes.update');
             Route::get('scenes/{scene}/versions', 'versions')->name('versions.index');
             Route::post('scenes/{scene}/versions/{version}/restore', 'restoreVersion')->name('versions.restore');
+        });
+
+        // Análisis emocional de la escena guardada (Groq o palabras clave).
+        Route::controller(SceneEmotionController::class)->prefix('script/scenes/{scene}')->name('script.emotions.')->group(function (): void {
+            Route::get('analysis', 'show')->name('show');
+            Route::post('analyze', 'analyze')->middleware('throttle:ai')->name('analyze');
         });
     });
 
