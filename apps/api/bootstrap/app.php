@@ -22,6 +22,6 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(
             fn (Request $request) => $request->is('api/*')
-                || ($request->is('projects/*/branching/*', 'projects/*/script/*') && $request->wantsJson()),
+                || ($request->is('projects/*/branching/*', 'projects/*/script/*', 'projects/*/analysis/*') && $request->wantsJson()),
         );
     })->create();

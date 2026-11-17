@@ -31,11 +31,15 @@ class EmotionChangeDetector
         $delta = $this->delta($previous, $current);
         $abrupt = $delta > (float) config('gamerdust.emotion.abrupt_threshold', 0.40);
 
-        return [
-            'delta' => $delta,
-            'abrupt' => $abrupt,
-            'alert' => $abrupt ? ($justified === true ? self::AMBER : self::RED) : null,
-        ];
+        return ['delta' => $delta, 'abrupt' => $abrupt, 'alert' => self::alertFor($abrupt, $justified)];
+    }
+
+    /**
+     * Alerta de un cambio ya clasificado: roja si es abrupto y no está justificado, ámbar si lo está.
+     */
+    public static function alertFor(bool $abrupt, ?bool $justified): ?string
+    {
+        return $abrupt ? ($justified === true ? self::AMBER : self::RED) : null;
     }
 
     /**

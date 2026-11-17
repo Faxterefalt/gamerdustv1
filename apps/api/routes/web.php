@@ -101,6 +101,8 @@ Route::middleware(['auth', 'verified'])->group(function (): void {
                 Route::delete('{loreEntry}', 'destroy')->name('destroy');
             });
         Route::get('analysis', [StudioController::class, 'analysis'])->name('analysis');
+        Route::get('analysis/evolution', [StudioController::class, 'evolution'])->name('analysis.evolution');
+        Route::get('analysis/emotion-timeline', [StudioController::class, 'emotionTimeline'])->name('analysis.emotion-timeline');
         Route::get('collaboration', [StudioController::class, 'collaboration'])->name('collaboration');
         Route::get('reports', [StudioController::class, 'reports'])->name('reports');
         Route::get('reports/markdown', [StudioController::class, 'markdown'])->name('reports.markdown');

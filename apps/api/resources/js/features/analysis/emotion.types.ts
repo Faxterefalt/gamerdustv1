@@ -73,3 +73,55 @@ export interface SceneEmotionAnalysis {
     inconsistencies: { fragment: string; contradicts: string; explanation: string; severity: string; url: string | null }[];
     suggestions: { kind: string; text: string; why: string }[];
 }
+
+/** Escena en el arco emocional de la historia (EmotionTimelineService). */
+export interface TimelineScene {
+    id: number;
+    code: string;
+    title: string;
+    act: string | null;
+    analyzed: boolean;
+    stale: boolean;
+    emotion: string | null;
+    vad: Vad | null;
+    labels: NarrativeLabels | null;
+    summary: string | null;
+    alert: EmotionAlert;
+    explanation: string | null;
+}
+
+/** Punto de un personaje: "Inicio" (autor) o una escena analizada (IA). */
+export interface TimelinePoint {
+    scene_id: number | null;
+    code: string | null;
+    origin: 'author' | 'ai';
+    emotion: string;
+    vad: Vad;
+    labels: NarrativeLabels;
+    evidence: string | null;
+    explanation: string | null;
+    alert: EmotionAlert;
+    out_of_character: boolean;
+    stale: boolean;
+}
+
+export interface TimelineCharacter {
+    id: number;
+    name: string;
+    points: TimelinePoint[];
+}
+
+export interface TimelineReview {
+    scene_id: number;
+    code: string;
+    title: string;
+    character_id: number | null;
+    name: string | null;
+    explanation: string | null;
+}
+
+export interface EmotionTimeline {
+    scenes: TimelineScene[];
+    characters: TimelineCharacter[];
+    reviews: TimelineReview[];
+}

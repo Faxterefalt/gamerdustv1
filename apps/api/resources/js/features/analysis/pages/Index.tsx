@@ -1,29 +1,24 @@
 import { Head, Link } from '@inertiajs/react';
-import { ArrowUpRight, ChartNoAxesCombined, FileText, MessageSquare, Sparkles, Users } from 'lucide-react';
+import { ArrowUpRight, ChartNoAxesCombined, FileText, HeartPulse, MessageSquare, Sparkles, Users } from 'lucide-react';
 import { useState } from 'react';
 import ProjectLayout from '../../../layouts/ProjectLayout';
 import { PageHeading } from '../../../shared/components/ui';
 import { __, choice } from '../../../shared/lib/i18n';
-import { card, field } from '../../../shared/lib/styles';
-import type { DialogueNode } from '../../dialogues/dialogues.types';
+import { card, field, secondary } from '../../../shared/lib/styles';
 import type { Project } from '../../projects/projects.types';
-import type { Scene } from '../../scenes/scenes.types';
 import { countWords, sceneCodes, sceneText, type ScriptScene } from '../../script/script.types';
-import EmotionalAnalysisPanel from '../components/EmotionalAnalysisPanel';
+import AnalysisTabs from '../components/AnalysisTabs';
 import NarrativeValidationPanel from '../components/NarrativeValidationPanel';
-import type { EmotionalAnalysis } from '../emotion.types';
 import type { NarrativeValidation } from '../validation.types';
 
 interface AnalysisProps {
     project: Project;
     scenes: ScriptScene[];
-    dialogues: Pick<DialogueNode, 'id' | 'node_key' | 'title'>[];
-    analysis: EmotionalAnalysis | null;
     validations: NarrativeValidation[];
     initialSceneId: number | null;
 }
 
-export default function Index({ project, scenes, dialogues, analysis, validations, initialSceneId }: AnalysisProps) {
+export default function Index({ project, scenes, validations, initialSceneId }: AnalysisProps) {
     const [selected, setSelected] = useState<number | 'all'>(scenes.some((scene) => scene.id === initialSceneId) ? (initialSceneId as number) : 'all');
     const codes = sceneCodes(scenes);
     const current = selected === 'all' ? scenes : scenes.filter((scene) => scene.id === selected);
@@ -45,15 +40,21 @@ export default function Index({ project, scenes, dialogues, analysis, validation
         <ProjectLayout>
             <Head title={`${__('AI Analysis')} - ${project.title}`} />
             <PageHeading title={__('AI Analysis')} description={__('A look at the structure of your story, based on the data you have written.')} />
+            <AnalysisTabs projectId={project.id} active="metrics" />
 
-            <div className="mb-7 flex items-start gap-3 rounded-lg border border-primary/20 bg-primary/5 p-5">
-                <Sparkles size={19} className="mt-0.5 shrink-0 text-primary" />
-                <div>
-                    <p className="font-mono text-[9px] tracking-wider text-primary">{__('REAL METRICS · NO GENERATIVE AI')}</p>
-                    <p className="mt-2 text-xs leading-6 text-[#b1c2a5]">
-                        {__('The connection to an AI model is not configured yet. This report counts words, dialogue and references; the emotional analysis is a keyword-based simulation.')}
-                    </p>
+            <div className="mb-7 flex flex-wrap items-start justify-between gap-4 rounded-lg border border-primary/20 bg-primary/5 p-5">
+                <div className="flex items-start gap-3">
+                    <Sparkles size={19} className="mt-0.5 shrink-0 text-primary" />
+                    <div>
+                        <p className="font-mono text-[9px] tracking-wider text-primary">{__('METRICS OF YOUR TEXT · NO AI CALLS ON THIS TAB')}</p>
+                        <p className="mt-2 max-w-2xl text-xs leading-6 text-[#b1c2a5]">
+                            {__('These figures count words, dialogue and links. The emotional analysis with AI runs only when you press Analyze emotions in the Script; its results appear in Emotional evolution.')}
+                        </p>
+                    </div>
                 </div>
+                <Link href={`/projects/${project.id}/analysis/evolution`} className={secondary}>
+                    <HeartPulse size={14} /> {__('See emotional evolution')}
+                </Link>
             </div>
 
             <label className="mb-7 block max-w-sm text-xs">
@@ -102,15 +103,12 @@ export default function Index({ project, scenes, dialogues, analysis, validation
             </section>
 
             <p className="mb-8 mt-5 text-[10px] leading-6 text-[#9caf8e]">
-                {__('Dialogue makes up :percent% of the words in the selected scope. No data is sent to AI services.', {
+                {__('Dialogue makes up :percent% of the words in the selected scope.', {
                     percent: totalWords ? Math.round((dialogueWords / totalWords) * 100) : 0,
                 })}
             </p>
 
-            <div className="grid gap-6 xl:grid-cols-2">
-                <EmotionalAnalysisPanel projectId={project.id} analysis={analysis} scenes={scenes as unknown as Scene[]} dialogues={dialogues as DialogueNode[]} />
-                <NarrativeValidationPanel projectId={project.id} validations={validations} />
-            </div>
+            <NarrativeValidationPanel projectId={project.id} validations={validations} />
         </ProjectLayout>
     );
 }

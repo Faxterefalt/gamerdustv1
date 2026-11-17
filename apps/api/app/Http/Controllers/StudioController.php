@@ -4,8 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\Project;
 use App\Models\Scene;
+use App\Services\Emotion\EmotionTimelineService;
+use App\Services\Emotion\EmotionTranslator;
 use App\Services\Narrative\NarrativeValidationService;
 use App\Services\Script\ScriptService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
@@ -42,11 +45,29 @@ class StudioController extends Controller
         return Inertia::render('Analysis/Index', [
             'project' => $project,
             'scenes' => $project->scenes()->with('characters:id')->get()->map(fn (Scene $scene) => $script->present($scene)),
-            'dialogues' => $project->dialogueNodes()->orderBy('id')->get(['id', 'node_key', 'title']),
-            'analysis' => $project->emotionalAnalyses()->first(),
             'validations' => $project->narrativeValidations()->where('resolved', false)->get(),
             'initialSceneId' => $request->integer('scene') ?: null,
         ]);
+    }
+
+    /**
+     * Evolución emocional (Vistas A y B). Los datos llegan por emotionTimeline (JSON).
+     */
+    public function evolution(Project $project, EmotionTranslator $emotions): Response
+    {
+        $this->authorize('view', $project);
+
+        return Inertia::render('Analysis/Evolution', [
+            'project' => $project,
+            'emotionCatalog' => $emotions->catalog(),
+        ]);
+    }
+
+    public function emotionTimeline(Project $project, EmotionTimelineService $timeline): JsonResponse
+    {
+        $this->authorize('view', $project);
+
+        return response()->json($timeline->build($project));
     }
 
     public function collaboration(Project $project): Response
