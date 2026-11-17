@@ -3,6 +3,7 @@
 namespace App\Services\Emotion;
 
 use App\Contracts\EmotionAnalyzer;
+use App\Models\AiFeedback;
 use App\Models\CharacterEmotionalState;
 use App\Models\EmotionalAnalysis;
 use App\Models\Scene;
@@ -200,6 +201,12 @@ class SceneEmotionService
                 'url' => $this->entryUrl($project->id, $item['entry'] ?? null),
             ], $result['inconsistencies'] ?? []),
             'suggestions' => $result['suggestions'] ?? [],
+            // Votos 👍/👎 del usuario actual por sugerencia: {índice: útil}.
+            'feedback' => (object) AiFeedback::query()
+                ->where('emotional_analysis_id', $analysis->id)
+                ->where('user_id', auth()->id())
+                ->pluck('useful', 'item_index')
+                ->all(),
         ];
     }
 

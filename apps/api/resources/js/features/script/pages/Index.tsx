@@ -21,6 +21,7 @@ import {
     Type,
     Undo2,
     UserRound,
+    Wand2,
 } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import ProjectLayout from '../../../layouts/ProjectLayout';
@@ -35,6 +36,7 @@ import { languageLabel } from '../../projects/projectOptions';
 import type { Project } from '../../projects/projects.types';
 import BlockInput from '../components/BlockInput';
 import EmotionPanel from '../components/EmotionPanel';
+import RefineDialog from '../components/RefineDialog';
 import SceneContext from '../components/SceneContext';
 import SceneDialog from '../components/SceneDialog';
 import { countWords, sceneCodes, type BlockKind, type LocationReference, type NamedReference, type ScriptBlock, type ScriptScene, type ScriptVersion } from '../script.types';
@@ -105,6 +107,8 @@ export default function Index({ project, scenes, characters, locations, comments
     const [analyzeRequested, setAnalyzeRequested] = useState(false);
     const consumeAnalyze = useCallback(() => setAnalyzeRequested(false), []);
     const closeEmotions = useCallback(() => setEmotionOpen(false), []);
+    // Bloque que se está refinando con IA (copia del borrador en el momento de abrir).
+    const [refining, setRefining] = useState<ScriptBlock | null>(null);
 
     const current = activeId === null ? undefined : docs[activeId];
     const dirty = Object.values(docs).some(isDirty);
@@ -373,7 +377,9 @@ export default function Index({ project, scenes, characters, locations, comments
     ) : null;
 
     const wordCount = current ? countWords(current.snapshot.elements.map((element) => element.text).join(' ')) : 0;
-    const focusedKind = current?.snapshot.elements.find((element) => element.id === focused)?.kind;
+    const focusedBlock = current?.snapshot.elements.find((element) => element.id === focused);
+    const focusedKind = focusedBlock?.kind;
+    const canRefine = Boolean(focusedBlock && focusedBlock.kind !== 'character' && focusedBlock.text.trim());
     const selectedVersion = versions.find((version) => version.id === previewVersion);
     const toolLabel = (kind: BlockKind) => __(TOOLS.find((tool) => tool.kind === kind)!.label);
     const dateLocale = locale === 'en' ? 'en-US' : 'es-ES';
@@ -462,6 +468,15 @@ export default function Index({ project, scenes, characters, locations, comments
                             }}
                         >
                             <Sparkles size={14} /> {__('Analyze emotions')}
+                        </button>
+                        <button
+                            type="button"
+                            disabled={!canRefine || pending}
+                            title={canRefine ? __('Propose an alternative for the selected block') : __('Select a block with text to refine it')}
+                            className={`${secondary} !min-h-9 !px-2.5 !text-[10px]`}
+                            onClick={() => focusedBlock && setRefining({ ...focusedBlock })}
+                        >
+                            <Wand2 size={14} /> {__('Refine with AI')}
                         </button>
                         <button type="button" disabled={!current || pending} className={`${secondary} !min-h-9 !px-2.5 !text-[10px]`} onClick={openVersions}>
                             <History size={14} /> {__('Versions')}
@@ -588,6 +603,27 @@ export default function Index({ project, scenes, characters, locations, comments
                     pendingAnalyze={analyzeRequested}
                     onConsumed={consumeAnalyze}
                     onClose={closeEmotions}
+                />
+            )}
+
+            {refining && current && (
+                <RefineDialog
+                    projectId={project.id}
+                    sceneId={current.scene.id}
+                    block={refining}
+                    blockLabel={toolLabel(refining.kind)}
+                    characters={characters.filter((character) => current.snapshot.characters.includes(character.id))}
+                    catalog={emotionCatalog}
+                    onClose={() => setRefining(null)}
+                    onApply={(text) => {
+                        // Solo el borrador local: entra en deshacer/rehacer y se guarda con Guardar.
+                        change((snapshot) => ({
+                            ...snapshot,
+                            elements: snapshot.elements.map((element) => (element.id === refining.id ? { ...element, text } : element)),
+                        }));
+                        setRefining(null);
+                        setNotice(__('Proposal applied to your draft. Press Save to keep it.'));
+                    }}
                 />
             )}
 

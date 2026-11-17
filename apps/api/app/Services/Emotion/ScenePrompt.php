@@ -61,6 +61,39 @@ class ScenePrompt
 
     public function user(array $context): string
     {
+        $lines = $this->contextLines($context);
+
+        $lines[] = '';
+        $lines[] = 'ESTADO PREVIO:';
+        foreach ($context['characters'] as $character) {
+            $previous = $context['previous'][$character['id']] ?? ['origin' => 'none'];
+            $lines[] = "- [character_id:{$character['id']}] {$character['name']}: ".match ($previous['origin']) {
+                'none' => 'sin estado previo · origen: none',
+                default => "{$previous['emotion']} ({$this->vad($previous)}) · origen: {$previous['origin']}".($previous['code'] ? " en {$previous['code']}" : ''),
+            };
+        }
+
+        $previousScene = $context['previous_scene'];
+        $lines[] = '';
+        $lines[] = $previousScene
+            ? "ESCENA ANTERIOR: {$previousScene['code']} \"{$previousScene['title']}\": {$previousScene['emotion']} ({$this->vad($previousScene)})"
+            : 'ESCENA ANTERIOR: ninguna analizada';
+
+        $scene = $context['scene'];
+        $lines[] = '';
+        $lines[] = "ESCENA {$scene['code']} · Acto ".($scene['act'] ?: '—').": \"{$scene['title']}\"".($scene['truncated'] ? ' (texto recortado)' : '');
+        $lines[] = $scene['text'];
+
+        return implode("\n", $lines);
+    }
+
+    /**
+     * Contexto común (proyecto, esencia, lugar, reglas y personajes) para cualquier petición sobre una escena.
+     *
+     * @return list<string>
+     */
+    public function contextLines(array $context): array
+    {
         $project = $context['project'];
         $lines = [
             "PROYECTO: {$project['title']} · Género: ".($project['genre'] ?: '—').' · Idioma de la narrativa: '.$this->language($project['language']),
@@ -107,28 +140,7 @@ class ScenePrompt
             $lines[] = '- ninguno vinculado (devuelve "characters" vacío)';
         }
 
-        $lines[] = '';
-        $lines[] = 'ESTADO PREVIO:';
-        foreach ($context['characters'] as $character) {
-            $previous = $context['previous'][$character['id']] ?? ['origin' => 'none'];
-            $lines[] = "- [character_id:{$character['id']}] {$character['name']}: ".match ($previous['origin']) {
-                'none' => 'sin estado previo · origen: none',
-                default => "{$previous['emotion']} ({$this->vad($previous)}) · origen: {$previous['origin']}".($previous['code'] ? " en {$previous['code']}" : ''),
-            };
-        }
-
-        $previousScene = $context['previous_scene'];
-        $lines[] = '';
-        $lines[] = $previousScene
-            ? "ESCENA ANTERIOR: {$previousScene['code']} \"{$previousScene['title']}\": {$previousScene['emotion']} ({$this->vad($previousScene)})"
-            : 'ESCENA ANTERIOR: ninguna analizada';
-
-        $scene = $context['scene'];
-        $lines[] = '';
-        $lines[] = "ESCENA {$scene['code']} · Acto ".($scene['act'] ?: '—').": \"{$scene['title']}\"".($scene['truncated'] ? ' (texto recortado)' : '');
-        $lines[] = $scene['text'];
-
-        return implode("\n", $lines);
+        return $lines;
     }
 
     /**
@@ -182,7 +194,7 @@ class ScenePrompt
         ]);
     }
 
-    private function language(?string $code): string
+    public function language(?string $code): string
     {
         return self::LANGUAGES[$code] ?? (string) $code;
     }

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AccountController;
+use App\Http\Controllers\AiAssistController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BibleEntryController;
 use App\Http\Controllers\BranchingGraphController;
@@ -124,6 +125,13 @@ Route::middleware(['auth', 'verified'])->group(function (): void {
         Route::controller(SceneEmotionController::class)->prefix('script/scenes/{scene}')->name('script.emotions.')->group(function (): void {
             Route::get('analysis', 'show')->name('show');
             Route::post('analyze', 'analyze')->middleware('throttle:ai')->name('analyze');
+        });
+
+        // Asistencia con IA: generar y refinar (nunca guardan nada) y valoraciones 👍/👎.
+        Route::post('script/scenes/{scene}/refine', [AiAssistController::class, 'refine'])->middleware('throttle:ai')->name('script.refine');
+        Route::controller(AiAssistController::class)->prefix('ai')->name('ai.')->group(function (): void {
+            Route::post('character-draft', 'characterDraft')->middleware('throttle:ai')->name('character-draft');
+            Route::post('feedback', 'feedback')->name('feedback');
         });
     });
 

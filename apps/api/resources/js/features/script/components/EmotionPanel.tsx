@@ -6,6 +6,7 @@ import { api, ApiError } from '../../../shared/lib/api';
 import { __, locale } from '../../../shared/lib/i18n';
 import { primarySm, secondary } from '../../../shared/lib/styles';
 import { ChangeAlert, EmotionChip, Evidence, NarrativeLine } from '../../analysis/components/EmotionBits';
+import FeedbackButtons from '../../analysis/components/FeedbackButtons';
 import type { CharacterEmotion, EmotionCatalog, EmotionChange, SceneEmotionAnalysis } from '../../analysis/emotion.types';
 import { emotionLabel, severityLabel, suggestionKindLabel } from '../../analysis/labels';
 
@@ -183,7 +184,7 @@ export default function EmotionPanel({ projectId, sceneId, sceneCode, dirty, cat
                     </p>
                 )}
 
-                {analysis && <AnalysisView analysis={analysis} catalog={catalog} technical={technical} dateLocale={dateLocale} />}
+                {analysis && <AnalysisView projectId={projectId} analysis={analysis} catalog={catalog} technical={technical} dateLocale={dateLocale} />}
             </div>
 
             <p className="border-t border-border px-5 py-3 text-[9px] leading-5 text-[#93a886]">{__('The AI only suggests: it never changes your script.')}</p>
@@ -191,7 +192,19 @@ export default function EmotionPanel({ projectId, sceneId, sceneCode, dirty, cat
     );
 }
 
-function AnalysisView({ analysis, catalog, technical, dateLocale }: { analysis: SceneEmotionAnalysis; catalog: EmotionCatalog; technical: boolean; dateLocale: string }) {
+function AnalysisView({
+    projectId,
+    analysis,
+    catalog,
+    technical,
+    dateLocale,
+}: {
+    projectId: number;
+    analysis: SceneEmotionAnalysis;
+    catalog: EmotionCatalog;
+    technical: boolean;
+    dateLocale: string;
+}) {
     const { scene } = analysis;
 
     return (
@@ -258,6 +271,15 @@ function AnalysisView({ analysis, catalog, technical, dateLocale }: { analysis: 
                                 <span className="font-mono text-[8px] tracking-wider text-primary">{suggestionKindLabel(suggestion.kind).toLocaleUpperCase()}</span>
                                 <p className="mt-1 text-[#d3dfca]">{suggestion.text}</p>
                                 {suggestion.why && <p className="mt-1 text-[10px] text-[#a2b697]">{suggestion.why}</p>}
+                                <div className="mt-2 flex justify-end">
+                                    <FeedbackButtons
+                                        key={analysis.id}
+                                        projectId={projectId}
+                                        target={{ emotional_analysis_id: analysis.id }}
+                                        index={index}
+                                        initial={analysis.feedback[index] ?? null}
+                                    />
+                                </div>
                             </li>
                         ))}
                     </ul>

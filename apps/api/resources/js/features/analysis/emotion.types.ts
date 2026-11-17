@@ -72,6 +72,8 @@ export interface SceneEmotionAnalysis {
     characters: CharacterEmotion[];
     inconsistencies: { fragment: string; contradicts: string; explanation: string; severity: string; url: string | null }[];
     suggestions: { kind: string; text: string; why: string }[];
+    /** Votos 👍/👎 del usuario por índice de sugerencia. */
+    feedback: Record<string, boolean>;
 }
 
 /** Escena en el arco emocional de la historia (EmotionTimelineService). */

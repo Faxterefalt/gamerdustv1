@@ -1,11 +1,12 @@
 import { Head } from '@inertiajs/react';
-import { Link2, UserRound } from 'lucide-react';
+import { Link2, UserRound, Wand2 } from 'lucide-react';
 import { useState } from 'react';
 import ProjectLayout from '../../../layouts/ProjectLayout';
 import LinkPicker from '../../../shared/components/LinkPicker';
 import Modal, { FormError, PageHeading } from '../../../shared/components/ui';
 import { __, choice } from '../../../shared/lib/i18n';
-import { field } from '../../../shared/lib/styles';
+import { field, secondary } from '../../../shared/lib/styles';
+import FeedbackButtons from '../../analysis/components/FeedbackButtons';
 import BibleTabs from '../../bible/components/BibleTabs';
 import EntryCatalog, { type CatalogItem } from '../../bible/components/EntryCatalog';
 import { CreateIn, EntryFooter, EntryStatus } from '../../bible/components/EntryParts';
@@ -16,6 +17,7 @@ import type { EmotionCatalog } from '../../analysis/emotion.types';
 import type { Project } from '../../projects/projects.types';
 import { sceneCodes } from '../../script/script.types';
 import { ROLE_SUGGESTIONS, type CharacterSheet } from '../characters.types';
+import CharacterDraftDialog, { type CharacterDraftResult } from '../components/CharacterDraftDialog';
 import InitialEmotionField from '../components/InitialEmotionField';
 
 interface CharactersProps {
@@ -88,7 +90,7 @@ function draftOf(entry: CharacterSheet | null): Draft {
 }
 
 export default function Index({ project, entries, selected, startNew, scenes, emotionCatalog }: CharactersProps) {
-    const { form, active, selectedId, dirty, saved, choose, cancel, update, submit, destroy } = useEntryEditor<CharacterSheet, Draft>({
+    const { form, active, selectedId, dirty, saved, choose, cancel, update, submit, destroy, fillNew } = useEntryEditor<CharacterSheet, Draft>({
         url: `/projects/${project.id}/characters`,
         entries,
         selected,
@@ -98,6 +100,37 @@ export default function Index({ project, entries, selected, startNew, scenes, em
     });
     const [query, setQuery] = useState('');
     const [picking, setPicking] = useState(false);
+    const [drafting, setDrafting] = useState(false);
+    // Borrador de la IA cargado en una ficha nueva (aún sin guardar).
+    const [aiDraft, setAiDraft] = useState<{ generationId: number | null; duplicate: boolean } | null>(null);
+
+    function applyDraft({ draft, duplicate_name, generation_id }: CharacterDraftResult) {
+        const text = (value: string | null | undefined) => value ?? '';
+        const filled = fillNew({
+            name: text(draft.name),
+            role: text(draft.role),
+            age: draft.age?.toString() ?? '',
+            background: text(draft.background),
+            personality: text(draft.personality),
+            motivation: text(draft.motivation),
+            speech_style: text(draft.speech_style),
+            limits: text(draft.limits),
+            archetype: text(draft.archetype),
+            gender: text(draft.gender),
+            fear: text(draft.fear),
+            desire: text(draft.desire),
+            emotional_arc: text(draft.emotional_arc),
+            visual_description: text(draft.visual_description),
+            voice_notes: text(draft.voice_notes),
+            initial_emotion: text(draft.initial_emotion),
+            initial_intensity: text(draft.initial_intensity),
+        });
+
+        if (filled) {
+            setAiDraft({ generationId: generation_id, duplicate: duplicate_name });
+            setDrafting(false);
+        }
+    }
 
     const codes = sceneCodes(scenes);
     const sceneLabel = (id: number) => {
@@ -137,7 +170,15 @@ export default function Index({ project, entries, selected, startNew, scenes, em
     return (
         <ProjectLayout>
             <Head title={`${__('Characters')} - ${project.title}`} />
-            <PageHeading title={__('Narrative Bible')} description={__('Who lives in your world: what they want, how they speak and where they appear.')} />
+            <PageHeading
+                title={__('Narrative Bible')}
+                description={__('Who lives in your world: what they want, how they speak and where they appear.')}
+                action={
+                    <button type="button" className={secondary} onClick={() => setDrafting(true)} disabled={form.processing}>
+                        <Wand2 size={14} /> {__('Draft with AI')}
+                    </button>
+                }
+            />
             <BibleTabs projectId={project.id} active="characters" />
 
             <div className="grid items-start gap-5 lg:grid-cols-[225px_minmax(0,1fr)] xl:grid-cols-[250px_minmax(0,1fr)]">
@@ -148,10 +189,16 @@ export default function Index({ project, entries, selected, startNew, scenes, em
                     onQuery={setQuery}
                     searchLabel={__('Search characters')}
                     addLabel={__('New character')}
-                    onAdd={() => choose(null)}
+                    onAdd={() => {
+                        setAiDraft(null);
+                        choose(null);
+                    }}
                     items={items}
                     selectedId={selectedId}
-                    onSelect={(id) => choose(entries.find((entry) => entry.id === id) ?? null)}
+                    onSelect={(id) => {
+                        setAiDraft(null);
+                        choose(entries.find((entry) => entry.id === id) ?? null);
+                    }}
                     disabled={form.processing}
                     empty={__('Add the first character of your world.')}
                 />
@@ -169,6 +216,19 @@ export default function Index({ project, entries, selected, startNew, scenes, em
                         </div>
                         <EntryStatus dirty={dirty} saved={saved} />
                     </div>
+
+                    {aiDraft && !active && (
+                        <div role="status" className="flex flex-wrap items-center justify-between gap-3 border-b border-primary/20 bg-primary/5 px-5 py-3 text-[11px] leading-5 sm:px-7">
+                            <span className="flex items-start gap-2 text-[#d3dfca]">
+                                <Wand2 size={14} className="mt-0.5 shrink-0 text-primary" />
+                                <span>
+                                    {__('AI draft: review it and press Save sheet. Nothing is saved until you do.')}
+                                    {aiDraft.duplicate && <span className="block text-[#f1d79a]">{__('A character with this name already exists: change it before saving.')}</span>}
+                                </span>
+                            </span>
+                            {aiDraft.generationId && <FeedbackButtons key={aiDraft.generationId} projectId={project.id} target={{ ai_generation_id: aiDraft.generationId }} />}
+                        </div>
+                    )}
 
                     <fieldset disabled={form.processing} className="space-y-6 p-5 sm:p-7">
                         <div className="grid gap-6 md:grid-cols-[200px_minmax(0,1fr)]">
@@ -270,6 +330,8 @@ export default function Index({ project, entries, selected, startNew, scenes, em
                     </fieldset>
                 </form>
             </div>
+
+            {drafting && <CharacterDraftDialog projectId={project.id} onDraft={applyDraft} onClose={() => setDrafting(false)} />}
 
             {picking && (
                 <Modal title={__('Link scenes')} onClose={() => setPicking(false)}>

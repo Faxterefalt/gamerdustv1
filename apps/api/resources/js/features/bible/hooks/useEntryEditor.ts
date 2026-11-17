@@ -56,6 +56,22 @@ export default function useEntryEditor<E extends { id: number }, D extends FormD
         load(entry);
     };
 
+    /**
+     * Ficha nueva con valores propuestos (p. ej. un borrador de la IA). No se guarda: queda como
+     * cambios sin guardar respecto a la ficha vacía, y nunca sobrescribe una ficha existente.
+     */
+    const fillNew = (values: Partial<D>): boolean => {
+        if (dirty && !confirm(__('Discard unsaved changes?'))) return false;
+        const empty = draftOf(null);
+        setSelectedId(null);
+        form.setData({ ...empty, ...values });
+        form.clearErrors();
+        setBaseline(JSON.stringify(empty));
+        setSaved(false);
+
+        return true;
+    };
+
     const update = <K extends keyof D>(key: K, value: D[K]) => {
         form.setData((data) => ({ ...data, [key]: value }));
         setSaved(false);
@@ -88,5 +104,5 @@ export default function useEntryEditor<E extends { id: number }, D extends FormD
 
     const cancel = () => choose(active);
 
-    return { form, active, selectedId, dirty, saved, choose, cancel, update, submit, destroy };
+    return { form, active, selectedId, dirty, saved, choose, cancel, update, submit, destroy, fillNew };
 }
