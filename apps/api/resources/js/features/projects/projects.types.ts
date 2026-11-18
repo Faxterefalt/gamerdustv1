@@ -14,8 +14,19 @@ export interface UserSummary {
     email: string;
 }
 
+/** Rol del usuario en el proyecto actual (HandleInertiaRequests → projectAccess). */
+export type ProjectRole = 'owner' | 'admin' | 'editor' | 'viewer';
+
+export interface ProjectAccess {
+    role: ProjectRole | null;
+    can_update: boolean;
+    can_manage: boolean;
+    is_owner: boolean;
+}
+
 export interface PageProps {
     locale?: string;
+    projectAccess?: ProjectAccess | null;
     auth: {
         user: UserSummary | null;
     };
@@ -89,6 +100,9 @@ export interface Project {
     dialogue_nodes?: DialogueNode[];
     emotional_analyses?: EmotionalAnalysis[];
     cost_estimations?: CostEstimation[];
+    /** Solo en la lista de proyectos: rol del usuario y dueño si es compartido. */
+    role?: ProjectRole;
+    owner?: string | null;
     lore_entries_count?: number;
     characters_count?: number;
     scenes_count?: number;

@@ -25,10 +25,12 @@ class CommentController extends Controller
         return back();
     }
 
-    public function destroy(Project $project, Comment $comment): RedirectResponse
+    public function destroy(Request $request, Project $project, Comment $comment): RedirectResponse
     {
         $this->authorize('update', $project);
         abort_unless($comment->project_id === $project->id, 404);
+        // Con colaboradores: cada uno borra los suyos; un administrador, cualquiera.
+        abort_unless($comment->user_id === $request->user()->id || $request->user()->can('manage', $project), 403);
 
         $comment->delete();
 

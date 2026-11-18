@@ -58,6 +58,7 @@ class ScriptController extends Controller
 
         $data = $request->validate([
             'updated_at' => ['nullable', 'string'],
+            'version_id' => ['nullable', 'integer'],
             'elements' => ['present', 'array', 'max:500'],
             'elements.*.id' => ['required', 'string', 'max:64'],
             'elements.*.kind' => ['required', Rule::in(ScriptService::KINDS)],
@@ -68,8 +69,19 @@ class ScriptController extends Controller
         ]);
 
         // Si la escena cambió desde que se cargó el editor (otra pestaña, el formulario clásico...), no se pisa.
-        if (filled($data['updated_at'] ?? null) && $data['updated_at'] !== $scene->updated_at?->toJSON()) {
-            return response()->json(['message' => __('This scene was changed elsewhere. Reload the page to get the latest version before saving.')], 409);
+        // La respuesta trae la versión guardada y quién la guardó, para el diálogo de conflicto (HU 26):
+        // ver los cambios del otro, sobrescribir (reenviando su updated_at) o copiar la versión propia.
+        $stale = (filled($data['updated_at'] ?? null) && $data['updated_at'] !== $scene->updated_at?->toJSON())
+            || (filled($data['version_id'] ?? null) && (int) $data['version_id'] !== $this->script->latestVersionId($scene));
+
+        if ($stale) {
+            return response()->json([
+                'message' => __('This scene was changed elsewhere. Reload the page to get the latest version before saving.'),
+                'conflict' => [
+                    'scene' => $this->script->present($scene),
+                    'saved_by' => $scene->versions()->with('user:id,name')->first()?->user?->name,
+                ],
+            ], 409);
         }
 
         $scene = $this->script->save($scene, $data['elements'], $data['characters'], $data['location_id'] ?? null, $request->user()?->id);

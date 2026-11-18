@@ -3,6 +3,8 @@ export class ApiError extends Error {
         message: string,
         public status: number,
         public errors: Record<string, string[]> = {},
+        /** Cuerpo completo de la respuesta (p. ej. `conflict` en un 409 del guion). */
+        public payload: Record<string, unknown> = {},
     ) {
         super(message);
     }
@@ -31,7 +33,7 @@ export async function api<T>(method: 'GET' | 'POST' | 'PUT' | 'DELETE', url: str
     const payload = await response.json().catch(() => ({}));
 
     if (!response.ok) {
-        throw new ApiError(payload.message ?? `Error ${response.status}`, response.status, payload.errors ?? {});
+        throw new ApiError(payload.message ?? `Error ${response.status}`, response.status, payload.errors ?? {}, payload);
     }
 
     return payload as T;

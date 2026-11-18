@@ -12,6 +12,13 @@ return [
         'words_per_page' => 250,
     ],
 
+    // Edición simultánea (HU 26): bloqueo blando por escena o nodo. El editor envía un latido
+    // cada `heartbeat_seconds`; si deja de hacerlo, el bloqueo caduca a los `lock_seconds`.
+    'collaboration' => [
+        'lock_seconds' => 60,
+        'heartbeat_seconds' => 20,
+    ],
+
     'ai' => [
         // groq | keywords. Sin GROQ_API_KEY se usa siempre el análisis por palabras clave.
         'driver' => env('GAMERDUST_AI_DRIVER') ?: (env('GROQ_API_KEY') ? 'groq' : 'keywords'),

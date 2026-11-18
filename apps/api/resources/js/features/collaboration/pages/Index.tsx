@@ -1,20 +1,26 @@
 import { Head } from '@inertiajs/react';
 import { Lock, Users } from 'lucide-react';
+import useProjectAccess from '../../../shared/hooks/useProjectAccess';
 import ProjectLayout from '../../../layouts/ProjectLayout';
 import { PageHeading } from '../../../shared/components/ui';
 import { __ } from '../../../shared/lib/i18n';
 import { card } from '../../../shared/lib/styles';
 import type { Project } from '../../projects/projects.types';
-import type { ProjectComment } from '../collaboration.types';
+import type { MemberRole, ProjectComment, ProjectMemberRow } from '../collaboration.types';
 import CommentsPanel from '../components/CommentsPanel';
+import MembersPanel, { ROLE_LABELS } from '../components/MembersPanel';
 
 interface CollaborationProps {
     project: Project;
     comments: ProjectComment[];
+    members: ProjectMemberRow[];
+    roles: MemberRole[];
 }
 
-export default function Index({ project, comments }: CollaborationProps) {
+export default function Index({ project, comments, members, roles }: CollaborationProps) {
     const authors = [...new Set(comments.map((comment) => comment.author))];
+    const access = useProjectAccess();
+    const shared = members.length > 1;
 
     return (
         <ProjectLayout>
@@ -30,12 +36,16 @@ export default function Index({ project, comments }: CollaborationProps) {
                 </section>
 
                 <aside className="space-y-5">
+                    <MembersPanel projectId={project.id} members={members} roles={roles} />
                     <div className={`${card} p-6`}>
                         <Lock size={23} className="text-primary" />
-                        <h2 className="mt-4 font-display text-lg">{__('A private project')}</h2>
+                        <h2 className="mt-4 font-display text-lg">{shared ? __('A shared project') : __('A private project')}</h2>
                         <p className="mt-3 text-xs leading-7 text-[#a9ba9d]">
-                            {__('For now only your account can see this project and its comments. Use them as notes on scenes and ideas to revisit.')}
+                            {shared
+                                ? __('Only the people in the team can see this project and its comments.')
+                                : __('For now only your account can see this project and its comments. Use them as notes on scenes and ideas to revisit.')}
                         </p>
+                        {access.role && <p className="mt-3 text-[10px] leading-6 text-[#9aaf8c]">{__('Your role: :role', { role: __(ROLE_LABELS[access.role]) })}</p>}
                         <p className="mt-3 text-[10px] leading-6 text-[#9aaf8c]">{__('Comments on a scene also appear in the Script editor, in the Comments tab.')}</p>
                     </div>
                     <div className={`${card} p-6`}>

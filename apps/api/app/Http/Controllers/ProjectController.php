@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreProjectRequest;
 use App\Http\Requests\UpdateProjectRequest;
 use App\Models\Project;
+use App\Models\ProjectMember;
 use App\Services\Narrative\NarrativeValidationService;
 use App\Services\Narrative\ProductionUsage;
 use Illuminate\Http\RedirectResponse;
@@ -18,12 +19,28 @@ class ProjectController extends Controller
     {
         $this->authorize('viewAny', Project::class);
 
-        $projects = $request->user()
-            ->projects()
+        $user = $request->user();
+
+        // Propios y compartidos; el favorito y el rol son los del usuario que mira.
+        $projects = Project::query()
+            ->accessibleBy($user)
+            ->with(['user:id,name', 'members' => fn ($query) => $query->where('user_id', $user->id)])
             ->withCount(['loreEntries', 'characters', 'scenes', 'dialogueNodes'])
             ->latest()
             ->paginate(12)
-            ->withQueryString();
+            ->withQueryString()
+            ->through(function (Project $project) use ($user) {
+                $membership = $project->members->first();
+                $data = $project->toArray();
+                unset($data['members']);
+
+                return [
+                    ...$data,
+                    'favorite' => $membership ? $membership->favorite : $project->favorite,
+                    'role' => $membership ? $membership->role : 'owner',
+                    'owner' => $project->user_id === $user->id ? null : $project->user?->name,
+                ];
+            });
 
         return Inertia::render('Projects/Index', [
             'projects' => $projects,
@@ -87,11 +104,18 @@ class ProjectController extends Controller
             ->with('success', __('Project updated.'));
     }
 
-    public function toggleFavorite(Project $project): RedirectResponse
+    /** Favorito personal: el del dueño está en el proyecto; el de cada miembro, en su fila. */
+    public function toggleFavorite(Request $request, Project $project): RedirectResponse
     {
-        $this->authorize('update', $project);
+        $this->authorize('view', $project);
 
-        $project->update(['favorite' => ! $project->favorite]);
+        $membership = $project->user_id === $request->user()->id
+            ? null
+            : ProjectMember::where('project_id', $project->id)->where('user_id', $request->user()->id)->firstOrFail();
+
+        $membership
+            ? $membership->update(['favorite' => ! $membership->favorite])
+            : $project->update(['favorite' => ! $project->favorite]);
 
         return back();
     }

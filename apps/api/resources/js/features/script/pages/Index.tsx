@@ -28,6 +28,8 @@ import {
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import ProjectLayout from '../../../layouts/ProjectLayout';
 import Modal, { FormError, Pending } from '../../../shared/components/ui';
+import useEditLock from '../../../shared/hooks/useEditLock';
+import useProjectAccess from '../../../shared/hooks/useProjectAccess';
 import useUnsaved from '../../../shared/hooks/useUnsaved';
 import { api, ApiError } from '../../../shared/lib/api';
 import { __, locale } from '../../../shared/lib/i18n';
@@ -37,6 +39,7 @@ import type { ProjectComment } from '../../collaboration/collaboration.types';
 import { languageLabel } from '../../projects/projectOptions';
 import type { PageProps, Project } from '../../projects/projects.types';
 import BlockInput from '../components/BlockInput';
+import ConflictDialog from '../components/ConflictDialog';
 import EmotionPanel from '../components/EmotionPanel';
 import RefineDialog from '../components/RefineDialog';
 import SceneContext from '../components/SceneContext';
@@ -83,6 +86,16 @@ function makeDoc(scene: ScriptScene): SceneDoc {
 }
 
 const isDirty = (doc: SceneDoc) => JSON.stringify(doc.snapshot) !== doc.baseline;
+
+/** 409 al guardar (HU 26): la versión que guardó otra persona. */
+type SaveConflict = { sceneId: number; theirs: ScriptScene; savedBy: string | null };
+
+/** Texto plano de los bloques para "Copiar mi versión". */
+const plainText = (blocks: ScriptBlock[]) =>
+    blocks
+        .filter((block) => block.text.trim() !== '')
+        .map((block) => (block.kind === 'character' || block.kind === 'heading' ? block.text.toUpperCase() : block.text))
+        .join('\n\n');
 
 /** Borrador local más reciente que la versión del servidor, pendiente de recuperar o descartar. */
 type DraftOffer = { sceneId: number; draft: LocalDraft; conflict: boolean };
@@ -156,6 +169,10 @@ export default function Index({ project, scenes, characters, locations, comments
     // base", la sugerencia como instrucción y los bloques entre los que elegir.
     const [refining, setRefining] = useState<ScriptBlock | null>(null);
     const [refineFrom, setRefineFrom] = useState<{ instruction: string; choices: ScriptBlock[] } | null>(null);
+    const [conflict, setConflict] = useState<SaveConflict | null>(null);
+    const access = useProjectAccess();
+    // Bloqueo blando de la escena abierta: quién más la está editando (HU 26).
+    const lockHolder = useEditLock(project.id, 'scene', activeId, access.can_update);
 
     const current = activeId === null ? undefined : docs[activeId];
     const dirty = Object.values(docs).some(isDirty);
@@ -324,7 +341,8 @@ export default function Index({ project, scenes, characters, locations, comments
         setError('');
     }
 
-    function save() {
+    /** @param base "Sobrescribir" tras un 409: se reenvían los tokens de la versión del otro. */
+    function save(base?: Pick<ScriptScene, 'updated_at' | 'version_id'>) {
         if (!current || pending) {
             return;
         }
@@ -334,7 +352,8 @@ export default function Index({ project, scenes, characters, locations, comments
         void run(async () => {
             try {
                 const response = await api<{ scene: ScriptScene }>('PUT', `/projects/${project.id}/script/scenes/${scene.id}`, {
-                    updated_at: scene.updated_at,
+                    updated_at: (base ?? scene).updated_at,
+                    version_id: (base ?? scene).version_id,
                     elements: snapshot.elements,
                     characters: snapshot.characters,
                     location_id: snapshot.location,
@@ -349,14 +368,54 @@ export default function Index({ project, scenes, characters, locations, comments
                     return { ...previous, [scene.id]: editedMeanwhile ? { ...saved, snapshot: latest.snapshot, past: latest.past, future: latest.future } : saved };
                 });
                 setFailed((previous) => ({ ...previous, [scene.id]: false }));
+                setConflict(null);
                 setNotice(__('Scene saved.'));
                 setError('');
             } catch (caught) {
                 // El borrador sigue en el navegador; el indicador muestra el error, nunca "guardado".
                 setFailed((previous) => ({ ...previous, [scene.id]: true }));
                 setError(errorMessage(caught));
+
+                const payload = caught instanceof ApiError && caught.status === 409 ? (caught.payload.conflict as { scene: ScriptScene; saved_by: string | null } | undefined) : undefined;
+
+                if (payload?.scene) {
+                    setConflict({ sceneId: scene.id, theirs: payload.scene, savedBy: payload.saved_by });
+                }
             }
         });
+    }
+
+    /** "Copiar mi versión": la propia al portapapeles y se carga la guardada; Deshacer recupera la propia. */
+    async function copyMine() {
+        if (!conflict) {
+            return;
+        }
+
+        const { sceneId, theirs } = conflict;
+        const mine = docs[sceneId]?.snapshot;
+        let copied = false;
+
+        try {
+            await navigator.clipboard.writeText(plainText(mine?.elements ?? []));
+            copied = true;
+        } catch {
+            // Sin permiso de portapapeles: la versión propia sigue disponible con Deshacer.
+        }
+
+        setDocs((previous) => {
+            const doc = previous[sceneId];
+            const loaded = makeDoc(theirs);
+
+            return { ...previous, [sceneId]: doc ? { ...loaded, past: [...doc.past, doc.snapshot].slice(-HISTORY_LIMIT) } : loaded };
+        });
+        setFailed((previous) => ({ ...previous, [sceneId]: false }));
+        setConflict(null);
+        setError('');
+        setNotice(
+            copied
+                ? __('Your version was copied to the clipboard and the saved version is loaded. Undo brings yours back.')
+                : __('The saved version is loaded. Your version could not be copied, but Undo brings it back.'),
+        );
     }
 
     function selectScene(sceneId: number) {
@@ -640,7 +699,7 @@ export default function Index({ project, scenes, characters, locations, comments
                         <button type="button" disabled={!allDocs.length} className={`${secondary} !min-h-9 !px-2.5 !text-[10px]`} onClick={exportPdf}>
                             <FileDown size={14} /> {__('Export PDF')}
                         </button>
-                        <button type="button" disabled={!current || pending} onClick={save} className={`${primarySm} !min-h-9 !px-3 !py-2 !text-[10px]`}>
+                        <button type="button" disabled={!current || pending} onClick={() => save()} className={`${primarySm} !min-h-9 !px-3 !py-2 !text-[10px]`}>
                             <Save size={13} /> {__('Save')}
                         </button>
                     </div>
@@ -679,6 +738,13 @@ export default function Index({ project, scenes, characters, locations, comments
                             );
                         })}
                     </div>
+                )}
+
+                {lockHolder && current && (
+                    <p role="status" className="flex items-center gap-2 border-b border-amber-700/40 bg-amber-950/40 px-5 py-2.5 text-xs text-amber-100">
+                        <UserRound size={14} className="shrink-0" />
+                        {__(':name is editing this scene right now. If you both save, whoever saves second will be warned about the conflict.', { name: lockHolder.name })}
+                    </p>
                 )}
 
                 {(error || notice) && (
@@ -861,6 +927,20 @@ export default function Index({ project, scenes, characters, locations, comments
                 <Modal title={__('Context and comments')} onClose={() => setMobileContext(false)}>
                     {context}
                 </Modal>
+            )}
+
+            {conflict && docs[conflict.sceneId] && (
+                <ConflictDialog
+                    theirs={conflict.theirs}
+                    savedBy={conflict.savedBy}
+                    mine={docs[conflict.sceneId].snapshot.elements}
+                    kindLabel={toolLabel}
+                    pending={pending}
+                    // El diálogo es modal: la escena del conflicto sigue siendo la activa.
+                    onOverwrite={() => save(conflict.theirs)}
+                    onCopyMine={() => void copyMine()}
+                    onClose={() => setConflict(null)}
+                />
             )}
 
             {versionOpen && (

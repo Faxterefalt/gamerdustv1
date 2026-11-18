@@ -1,9 +1,11 @@
 import { __ } from '../../../shared/lib/i18n';
 import { Link } from '@inertiajs/react';
-import { BookOpen, Flag, Play, Plus, Trash2, X } from 'lucide-react';
+import { BookOpen, Flag, Play, Plus, Trash2, UserRound, X } from 'lucide-react';
 import { useState, type ReactNode } from 'react';
 import LinkPicker from '../../../shared/components/LinkPicker';
 import Modal from '../../../shared/components/ui';
+import useEditLock from '../../../shared/hooks/useEditLock';
+import useProjectAccess from '../../../shared/hooks/useProjectAccess';
 import type { BranchingGraph, GraphNode, GraphOption, GraphWarning, NodePatch, OptionPatch } from '../branching.types';
 import type { SaveError } from '../hooks/useBranchingGraph';
 import { DIALOGUE_TYPE_STYLE } from '../layout';
@@ -65,6 +67,9 @@ export default function NodeEditorPanel({
     emotionCatalog,
 }: NodeEditorPanelProps) {
     const [linking, setLinking] = useState(false);
+    // Bloqueo blando del nodo abierto (HU 26): avisa si otra persona lo está editando.
+    const access = useProjectAccess();
+    const lockHolder = useEditLock(projectId, 'node', node.id, access.can_update);
     const loreTitles = new Map(graph.lore_entries.map((entry) => [entry.id, entry.title]));
     const toggleLore = (id: number, on: boolean) =>
         onEdit({ lore_entry_ids: on ? [...node.lore_entry_ids, id] : node.lore_entry_ids.filter((current) => current !== id) });
@@ -94,6 +99,12 @@ export default function NodeEditorPanel({
             </div>
 
             <div className="space-y-4 p-4">
+                {lockHolder && (
+                    <p role="status" className="flex items-start gap-2 border border-amber-700/60 bg-amber-950/40 p-2 text-xs text-amber-100">
+                        <UserRound size={14} className="mt-0.5 shrink-0" />
+                        {__(':name is editing this node right now. Changes are saved automatically: the last one to write wins.', { name: lockHolder.name })}
+                    </p>
+                )}
                 {error && !error.optionId && (error.nodeId === node.id || error.nodeId === undefined) && (
                     <p className="border border-rose-800 bg-rose-950/50 p-2 text-xs text-rose-200">{error.message}</p>
                 )}

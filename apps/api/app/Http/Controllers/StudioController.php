@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Project;
+use App\Models\ProjectMember;
 use App\Models\Scene;
 use App\Services\Branching\DialoguePlayerView;
 use App\Services\Emotion\EmotionTimelineService;
@@ -77,8 +78,16 @@ class StudioController extends Controller
     {
         $this->authorize('view', $project);
 
+        $project->loadMissing('user:id,name,email');
+
         return Inertia::render('Collaboration/Index', [
             'project' => $project,
+            // El dueño primero (administrador implícito, sin fila en project_members).
+            'members' => [
+                ['id' => null, 'user_id' => $project->user_id, 'name' => $project->user?->name, 'email' => $project->user?->email, 'role' => 'owner', 'created_at' => $project->created_at?->toJSON()],
+                ...$project->members()->with('user:id,name,email')->oldest()->get()->map->toPayload(),
+            ],
+            'roles' => ProjectMember::ROLES,
             'comments' => fn () => $project->comments()->with(['user:id,name', 'scene:id,title'])->get()->map->toPayload(),
         ]);
     }

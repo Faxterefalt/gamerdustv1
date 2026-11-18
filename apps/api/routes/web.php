@@ -9,6 +9,7 @@ use App\Http\Controllers\CharacterController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\CostEstimationController;
 use App\Http\Controllers\DialogueNodeController;
+use App\Http\Controllers\EditLockController;
 use App\Http\Controllers\EmotionalAnalysisController;
 use App\Http\Controllers\LocaleController;
 use App\Http\Controllers\LoreEntryController;
@@ -17,6 +18,7 @@ use App\Http\Controllers\NarrativeValidationController;
 use App\Http\Controllers\PasswordResetController;
 use App\Http\Controllers\ProjectConstraintController;
 use App\Http\Controllers\ProjectController;
+use App\Http\Controllers\ProjectMemberController;
 use App\Http\Controllers\SceneController;
 use App\Http\Controllers\SceneEmotionController;
 use App\Http\Controllers\ScriptController;
@@ -124,6 +126,13 @@ Route::middleware(['auth', 'verified'])->group(function (): void {
 
         Route::resource('mechanics', MechanicController::class)->only(['index', 'store', 'update', 'destroy']);
         Route::resource('comments', CommentController::class)->only(['store', 'destroy']);
+        // Edición simultánea (HU 26): bloqueo blando con latido (JSON). release también acepta keepalive al cerrar.
+        Route::post('locks', [EditLockController::class, 'heartbeat'])->name('locks.heartbeat');
+        Route::post('locks/release', [EditLockController::class, 'release'])->name('locks.release');
+        // Colaboración (HU 5): miembros con rol.
+        Route::post('members', [ProjectMemberController::class, 'store'])->name('members.store');
+        Route::put('members/{member}', [ProjectMemberController::class, 'update'])->name('members.update');
+        Route::delete('members/{member}', [ProjectMemberController::class, 'destroy'])->name('members.destroy');
 
         // Editor de guion: index es Inertia, el resto JSON.
         Route::controller(ScriptController::class)->prefix('script')->name('script.')->group(function (): void {

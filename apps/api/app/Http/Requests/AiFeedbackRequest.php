@@ -13,7 +13,8 @@ class AiFeedbackRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return $this->user()?->can('view', $this->route('project')) ?? false;
+        // Votar es escribir en el proyecto: un lector (viewer) no puede.
+        return $this->user()?->can('update', $this->route('project')) ?? false;
     }
 
     public function rules(): array

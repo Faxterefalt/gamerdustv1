@@ -31,8 +31,14 @@ class User extends Authenticatable
         ];
     }
 
+    /** Proyectos de los que es dueño. Los compartidos se consultan con Project::accessibleBy(). */
     public function projects(): HasMany
     {
         return $this->hasMany(Project::class);
+    }
+
+    public function memberships(): HasMany
+    {
+        return $this->hasMany(ProjectMember::class);
     }
 }

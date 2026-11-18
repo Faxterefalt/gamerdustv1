@@ -31,6 +31,7 @@ class Comment extends Model
     {
         return [
             'id' => $this->id,
+            'user_id' => $this->user_id,
             'scene_id' => $this->scene_id,
             'scene_title' => $this->scene?->title,
             'author' => $this->user?->name ?? __('Deleted user'),

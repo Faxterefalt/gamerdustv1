@@ -17,6 +17,8 @@ export interface ScriptScene {
     location_id: number | null;
     /** Token de concurrencia: se reenvía al guardar. */
     updated_at: string | null;
+    /** Última versión guardada: segundo token (updated_at solo tiene segundos). */
+    version_id: number | null;
 }
 
 export interface ScriptVersion {

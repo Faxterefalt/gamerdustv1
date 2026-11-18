@@ -1,7 +1,8 @@
 import { Link, usePage } from '@inertiajs/react';
-import { ChevronRight, Lock } from 'lucide-react';
+import { ChevronRight, Eye, Lock, Users } from 'lucide-react';
 import { useCallback, useEffect, useState, type PropsWithChildren, type ReactNode } from 'react';
 import type { PageProps } from '../features/projects/projects.types';
+import useProjectAccess from '../shared/hooks/useProjectAccess';
 import { __ } from '../shared/lib/i18n';
 import Footer from './components/Footer';
 import Header from './components/Header';
@@ -76,6 +77,7 @@ function WorkspaceShell({ project, url, children }: PropsWithChildren<{ project:
     const [mobileOpen, setMobileOpen] = useState(false);
     const [desktop, setDesktop] = useState(true);
     const section = activeSection(url, project.id);
+    const access = useProjectAccess();
     const close = useCallback(() => setMobileOpen(false), []);
 
     useEffect(() => {
@@ -124,9 +126,23 @@ function WorkspaceShell({ project, url, children }: PropsWithChildren<{ project:
                             </span>
                         </nav>
                         <span className="hidden shrink-0 items-center gap-2 font-mono text-[8px] tracking-wider text-[#94a589] md:flex">
-                            <Lock size={12} /> {__('PRIVATE PROJECT')}
+                            {access.is_owner ? (
+                                <>
+                                    <Lock size={12} /> {__('PRIVATE PROJECT')}
+                                </>
+                            ) : (
+                                <>
+                                    <Users size={12} /> {__('SHARED PROJECT')}
+                                </>
+                            )}
                         </span>
                     </div>
+                    {/* Lector (HU 5): puede ver y exportar; el servidor rechaza cualquier cambio con 403. */}
+                    {!access.can_update && (
+                        <p role="status" className="flex items-center gap-2 border-b border-amber-700/40 bg-amber-950/40 px-5 py-2 text-[11px] text-amber-100 sm:px-7">
+                            <Eye size={13} className="shrink-0" /> {__('Read-only access: you can view and export this project, but your changes will not be saved.')}
+                        </p>
+                    )}
                     {children}
                 </main>
             </div>

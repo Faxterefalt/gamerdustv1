@@ -1,8 +1,9 @@
 import { __, choice } from '../../../shared/lib/i18n';
 import { Link, router } from '@inertiajs/react';
-import { ArrowUpRight, GitBranch, Star, Trash2 } from 'lucide-react';
+import { ArrowUpRight, GitBranch, Star, Trash2, Users } from 'lucide-react';
 import { imageForGenre } from '../../../shared/lib/styles';
 import { genreLabel } from '../projectOptions';
+import { ROLE_LABELS } from '../../collaboration/components/MembersPanel';
 import type { Project } from '../projects.types';
 
 interface ProjectCardProps {
@@ -12,6 +13,9 @@ interface ProjectCardProps {
 
 export default function ProjectCard({ project, list }: ProjectCardProps) {
     const scenes = project.scenes_count ?? 0;
+    // Solo dueño y admin/editor editan; solo el dueño borra (HU 5).
+    const isOwner = (project.role ?? 'owner') === 'owner';
+    const canEdit = isOwner || project.role === 'admin' || project.role === 'editor';
     const toggleFavorite = () => router.patch(`/projects/${project.id}/favorite`, {}, { preserveScroll: true });
     const destroy = () => {
         if (confirm(__('Delete ":name"?', { name: project.title }))) {
@@ -44,6 +48,11 @@ export default function ProjectCard({ project, list }: ProjectCardProps) {
                         <Star size={16} className={project.favorite ? 'fill-primary text-primary' : 'text-[#74816b]'} />
                     </button>
                 </div>
+                {project.owner && (
+                    <p className="mt-1 flex items-center gap-1.5 text-[10px] text-primary">
+                        <Users size={11} /> {__('Shared by :name · :role', { name: project.owner, role: __(ROLE_LABELS[project.role ?? 'viewer']) })}
+                    </p>
+                )}
                 <p className="mt-2 line-clamp-2 min-h-10 text-xs leading-5 text-[#94a18a]">
                     {project.description || __('A new world awaits its first story.')}
                 </p>
@@ -53,12 +62,16 @@ export default function ProjectCard({ project, list }: ProjectCardProps) {
                         {choice(':count scene|:count scenes', scenes)}
                     </span>
                     <span className="flex items-center gap-4">
-                        <Link href={`/projects/${project.id}/edit`} className="hover:text-white">
-                            {__('Edit')}
-                        </Link>
-                        <button type="button" onClick={destroy} aria-label={__('Delete project')} className="hover:text-rose-300">
-                            <Trash2 size={13} />
-                        </button>
+                        {canEdit && (
+                            <Link href={`/projects/${project.id}/edit`} className="hover:text-white">
+                                {__('Edit')}
+                            </Link>
+                        )}
+                        {isOwner && (
+                            <button type="button" onClick={destroy} aria-label={__('Delete project')} className="hover:text-rose-300">
+                                <Trash2 size={13} />
+                            </button>
+                        )}
                         <Link href={`/projects/${project.id}`} className="flex items-center gap-2 text-primary">
                             {__('Open world')} <ArrowUpRight size={14} />
                         </Link>

@@ -88,7 +88,17 @@ class ScriptService
                 : $scene->characters()->pluck('characters.id')->all(),
             'location_id' => $scene->location_id,
             'updated_at' => $scene->updated_at?->toJSON(),
+            // Segundo testigo de concurrencia: updated_at solo tiene segundos y dos guardados en el mismo
+            // segundo no se distinguirían; cada guardado crea una versión nueva (id creciente).
+            'version_id' => $this->latestVersionId($scene),
         ];
+    }
+
+    public function latestVersionId(Scene $scene): ?int
+    {
+        $id = $scene->versions()->reorder()->max('id');
+
+        return $id === null ? null : (int) $id;
     }
 
     private function recordVersion(Scene $scene, ?int $userId): void

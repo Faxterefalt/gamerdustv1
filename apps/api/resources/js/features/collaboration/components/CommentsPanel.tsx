@@ -1,9 +1,11 @@
-import { router, useForm } from '@inertiajs/react';
+import { router, useForm, usePage } from '@inertiajs/react';
 import { MessageSquare, Send, Trash2 } from 'lucide-react';
 import { useState, type FormEvent } from 'react';
 import { FormError, Pending } from '../../../shared/components/ui';
+import useProjectAccess from '../../../shared/hooks/useProjectAccess';
 import { __, locale } from '../../../shared/lib/i18n';
 import { field, primarySm } from '../../../shared/lib/styles';
+import type { PageProps } from '../../projects/projects.types';
 import type { ProjectComment } from '../collaboration.types';
 
 interface CommentsPanelProps {
@@ -20,6 +22,8 @@ interface CommentsPanelProps {
  */
 export default function CommentsPanel({ projectId, comments, sceneId, compact = false }: CommentsPanelProps) {
     const [sent, setSent] = useState(false);
+    const access = useProjectAccess();
+    const userId = usePage<PageProps>().props.auth.user?.id;
     const form = useForm({ text: '', scene_id: sceneId ?? null });
     const visible = sceneId === undefined ? comments : comments.filter((comment) => comment.scene_id === sceneId);
     const reload = { preserveScroll: true, preserveState: true, only: ['comments'] };
@@ -69,15 +73,20 @@ export default function CommentsPanel({ projectId, comments, sceneId, compact = 
                                     {sceneId === undefined && comment.scene_title ? ` · ${comment.scene_title}` : ''}
                                 </p>
                             </div>
-                            <button type="button" onClick={() => destroy(comment)} aria-label={__('Delete comment')} className="rounded p-1 text-[#7f9174] hover:text-rose-300">
-                                <Trash2 size={12} />
-                            </button>
+                            {access.can_update && (comment.user_id === userId || access.can_manage) && (
+                                <button type="button" onClick={() => destroy(comment)} aria-label={__('Delete comment')} className="rounded p-1 text-[#7f9174] hover:text-rose-300">
+                                    <Trash2 size={12} />
+                                </button>
+                            )}
                         </div>
                         <p className="mt-3 whitespace-pre-wrap break-words text-xs leading-7 text-[#bac9af]">{comment.text}</p>
                     </article>
                 ))}
             </div>
 
+            {!access.can_update ? (
+                <p className="mt-6 border-t border-border pt-5 text-[11px] text-[#9eb392]">{__('You have read-only access: you cannot comment on this project.')}</p>
+            ) : (
             <form className="mt-6 border-t border-border pt-5" onSubmit={submit}>
                 <fieldset disabled={form.processing}>
                     <label className="block text-[11px] text-[#b7c6ab]">
@@ -108,6 +117,7 @@ export default function CommentsPanel({ projectId, comments, sceneId, compact = 
                     )}
                 </fieldset>
             </form>
+            )}
         </div>
     );
 }
