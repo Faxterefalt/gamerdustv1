@@ -10,7 +10,8 @@ Gamerdust es una app web de asistencia al diseño narrativo de videojuegos (proy
 - `apps/web/` — vacío, reservado para una futura SPA separada. No poner código del frontend aquí.
 - `apps/narrative-engine/` — esqueleto Python (FastAPI previsto); todos los `.py` están vacíos. Hoy el análisis emocional lo hace PHP con Groq (o por palabras clave sin clave) detrás del contrato `EmotionAnalyzer` (ver abajo).
 - `compose.yaml` — solo MySQL 8.4 (BD `gamerdust`). En local se usa Laragon apuntando a `apps/api/public`.
-- `docs/` — documentación: `architecture/Gamerdust_Documentacion.ipynb`, [modelo-asistencia-emocional.md](docs/modelo-asistencia-emocional.md) y [despliegue.md](docs/despliegue.md) (producción: HTTPS, `.env`, `optimize`, cola, logs). `tests/e2e/` vacío.
+- `docs/` — documentación: `architecture/Gamerdust_Documentacion.ipynb`, [modelo-asistencia-emocional.md](docs/modelo-asistencia-emocional.md) y [despliegue.md](docs/despliegue.md) (producción: HTTPS, `.env`, `optimize`, cola, logs).
+- `tests/e2e/` — pruebas de navegador sin dependencias (Node + Chrome headless por CDP; ver su [README](tests/e2e/README.md)): `run.mjs` crea una SQLite temporal con el seeder, arranca `php -S` y ejecuta los escenarios de `scenarios/` (diálogos, guion, IA, colaboración, cuenta).
 
 ## Comandos (en `apps/api`)
 
@@ -24,6 +25,7 @@ php artisan gamerdust:test [--filter=...]                # la misma suite con la
 php artisan test --filter=BranchingEditorTest            # una clase
 php artisan test --filter=test_nombre_del_metodo         # un test
 npm run test:js            # tests de JS con node --test (diff de versiones, auto-formato) + test:parity
+npm run test:e2e [-- --skip-build --only=script,ai]  # pruebas de navegador (tests/e2e; PHP_BINARY = PHP ≥ 8.4, CHROME_PATH)
 npm run test:parity        # el evaluador JS del reproductor da lo mismo que BranchingStateEvaluator (tests/Fixtures/branching-state-cases.json)
 vendor/bin/pint            # formateo PHP (Laravel Pint)
 npx tsc --noEmit           # chequeo de tipos TS (no hay ESLint)

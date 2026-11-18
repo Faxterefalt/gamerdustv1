@@ -5,6 +5,7 @@
     "scripts": {
         "build": "vite build",
         "dev": "vite",
+        "test:e2e": "node ../../tests/e2e/run.mjs",
         "test:js": "node --test tests/js/script-editor.test.ts && npm run test:parity",
         "test:parity": "node tests/js/branching-state-parity.cjs resources/views/reports/partials/branching-state.blade.php tests/Fixtures/branching-state-cases.json"
     },
