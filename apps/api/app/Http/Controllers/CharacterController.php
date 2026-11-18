@@ -25,7 +25,10 @@ class CharacterController extends Controller
     {
         $this->authorize('view', $project);
 
-        $characters = $project->characters()->with('scenes:id')->orderBy('name')->get();
+        $characters = $project->characters()
+            ->with(['scenes:id', 'dialogueNodes' => fn ($query) => $query->select(['id', 'project_id', 'character_id', 'node_key', 'title', 'dialogue_type'])->orderBy('id')])
+            ->orderBy('name')
+            ->get();
         $selected = $request->integer('character');
 
         return Inertia::render('Characters/Index', [

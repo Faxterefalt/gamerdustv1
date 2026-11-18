@@ -1,13 +1,15 @@
-import { Head } from '@inertiajs/react';
+import { Head, usePage } from '@inertiajs/react';
 import {
     AlignLeft,
     BookOpen,
     Check,
     ChevronDown,
     ChevronRight,
+    CircleAlert,
     Cloud,
     FileDown,
     FileText,
+    GitCompare,
     History,
     List,
     LoaderCircle,
@@ -23,7 +25,7 @@ import {
     UserRound,
     Wand2,
 } from 'lucide-react';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import ProjectLayout from '../../../layouts/ProjectLayout';
 import Modal, { FormError, Pending } from '../../../shared/components/ui';
 import useUnsaved from '../../../shared/hooks/useUnsaved';
@@ -33,12 +35,15 @@ import { primarySm, secondary } from '../../../shared/lib/styles';
 import type { EmotionCatalog } from '../../analysis/emotion.types';
 import type { ProjectComment } from '../../collaboration/collaboration.types';
 import { languageLabel } from '../../projects/projectOptions';
-import type { Project } from '../../projects/projects.types';
+import type { PageProps, Project } from '../../projects/projects.types';
 import BlockInput from '../components/BlockInput';
 import EmotionPanel from '../components/EmotionPanel';
 import RefineDialog from '../components/RefineDialog';
 import SceneContext from '../components/SceneContext';
 import SceneDialog from '../components/SceneDialog';
+import VersionDiff from '../components/VersionDiff';
+import { localDrafts, type LocalDraft } from '../lib/localDrafts';
+import { matchCharacterLine, NEXT_KIND } from '../lib/scriptFormat';
 import { countWords, sceneCodes, type BlockKind, type LocationReference, type NamedReference, type ScriptBlock, type ScriptScene, type ScriptVersion } from '../script.types';
 
 interface ScriptIndexProps {
@@ -79,6 +84,39 @@ function makeDoc(scene: ScriptScene): SceneDoc {
 
 const isDirty = (doc: SceneDoc) => JSON.stringify(doc.snapshot) !== doc.baseline;
 
+/** Borrador local más reciente que la versión del servidor, pendiente de recuperar o descartar. */
+type DraftOffer = { sceneId: number; draft: LocalDraft; conflict: boolean };
+
+const LOCAL_DELAY = 700;
+
+/**
+ * Borradores del navegador al abrir el editor (HU 24): se ofrecen los más recientes que la versión guardada
+ * y distintos de ella; el resto se limpian.
+ */
+function findOffers(userId: number | null, scenes: ScriptScene[]): DraftOffer[] {
+    if (userId === null) {
+        return [];
+    }
+
+    return scenes.flatMap((scene) => {
+        const draft = localDrafts.read(userId, scene.id);
+
+        if (!draft) {
+            return [];
+        }
+
+        const serverTime = scene.updated_at ? Date.parse(scene.updated_at) : 0;
+
+        if (JSON.stringify(draft.snapshot) === makeDoc(scene).baseline || draft.saved_at <= serverTime) {
+            localDrafts.remove(userId, scene.id);
+
+            return [];
+        }
+
+        return [{ sceneId: scene.id, draft, conflict: draft.base_updated_at !== scene.updated_at }];
+    });
+}
+
 function errorMessage(caught: unknown): string {
     if (caught instanceof ApiError) {
         return Object.values(caught.errors)[0]?.[0] ?? caught.message;
@@ -88,6 +126,13 @@ function errorMessage(caught: unknown): string {
 }
 
 export default function Index({ project, scenes, characters, locations, comments, initialSceneId, emotionCatalog }: ScriptIndexProps) {
+    const userId = usePage<PageProps>().props.auth.user?.id ?? null;
+    const [offers, setOffers] = useState<DraftOffer[]>(() => findOffers(userId, scenes));
+    // Escenas cuyo último guardado en el servidor falló (el indicador nunca dice "guardado").
+    const [failed, setFailed] = useState<Record<number, boolean>>({});
+    // ¿Se pudo guardar el borrador en este navegador? (false en modo privado o sin espacio).
+    const [localOk, setLocalOk] = useState(true);
+    const [compareWith, setCompareWith] = useState<'current' | number | null>(null);
     const [docs, setDocs] = useState<Record<number, SceneDoc>>(() => Object.fromEntries(scenes.map((scene) => [scene.id, makeDoc(scene)])));
     const [activeId, setActiveId] = useState<number | null>(() => scenes.find((scene) => scene.id === initialSceneId)?.id ?? scenes[0]?.id ?? null);
     const [focused, setFocused] = useState<string | null>(null);
@@ -113,7 +158,71 @@ export default function Index({ project, scenes, characters, locations, comments
     const current = activeId === null ? undefined : docs[activeId];
     const dirty = Object.values(docs).some(isDirty);
     const currentDirty = current ? isDirty(current) : false;
+    const currentFailed = Boolean(current && failed[current.scene.id] && currentDirty);
     useUnsaved(dirty);
+
+    // Autoguardado local con debounce: los borradores con cambios se copian al navegador y los ya guardados se
+    // borran. Las escenas con un borrador pendiente de recuperar no se tocan hasta que el autor decida.
+    const docsRef = useRef(docs);
+    docsRef.current = docs;
+    const offersRef = useRef(offers);
+    offersRef.current = offers;
+
+    const persistLocal = useCallback(() => {
+        if (userId === null) {
+            return;
+        }
+
+        const waiting = new Set(offersRef.current.map((offer) => offer.sceneId));
+        let ok = true;
+
+        for (const doc of Object.values(docsRef.current)) {
+            if (waiting.has(doc.scene.id)) {
+                continue;
+            }
+
+            if (isDirty(doc)) {
+                ok = localDrafts.write(userId, doc.scene.id, { snapshot: doc.snapshot, base_updated_at: doc.scene.updated_at, saved_at: Date.now() }) && ok;
+            } else {
+                localDrafts.remove(userId, doc.scene.id);
+            }
+        }
+
+        setLocalOk(ok);
+    }, [userId]);
+
+    useEffect(() => {
+        const timer = window.setTimeout(persistLocal, LOCAL_DELAY);
+
+        return () => window.clearTimeout(timer);
+    }, [docs, offers, persistLocal]);
+
+    // Al cerrar o recargar la pestaña no se espera al debounce.
+    useEffect(() => {
+        window.addEventListener('pagehide', persistLocal);
+
+        return () => window.removeEventListener('pagehide', persistLocal);
+    }, [persistLocal]);
+
+    function recover(offer: DraftOffer) {
+        setDocs((previous) => {
+            const doc = previous[offer.sceneId];
+
+            // La versión del servidor queda en deshacer: Ctrl+Z vuelve a ella.
+            return doc ? { ...previous, [offer.sceneId]: { ...doc, snapshot: offer.draft.snapshot, past: [...doc.past, doc.snapshot], future: [] } } : previous;
+        });
+        setOffers((previous) => previous.filter((item) => item.sceneId !== offer.sceneId));
+        selectScene(offer.sceneId);
+        setNotice(__('Draft recovered. Press Save to keep it on the server.'));
+    }
+
+    function discard(offer: DraftOffer) {
+        if (userId !== null) {
+            localDrafts.remove(userId, offer.sceneId);
+        }
+
+        setOffers((previous) => previous.filter((item) => item.sceneId !== offer.sceneId));
+    }
 
     // Escenas nuevas que lleguen del servidor (sin pisar los borradores existentes).
     useEffect(() => {
@@ -171,6 +280,21 @@ export default function Index({ project, scenes, characters, locations, comments
         requestAnimationFrame(() => document.getElementById(`script-block-${block.id}`)?.focus());
     }
 
+    /** Enter al final de un bloque: crea el siguiente según la convención de guion (entra en deshacer). */
+    function enterAfter(block: ScriptBlock) {
+        const next: ScriptBlock = { id: crypto.randomUUID(), kind: NEXT_KIND[block.kind], text: '' };
+
+        change((snapshot) => {
+            const elements = [...snapshot.elements];
+            const index = elements.findIndex((element) => element.id === block.id);
+            elements.splice(index < 0 ? elements.length : index + 1, 0, next);
+
+            return { ...snapshot, elements };
+        });
+        setFocused(next.id);
+        requestAnimationFrame(() => document.getElementById(`script-block-${next.id}`)?.focus());
+    }
+
     function undo(redo = false) {
         if (activeId === null) {
             return;
@@ -222,9 +346,12 @@ export default function Index({ project, scenes, characters, locations, comments
 
                     return { ...previous, [scene.id]: editedMeanwhile ? { ...saved, snapshot: latest.snapshot, past: latest.past, future: latest.future } : saved };
                 });
+                setFailed((previous) => ({ ...previous, [scene.id]: false }));
                 setNotice(__('Scene saved.'));
                 setError('');
             } catch (caught) {
+                // El borrador sigue en el navegador; el indicador muestra el error, nunca "guardado".
+                setFailed((previous) => ({ ...previous, [scene.id]: true }));
                 setError(errorMessage(caught));
             }
         });
@@ -250,6 +377,7 @@ export default function Index({ project, scenes, characters, locations, comments
         setVersionError('');
         setVersions([]);
         setPreviewVersion(null);
+        setCompareWith(null);
 
         void run(async () => {
             try {
@@ -383,6 +511,14 @@ export default function Index({ project, scenes, characters, locations, comments
     const selectedVersion = versions.find((version) => version.id === previewVersion);
     const toolLabel = (kind: BlockKind) => __(TOOLS.find((tool) => tool.kind === kind)!.label);
     const dateLocale = locale === 'en' ? 'en-US' : 'es-ES';
+    // Nombres de los personajes de la escena: una línea en MAYÚSCULAS con su nombre pasa a ser PERSONAJE.
+    const sceneNames = current ? characters.filter((character) => current.snapshot.characters.includes(character.id)).map((character) => character.name) : [];
+    const versionLabel = (id: number) => {
+        const index = versions.findIndex((version) => version.id === id);
+
+        return index === 0 ? __('Most recent') : __('Revision :number', { number: versions.length - index });
+    };
+    const compareTarget = compareWith === 'current' ? current?.snapshot.elements : versions.find((version) => version.id === compareWith)?.script;
 
     return (
         <ProjectLayout bare>
@@ -411,9 +547,27 @@ export default function Index({ project, scenes, characters, locations, comments
                             <span className="ml-3 hidden align-middle font-mono text-[8px] tracking-wider text-[#90a081] sm:inline">/ {project.title}</span>
                         </h1>
                     </div>
-                    <div role="status" className="flex items-center gap-2 text-[10px] text-[#9fb68f]">
-                        {pending ? <LoaderCircle size={13} className="animate-spin" /> : currentDirty ? <span className="h-1.5 w-1.5 rounded-full bg-primary" /> : <Cloud size={14} />}
-                        {pending ? __('Processing…') : currentDirty ? __('Unsaved changes') : __('All changes saved')}
+                    <div role="status" className={`flex items-center gap-2 text-[10px] ${currentFailed ? 'text-rose-300' : 'text-[#9fb68f]'}`}>
+                        {pending ? (
+                            <LoaderCircle size={13} className="animate-spin" />
+                        ) : currentFailed ? (
+                            <CircleAlert size={14} />
+                        ) : currentDirty ? (
+                            <span className="h-1.5 w-1.5 rounded-full bg-primary" />
+                        ) : (
+                            <Cloud size={14} />
+                        )}
+                        {pending
+                            ? __('Processing…')
+                            : currentFailed
+                              ? localOk
+                                  ? __('Not saved: the server failed. Your draft is kept in this browser.')
+                                  : __('Not saved: the server failed and this browser cannot keep the draft.')
+                              : currentDirty
+                                ? localOk
+                                    ? __('Unsaved changes · draft kept in this browser')
+                                    : __('Unsaved changes · this browser cannot keep the draft')
+                                : __('All changes saved')}
                     </div>
                 </div>
 
@@ -499,6 +653,32 @@ export default function Index({ project, scenes, characters, locations, comments
                     </button>
                 </div>
 
+                {offers.length > 0 && (
+                    <div className="space-y-2 border-b border-border px-5 py-4">
+                        {offers.map((offer) => {
+                            const doc = docs[offer.sceneId];
+
+                            return (
+                                <div key={offer.sceneId} role="alert" className="flex flex-wrap items-center gap-3 rounded-md border border-primary/30 bg-primary/5 px-4 py-3 text-xs">
+                                    <span className="min-w-0 flex-1 leading-6">
+                                        {__('There is an unsaved draft of :scene from :time in this browser.', {
+                                            scene: `${codes.get(offer.sceneId) ?? ''} · ${doc?.scene.title ?? ''}`,
+                                            time: new Date(offer.draft.saved_at).toLocaleString(dateLocale),
+                                        })}
+                                        {offer.conflict && <span className="block text-amber-200">{__('The scene was saved again after this draft: recovering it and saving will replace those changes.')}</span>}
+                                    </span>
+                                    <button type="button" className={`${primarySm} !min-h-8 !py-1.5`} onClick={() => recover(offer)}>
+                                        {__('Recover draft')}
+                                    </button>
+                                    <button type="button" className={`${secondary} !min-h-8 !py-1.5`} onClick={() => discard(offer)}>
+                                        {__('Discard')}
+                                    </button>
+                                </div>
+                            );
+                        })}
+                    </div>
+                )}
+
                 {(error || notice) && (
                     <div className="border-b border-border px-5 pb-4">
                         <FormError error={error} />
@@ -553,9 +733,19 @@ export default function Index({ project, scenes, characters, locations, comments
                                                 onChange={(text) =>
                                                     change((snapshot) => ({
                                                         ...snapshot,
-                                                        elements: snapshot.elements.map((element) => (element.id === block.id ? { ...element, text } : element)),
+                                                        elements: snapshot.elements.map((element) =>
+                                                            element.id === block.id
+                                                                ? {
+                                                                      ...element,
+                                                                      text,
+                                                                      // Auto-formato: el nombre de un personaje de la escena en MAYÚSCULAS es un bloque PERSONAJE.
+                                                                      kind: element.kind === 'action' && matchCharacterLine(text, sceneNames, locale) ? 'character' : element.kind,
+                                                                  }
+                                                                : element,
+                                                        ),
                                                     }))
                                                 }
+                                                onEnterAtEnd={() => enterAfter(block)}
                                                 onRemove={() => change((snapshot) => ({ ...snapshot, elements: snapshot.elements.filter((element) => element.id !== block.id) }))}
                                             />
                                         ))}
@@ -689,14 +879,45 @@ export default function Index({ project, scenes, characters, locations, comments
                             </div>
                             {selectedVersion && (
                                 <div>
-                                    <div className="max-h-72 overflow-y-auto rounded-md border border-border bg-background p-4">
-                                        <h3 className="mb-3 text-xs text-primary">{selectedVersion.title}</h3>
-                                        {selectedVersion.script.map((element, index) => (
-                                            <p key={index} className="mb-3 whitespace-pre-wrap break-words font-mono text-[10px] leading-6 text-[#c2cfb8]">
-                                                {element.text}
+                                    <label className="mb-3 flex flex-wrap items-center gap-2 text-[10px] text-[#a9bb9d]">
+                                        <GitCompare size={13} className="text-primary" />
+                                        {__('Compare with')}
+                                        <select
+                                            value={compareWith === null ? '' : String(compareWith)}
+                                            onChange={(event) => setCompareWith(event.target.value === '' ? null : event.target.value === 'current' ? 'current' : Number(event.target.value))}
+                                            className="rounded border border-border bg-background px-2 py-1 text-[10px] text-foreground"
+                                        >
+                                            <option value="">{__('(no comparison: preview)')}</option>
+                                            <option value="current">{__('Current draft')}</option>
+                                            {versions
+                                                .filter((version) => version.id !== selectedVersion.id)
+                                                .map((version) => (
+                                                    <option key={version.id} value={version.id}>
+                                                        {versionLabel(version.id)}
+                                                    </option>
+                                                ))}
+                                        </select>
+                                    </label>
+                                    {compareTarget ? (
+                                        <>
+                                            <p className="mb-2 text-[9px] text-[#93a687]">
+                                                {__(':from → :to', {
+                                                    from: versionLabel(selectedVersion.id),
+                                                    to: compareWith === 'current' ? __('Current draft') : versionLabel(compareWith as number),
+                                                })}
                                             </p>
-                                        ))}
-                                    </div>
+                                            <VersionDiff before={selectedVersion.script} after={compareTarget} kindLabel={toolLabel} />
+                                        </>
+                                    ) : (
+                                        <div className="max-h-72 overflow-y-auto rounded-md border border-border bg-background p-4">
+                                            <h3 className="mb-3 text-xs text-primary">{selectedVersion.title}</h3>
+                                            {selectedVersion.script.map((element, index) => (
+                                                <p key={index} className="mb-3 whitespace-pre-wrap break-words font-mono text-[10px] leading-6 text-[#c2cfb8]">
+                                                    {element.text}
+                                                </p>
+                                            ))}
+                                        </div>
+                                    )}
                                     <button type="button" disabled={pending} className={`${primarySm} mt-4 w-full`} onClick={() => restore(selectedVersion)}>
                                         <Pending pending={pending}>{__('Restore this version')}</Pending>
                                     </button>

@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Character;
+use App\Models\DialogueNode;
 use App\Models\Project;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -34,6 +35,25 @@ class CharacterSheetTest extends TestCase
     private function url(string $path = ''): string
     {
         return "/projects/{$this->project->id}/characters{$path}";
+    }
+
+    public function test_la_ficha_lista_los_nodos_de_dialogo_donde_participa(): void
+    {
+        $lia = $this->project->characters()->create(['name' => 'Lía']);
+        $otro = $this->project->characters()->create(['name' => 'Otro']);
+        $base = ['project_id' => $this->project->id, 'dialogue_type' => 'ambient', 'text' => ''];
+        $saludo = DialogueNode::create([...$base, 'node_key' => 'saludo', 'title' => 'Saludo', 'character_id' => $lia->id]);
+        $despedida = DialogueNode::create([...$base, 'node_key' => 'despedida', 'character_id' => $lia->id]);
+        DialogueNode::create([...$base, 'node_key' => 'ajeno', 'title' => 'Ajeno', 'character_id' => $otro->id]);
+
+        $this->actingAs($this->user)->get($this->url())->assertOk()->assertInertia(fn ($page) => $page
+            ->component('Characters/Index', false)
+            ->where('entries.0.name', 'Lía')
+            ->where('entries.0.dialogue_nodes', [
+                ['id' => $saludo->id, 'title' => 'Saludo', 'dialogue_type' => 'ambient'],
+                ['id' => $despedida->id, 'title' => 'despedida', 'dialogue_type' => 'ambient'],
+            ])
+            ->where('entries.1.dialogue_nodes.0.title', 'Ajeno'));
     }
 
     public function test_la_ficha_se_abre_en_el_indice_y_las_rutas_antiguas_redirigen(): void

@@ -1,5 +1,5 @@
-import { Head } from '@inertiajs/react';
-import { Link2, UserRound, Wand2 } from 'lucide-react';
+import { Head, Link } from '@inertiajs/react';
+import { GitBranch, Link2, UserRound, Wand2 } from 'lucide-react';
 import { useState } from 'react';
 import ProjectLayout from '../../../layouts/ProjectLayout';
 import LinkPicker from '../../../shared/components/LinkPicker';
@@ -14,6 +14,8 @@ import ImageField from '../../bible/components/ImageField';
 import LinkRow from '../../bible/components/LinkRow';
 import useEntryEditor from '../../bible/hooks/useEntryEditor';
 import type { EmotionCatalog } from '../../analysis/emotion.types';
+import { DIALOGUE_TYPE_STYLE } from '../../branching/layout';
+import type { DialogueType } from '../../dialogues/dialogues.types';
 import type { Project } from '../../projects/projects.types';
 import { sceneCodes } from '../../script/script.types';
 import { ROLE_SUGGESTIONS, type CharacterSheet } from '../characters.types';
@@ -306,6 +308,31 @@ export default function Index({ project, entries, selected, startNew, scenes, em
                                 addLabel={__('Link scene')}
                                 onAdd={() => setPicking(true)}
                             />
+                            {active && (
+                                <div className="mt-5 border-t border-border pt-4">
+                                    <p className="mb-2 flex items-center gap-2 text-[11px] text-[#c9d6bf]">
+                                        <GitBranch size={13} className="text-primary" /> {__('Branching dialogues')}
+                                        <span className="font-mono text-[10px] text-[#9faf93]">{String(active.dialogue_nodes.length).padStart(2, '0')}</span>
+                                    </p>
+                                    {active.dialogue_nodes.length ? (
+                                        <ul className="flex flex-wrap gap-1.5">
+                                            {active.dialogue_nodes.map((node) => (
+                                                <li key={node.id}>
+                                                    <Link
+                                                        href={`/projects/${project.id}/branching?node=${node.id}`}
+                                                        title={__(DIALOGUE_TYPE_STYLE[node.dialogue_type as DialogueType]?.label ?? node.dialogue_type)}
+                                                        className="inline-flex items-center gap-1 rounded border border-border px-2 py-1 text-[10px] text-[#c4d1ba] hover:border-primary/40 hover:text-primary"
+                                                    >
+                                                        {node.title}
+                                                    </Link>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    ) : (
+                                        <p className="text-[10px] leading-5 text-[#9faf93]">{__('This character does not speak in any dialogue node yet. Assign them in the branching editor.')}</p>
+                                    )}
+                                </div>
+                            )}
                         </section>
 
                         <details className="rounded-lg border border-border px-4 py-3">

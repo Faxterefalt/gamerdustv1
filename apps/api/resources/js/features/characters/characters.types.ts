@@ -27,6 +27,8 @@ export interface Character {
 export interface CharacterSheet extends Character {
     image_url: string | null;
     scene_ids: number[];
+    /** Nodos de diálogo donde participa (solo lectura: se editan en Diálogos). */
+    dialogue_nodes: { id: number; title: string; dialogue_type: string }[];
 }
 
 /** Sugerencias de rol (el rol es texto libre). Claves de traducción en inglés. */

@@ -28,12 +28,14 @@ interface BlockInputProps {
     onChange: (text: string) => void;
     onFocus: () => void;
     onRemove: () => void;
+    /** Enter (sin Mayús) con el cursor al final del bloque: el editor crea el siguiente según la convención. */
+    onEnterAtEnd: () => void;
 }
 
 /**
  * Bloque de guion editable: un textarea que crece con su contenido y adopta el formato de guion de su tipo.
  */
-export default function BlockInput({ block, label, index, disabled, onChange, onFocus, onRemove }: BlockInputProps) {
+export default function BlockInput({ block, label, index, disabled, onChange, onFocus, onRemove, onEnterAtEnd }: BlockInputProps) {
     const ref = useRef<HTMLTextAreaElement>(null);
 
     useLayoutEffect(() => {
@@ -73,6 +75,16 @@ export default function BlockInput({ block, label, index, disabled, onChange, on
                 value={block.text}
                 onChange={(event) => onChange(event.target.value)}
                 onFocus={onFocus}
+                onKeyDown={(event) => {
+                    const element = event.currentTarget;
+                    const atEnd = element.selectionStart === element.value.length && element.selectionEnd === element.value.length;
+
+                    // Mayús+Enter sigue siendo un salto de línea dentro del bloque.
+                    if (event.key === 'Enter' && !event.shiftKey && !event.ctrlKey && !event.metaKey && !event.altKey && !event.nativeEvent.isComposing && atEnd) {
+                        event.preventDefault();
+                        onEnterAtEnd();
+                    }
+                }}
                 placeholder={__(PLACEHOLDERS[block.kind])}
                 className={`block min-h-6 w-full resize-none overflow-hidden rounded-sm border-0 bg-transparent p-0 text-inherit outline-none placeholder:text-[#83907c] focus-visible:!outline-0 ${centered ? 'text-center' : 'text-left'}`}
             />

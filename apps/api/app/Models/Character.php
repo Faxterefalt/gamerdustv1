@@ -98,6 +98,10 @@ class Character extends Model
                 ? route('projects.characters.image', [$this->project_id, $this->id, 'v' => $this->updated_at?->timestamp])
                 : null,
             'scene_ids' => $this->scenes->pluck('id')->values(),
+            // Participación en la ramificación (HU 16): nodos donde habla el personaje.
+            'dialogue_nodes' => $this->relationLoaded('dialogueNodes')
+                ? $this->dialogueNodes->map(fn (DialogueNode $node) => ['id' => $node->id, 'title' => $node->displayTitle(), 'dialogue_type' => $node->dialogue_type])->values()->all()
+                : [],
         ];
     }
 }
