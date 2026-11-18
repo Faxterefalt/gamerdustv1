@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\AiFeedbackRequest;
 use App\Http\Requests\CharacterDraftRequest;
+use App\Http\Requests\ProjectAiRequest;
 use App\Http\Requests\RefineBlockRequest;
 use App\Models\AiFeedback;
 use App\Models\Project;
@@ -11,6 +12,8 @@ use App\Models\Scene;
 use App\Services\Ai\AiUnavailableException;
 use App\Services\Assist\BlockRefineService;
 use App\Services\Assist\CharacterDraftService;
+use App\Services\Assist\ConsequenceReviewService;
+use App\Services\Assist\LudonarrativeReviewService;
 use Illuminate\Http\JsonResponse;
 
 /**
@@ -35,6 +38,26 @@ class AiAssistController extends Controller
 
         try {
             return response()->json($refiner->refine($scene, $data['block'], $data['goal'], $character, $data['instruction'] ?? null, $request->user()->id));
+        } catch (AiUnavailableException $exception) {
+            return $this->busy($exception);
+        }
+    }
+
+    /** "Revisar consecuencias" del editor de ramificación (HU 50). Solo lee el grafo. */
+    public function consequenceReview(ProjectAiRequest $request, Project $project, ConsequenceReviewService $reviews): JsonResponse
+    {
+        try {
+            return response()->json($reviews->review($project, $request->user()->id));
+        } catch (AiUnavailableException $exception) {
+            return $this->busy($exception);
+        }
+    }
+
+    /** "Detectar disonancias" de Mecánicas (HU 56). Solo lee mecánicas y sus vínculos. */
+    public function ludonarrativeReview(ProjectAiRequest $request, Project $project, LudonarrativeReviewService $reviews): JsonResponse
+    {
+        try {
+            return response()->json($reviews->review($project, $request->user()->id));
         } catch (AiUnavailableException $exception) {
             return $this->busy($exception);
         }

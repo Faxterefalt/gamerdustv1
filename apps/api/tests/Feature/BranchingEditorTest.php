@@ -274,12 +274,13 @@ class BranchingEditorTest extends TestCase
     {
         $scene = Scene::create(['project_id' => $this->project->id, 'title' => 'Archivo', 'conflict' => 'Memoria rota']);
         $character = Character::create(['project_id' => $this->project->id, 'name' => 'Ira', 'motivation' => 'Recordar']);
-        $this->project->loreEntries()->create(['title' => 'La Caida', 'type' => 'event']);
+        $caida = $this->project->loreEntries()->create(['title' => 'La Caida', 'type' => 'event']);
+        $this->project->loreEntries()->create(['title' => 'Sin vincular', 'type' => 'event']);
         $a = $this->node('A');
 
         $this->save($a, [
             'scene_id' => $scene->id, 'character_id' => $character->id, 'text' => '{{B}}',
-            'emotional_tone' => 'tenso', 'trigger_condition' => 'flag_x',
+            'emotional_tone' => 'tenso', 'trigger_condition' => 'flag_x', 'lore_entry_ids' => [$caida->id],
         ])->assertOk();
         $this->save($a, ['title' => 'A prima'])->assertOk();
 
@@ -293,7 +294,9 @@ class BranchingEditorTest extends TestCase
             ->assertJsonPath('context.scene.conflict', 'Memoria rota')
             ->assertJsonPath('context.character.name', 'Ira')
             ->assertJsonPath('context.options.0.target', 'B')
-            ->assertJsonPath('context.lore.0.title', 'La Caida');
+            ->assertJsonPath('context.lore.0.title', 'La Caida')
+            // Solo las entradas de la Biblia vinculadas al nodo.
+            ->assertJsonCount(1, 'context.lore');
     }
 
     public function test_el_analisis_no_cambia_el_contenido(): void
@@ -302,8 +305,8 @@ class BranchingEditorTest extends TestCase
         $this->save($a, ['text' => 'El miedo y la traicion {{B}}'])->assertOk();
         $before = [$a->fresh()->only(['title', 'text', 'node_key']), $this->optionsOf($a)->toArray(), DialogueNode::count()];
 
-        $this->actingAs($this->user)->postJson($this->url("/nodes/{$a->id}/analysis"))
-            ->assertOk()->assertJsonPath('analysis.analyzable_id', $a->id)->assertJsonStructure(['analysis' => ['suggestions'], 'context']);
+        $this->actingAs($this->user)->postJson($this->url("/nodes/{$a->id}/analyze"))
+            ->assertOk()->assertJsonPath('analysis.source', 'keywords')->assertJsonStructure(['analysis' => ['emotion', 'labels', 'summary', 'suggestions']])->assertJsonMissingPath('graph');
 
         $this->assertSame(1, EmotionalAnalysis::where('analyzable_id', $a->id)->count());
         $after = [$a->fresh()->only(['title', 'text', 'node_key']), $this->optionsOf($a)->toArray(), DialogueNode::count()];

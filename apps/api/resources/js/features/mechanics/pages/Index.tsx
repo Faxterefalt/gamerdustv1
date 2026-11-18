@@ -1,5 +1,5 @@
 import { Head, Link, router, useForm } from '@inertiajs/react';
-import { ArrowRight, Check, ChevronRight, Link2, Plus, Save, Search, Settings2, ShieldCheck, Trash2, X } from 'lucide-react';
+import { ArrowRight, Check, ChevronRight, Link2, Plus, Save, Scale, Search, Settings2, ShieldCheck, Trash2, X } from 'lucide-react';
 import { useState, type FormEvent } from 'react';
 import ProjectLayout from '../../../layouts/ProjectLayout';
 import LinkPicker from '../../../shared/components/LinkPicker';
@@ -9,6 +9,7 @@ import { __, choice } from '../../../shared/lib/i18n';
 import { button, field, secondary } from '../../../shared/lib/styles';
 import type { Project } from '../../projects/projects.types';
 import { sceneCodes } from '../../script/script.types';
+import DissonanceDialog from '../components/DissonanceDialog';
 import {
     MECHANIC_ICONS,
     MECHANIC_KINDS,
@@ -69,6 +70,7 @@ export default function Index({ project, mechanics, selected, scenes, characters
     const [query, setQuery] = useState('');
     const [picker, setPicker] = useState<Picker>(null);
     const [saved, setSaved] = useState(false);
+    const [reviewing, setReviewing] = useState(false);
 
     const active = mechanics.find((mechanic) => mechanic.id === selectedId) ?? null;
     const dirty = JSON.stringify(form.data) !== baseline;
@@ -163,8 +165,19 @@ export default function Index({ project, mechanics, selected, scenes, characters
                 title={__('Game mechanics')}
                 description={__('What the player does. What your story remembers.')}
                 action={
-                    <span className="flex items-center gap-2 rounded-full border border-primary/15 bg-primary/5 px-3 py-1.5 font-mono text-[8px] tracking-wider text-primary">
-                        <Settings2 size={12} /> {__('SYSTEMS WITH NARRATIVE')}
+                    <span className="flex flex-wrap items-center gap-2">
+                        <button
+                            type="button"
+                            disabled={!mechanics.length}
+                            onClick={() => setReviewing(true)}
+                            title={__('The AI compares each mechanic with its linked scenes, characters and rules. It only suggests.')}
+                            className={secondary}
+                        >
+                            <Scale size={14} /> {__('Detect dissonances')}
+                        </button>
+                        <span className="flex items-center gap-2 rounded-full border border-primary/15 bg-primary/5 px-3 py-1.5 font-mono text-[8px] tracking-wider text-primary">
+                            <Settings2 size={12} /> {__('SYSTEMS WITH NARRATIVE')}
+                        </span>
                     </span>
                 }
             />
@@ -445,6 +458,22 @@ export default function Index({ project, mechanics, selected, scenes, characters
                         />
                     )}
                 </Modal>
+            )}
+
+            {reviewing && (
+                <DissonanceDialog
+                    projectId={project.id}
+                    dirty={dirty}
+                    onSelectMechanic={(id) => {
+                        const mechanic = mechanics.find((item) => item.id === id);
+
+                        if (mechanic) {
+                            setReviewing(false);
+                            choose(mechanic);
+                        }
+                    }}
+                    onClose={() => setReviewing(false)}
+                />
             )}
         </ProjectLayout>
     );

@@ -1,4 +1,4 @@
-import type { EmotionalAnalysis } from '../analysis/emotion.types';
+import type { NarrativeLabels, Vad } from '../analysis/emotion.types';
 import type { DialogueType } from '../dialogues/dialogues.types';
 
 export type VariableType = 'bool' | 'number';
@@ -138,14 +138,59 @@ export interface NodeContext {
     lore: { id: number; title: string; type?: string | null }[];
 }
 
-export interface AnalysisResponse {
-    analysis: EmotionalAnalysis;
-    context: NodeContext;
+/** NodeEmotionService::present (HU 45). */
+export interface NodeAnalysis {
+    id: number;
+    created_at: string | null;
+    from_cache: boolean;
+    /** El texto o el contexto cambiaron desde el análisis. */
+    stale: boolean;
+    source: 'groq' | 'keywords';
+    model: string | null;
+    degraded: boolean;
+    emotion: string;
+    labels: NarrativeLabels;
+    vad: Vad;
+    summary: string;
+    evidence: string;
+    flow: { justified: boolean | null; explanation: string };
+    speaker: {
+        character_id: number;
+        name: string;
+        emotion: string;
+        labels: NarrativeLabels;
+        vad: Vad;
+        evidence: string;
+        out_of_character: boolean;
+        out_of_character_reason: string;
+    } | null;
+    inconsistencies: { fragment: string; contradicts: string; explanation: string; severity: 'low' | 'medium' | 'high'; url: string | null }[];
+    suggestions: { kind: string; text: string; why: string }[];
+    feedback: Record<number, boolean>;
 }
 
 export interface ContextResponse {
     context: NodeContext;
-    analyses: EmotionalAnalysis[];
+    analysis: NodeAnalysis | null;
+}
+
+/** ConsequenceReviewService::review (HU 50). */
+export interface ConsequenceReview {
+    summary: string;
+    findings: {
+        kind: 'incompatibility' | 'convergence' | 'dead_condition' | 'unused_effect';
+        option_id: number;
+        node_id: number;
+        node_title: string;
+        option_label: string;
+        explanation: string;
+        evidence: string;
+        severity: 'low' | 'medium' | 'high';
+        /** Convergencia: revisión de diseño, no error. */
+        review: boolean;
+    }[];
+    truncated: boolean;
+    generation_id: number | null;
 }
 
 export type SaveStatus = 'idle' | 'pending' | 'saving' | 'saved' | 'error';

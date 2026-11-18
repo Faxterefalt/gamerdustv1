@@ -87,7 +87,8 @@ Route::middleware(['auth', 'verified'])->group(function (): void {
             Route::delete('variables/{variable}', 'destroyVariable')->name('variables.destroy');
             Route::get('playtest', 'playtest')->name('playtest');
             Route::get('nodes/{node}/context', 'context')->name('nodes.context');
-            Route::post('nodes/{node}/analysis', 'analyze')->name('nodes.analysis');
+            Route::get('nodes/{node}/analysis', 'analysis')->name('nodes.analysis');
+            Route::post('nodes/{node}/analyze', 'analyze')->middleware('throttle:ai')->name('nodes.analyze');
         });
 
     // Estudio del proyecto (secciones del sidebar).
@@ -136,6 +137,8 @@ Route::middleware(['auth', 'verified'])->group(function (): void {
         Route::post('script/scenes/{scene}/refine', [AiAssistController::class, 'refine'])->middleware('throttle:ai')->name('script.refine');
         Route::controller(AiAssistController::class)->prefix('ai')->name('ai.')->group(function (): void {
             Route::post('character-draft', 'characterDraft')->middleware('throttle:ai')->name('character-draft');
+            Route::post('consequence-review', 'consequenceReview')->middleware('throttle:ai')->name('consequence-review');
+            Route::post('ludonarrative-review', 'ludonarrativeReview')->middleware('throttle:ai')->name('ludonarrative-review');
             Route::post('feedback', 'feedback')->name('feedback');
         });
     });

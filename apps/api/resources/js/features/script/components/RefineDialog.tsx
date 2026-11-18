@@ -35,7 +35,11 @@ interface RefineDialogProps {
     /** Personajes vinculados a la escena (para "fiel a la personalidad de…"). */
     characters: NamedReference[];
     catalog: EmotionCatalog;
-    onApply: (text: string) => void;
+    /** "Usar como base": la sugerencia del análisis llega como instrucción (editable). */
+    initialInstruction?: string;
+    /** Bloques que se pueden elegir para refinar (desde una sugerencia, que es de toda la escena). */
+    choices?: ScriptBlock[];
+    onApply: (text: string, blockId: string) => void;
     onClose: () => void;
 }
 
@@ -43,10 +47,11 @@ interface RefineDialogProps {
  * Refinar un bloque del guion con IA: la propuesta se compara con el original y solo
  * "Aplicar" la lleva al borrador local (entra en deshacer/rehacer). Se guarda al pulsar Guardar.
  */
-export default function RefineDialog({ projectId, sceneId, block, blockLabel, characters, catalog, onApply, onClose }: RefineDialogProps) {
-    const [goal, setGoal] = useState<Goal>('more_tension');
+export default function RefineDialog({ projectId, sceneId, block: initialBlock, blockLabel, characters, catalog, initialInstruction = '', choices, onApply, onClose }: RefineDialogProps) {
+    const [block, setBlock] = useState(initialBlock);
+    const [goal, setGoal] = useState<Goal>(initialInstruction ? 'clearer' : 'more_tension');
     const [characterId, setCharacterId] = useState<number | ''>(characters[0]?.id ?? '');
-    const [instruction, setInstruction] = useState('');
+    const [instruction, setInstruction] = useState(initialInstruction);
     const [result, setResult] = useState<Proposal | null>(null);
     const [pending, setPending] = useState(false);
     const [error, setError] = useState('');
@@ -77,7 +82,28 @@ export default function RefineDialog({ projectId, sceneId, block, blockLabel, ch
 
     return (
         <Modal title={__('Refine with AI')} wide onClose={() => !pending && onClose()}>
-            <p className="mb-2 text-[10px] text-[#a2b697]">{__('Block to refine: :kind', { kind: blockLabel })}</p>
+            {choices && choices.length > 1 ? (
+                <label className="mb-2 block text-[10px] text-[#a2b697]">
+                    {__('Block to refine')}
+                    <select
+                        value={block.id}
+                        disabled={pending}
+                        onChange={(event) => {
+                            setBlock(choices.find((choice) => choice.id === event.target.value) ?? block);
+                            setResult(null);
+                        }}
+                        className={field}
+                    >
+                        {choices.map((choice, index) => (
+                            <option key={choice.id} value={choice.id}>
+                                {`${index + 1}. ${choice.text.slice(0, 70)}${choice.text.length > 70 ? '…' : ''}`}
+                            </option>
+                        ))}
+                    </select>
+                </label>
+            ) : (
+                <p className="mb-2 text-[10px] text-[#a2b697]">{__('Block to refine: :kind', { kind: blockLabel })}</p>
+            )}
             <p className="mb-5 whitespace-pre-wrap rounded-md border border-border bg-background p-3 font-mono text-[11px] leading-6 text-[#c2cfb8]">{block.text}</p>
 
             <fieldset disabled={pending}>
@@ -112,7 +138,11 @@ export default function RefineDialog({ projectId, sceneId, block, blockLabel, ch
 
                 <label className="mt-4 block text-xs">
                     {__('Extra instruction (optional)')}
-                    <input value={instruction} maxLength={300} onChange={(event) => setInstruction(event.target.value)} placeholder={__('E.g. Keep the reference to the lighthouse')} className={field} />
+                    {initialInstruction ? (
+                        <textarea value={instruction} maxLength={700} rows={3} onChange={(event) => setInstruction(event.target.value)} className={field} />
+                    ) : (
+                        <input value={instruction} maxLength={700} onChange={(event) => setInstruction(event.target.value)} placeholder={__('E.g. Keep the reference to the lighthouse')} className={field} />
+                    )}
                 </label>
             </fieldset>
 
@@ -163,7 +193,7 @@ export default function RefineDialog({ projectId, sceneId, block, blockLabel, ch
                                 <RefreshCw size={14} /> {__('Try another')}
                             </Pending>
                         </button>
-                        <button type="button" disabled={pending} onClick={() => onApply(result.proposal)} className={primarySm}>
+                        <button type="button" disabled={pending} onClick={() => onApply(result.proposal, block.id)} className={primarySm}>
                             <Check size={14} /> {__('Apply')}
                         </button>
                     </div>

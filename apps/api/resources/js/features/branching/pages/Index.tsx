@@ -1,10 +1,12 @@
 import { __ } from '../../../shared/lib/i18n';
 import { Head, Link } from '@inertiajs/react';
-import { CheckCircle2, CircleAlert, Loader2, Play, Save, Variable, X } from 'lucide-react';
+import { CheckCircle2, CircleAlert, Loader2, Play, Save, ScanSearch, Variable, X } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 import ProjectLayout from '../../../layouts/ProjectLayout';
+import type { EmotionCatalog } from '../../analysis/emotion.types';
 import type { BranchingGraph, SaveStatus } from '../branching.types';
 import BranchingCanvas from '../components/BranchingCanvas';
+import ConsequenceReviewDialog from '../components/ConsequenceReviewDialog';
 import NodeEditorPanel from '../components/NodeEditorPanel';
 import PlaytestDialog from '../components/PlaytestDialog';
 import VariablesDialog from '../components/VariablesDialog';
@@ -14,6 +16,7 @@ interface BranchingIndexProps {
     project: { id: number; title: string };
     graph: BranchingGraph;
     selectedNodeId: number | null;
+    emotionCatalog: EmotionCatalog;
 }
 
 const STATUS_LABEL: Record<SaveStatus, string> = {
@@ -30,12 +33,13 @@ const NOTICE_TONE = {
     error: 'border-rose-700 bg-rose-950/60 text-rose-100',
 } as const;
 
-export default function Index({ project, graph: initialGraph, selectedNodeId }: BranchingIndexProps) {
+export default function Index({ project, graph: initialGraph, selectedNodeId, emotionCatalog }: BranchingIndexProps) {
     const editor = useBranchingGraph(project.id, initialGraph);
     const { graph, displayNode, createNode, deleteNode, createOption, deleteOption, movePositions, flush } = editor;
     const [selectedId, setSelectedId] = useState<number | null>(selectedNodeId);
     const [focusNonce, setFocusNonce] = useState(selectedNodeId ? 1 : 0);
     const [showVariables, setShowVariables] = useState(false);
+    const [reviewing, setReviewing] = useState(false);
     // undefined = cerrado; null = desde el inicio; número = desde ese nodo.
     const [playFrom, setPlayFrom] = useState<number | null | undefined>(undefined);
 
@@ -131,6 +135,15 @@ export default function Index({ project, graph: initialGraph, selectedNodeId }: 
                     >
                         <Play size={14} /> {__('Test run')}
                     </button>
+                    <button
+                        type="button"
+                        onClick={() => setReviewing(true)}
+                        disabled={!graph.edges.length}
+                        title={__('The AI looks for decisions that may not fit together. It only suggests.')}
+                        className="flex items-center gap-1.5 border border-zinc-700 px-3 py-2 text-sm hover:border-amber-500 disabled:opacity-40"
+                    >
+                        <ScanSearch size={14} /> {__('Review consequences')}
+                    </button>
                     <button type="button" onClick={() => setShowVariables(true)} className="flex items-center gap-1.5 border border-zinc-700 px-3 py-2 text-sm hover:border-amber-500">
                         <Variable size={14} /> {__('Variables')} ({graph.variables.length})
                     </button>
@@ -192,6 +205,7 @@ export default function Index({ project, graph: initialGraph, selectedNodeId }: 
                             onFlush={flush}
                             onOpenVariables={() => setShowVariables(true)}
                             onPlayFromHere={() => void playtest(selected.id)}
+                            emotionCatalog={emotionCatalog}
                         />
                     </div>
                 )}
@@ -199,6 +213,18 @@ export default function Index({ project, graph: initialGraph, selectedNodeId }: 
 
             {showVariables && (
                 <VariablesDialog variables={graph.variables} error={editor.error} onSave={editor.saveVariable} onDelete={editor.deleteVariable} onClose={() => setShowVariables(false)} />
+            )}
+            {reviewing && (
+                <ConsequenceReviewDialog
+                    projectId={project.id}
+                    beforeReview={flush}
+                    onGoToNode={(nodeId) => {
+                        setSelectedId(nodeId);
+                        setFocusNonce((nonce) => nonce + 1);
+                        setReviewing(false);
+                    }}
+                    onClose={() => setReviewing(false)}
+                />
             )}
             {playFrom !== undefined && <PlaytestDialog projectId={project.id} startNodeId={playFrom} onClose={() => setPlayFrom(undefined)} />}
         </ProjectLayout>

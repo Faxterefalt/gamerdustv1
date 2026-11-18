@@ -1,5 +1,5 @@
 import { Link } from '@inertiajs/react';
-import { HeartPulse, LoaderCircle, RefreshCw, Sparkles, UserRound, X } from 'lucide-react';
+import { HeartPulse, LoaderCircle, RefreshCw, Sparkles, UserRound, Wand2, X } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { FormError } from '../../../shared/components/ui';
 import { api, ApiError } from '../../../shared/lib/api';
@@ -23,6 +23,8 @@ interface EmotionPanelProps {
     pendingAnalyze: boolean;
     onConsumed: () => void;
     onClose: () => void;
+    /** "Usar como base": abre Refinar con la sugerencia como instrucción (nada se aplica sin Aplicar + Guardar). */
+    onUseSuggestion?: (text: string) => void;
 }
 
 function readTechnical(): boolean {
@@ -37,7 +39,7 @@ function readTechnical(): boolean {
  * Panel lateral de análisis emocional de la escena guardada. Solo lee y propone:
  * nunca modifica el guion. La IA solo se llama al pulsar Analizar o Reanalizar.
  */
-export default function EmotionPanel({ projectId, sceneId, sceneCode, dirty, catalog, pendingAnalyze, onConsumed, onClose }: EmotionPanelProps) {
+export default function EmotionPanel({ projectId, sceneId, sceneCode, dirty, catalog, pendingAnalyze, onConsumed, onClose, onUseSuggestion }: EmotionPanelProps) {
     const [analysis, setAnalysis] = useState<SceneEmotionAnalysis | null>(null);
     const [status, setStatus] = useState<'loading' | 'analyzing' | 'idle'>('loading');
     const [error, setError] = useState('');
@@ -184,7 +186,7 @@ export default function EmotionPanel({ projectId, sceneId, sceneCode, dirty, cat
                     </p>
                 )}
 
-                {analysis && <AnalysisView projectId={projectId} analysis={analysis} catalog={catalog} technical={technical} dateLocale={dateLocale} />}
+                {analysis && <AnalysisView projectId={projectId} analysis={analysis} catalog={catalog} technical={technical} dateLocale={dateLocale} onUseSuggestion={onUseSuggestion} />}
             </div>
 
             <p className="border-t border-border px-5 py-3 text-[9px] leading-5 text-[#93a886]">{__('The AI only suggests: it never changes your script.')}</p>
@@ -198,12 +200,14 @@ function AnalysisView({
     catalog,
     technical,
     dateLocale,
+    onUseSuggestion,
 }: {
     projectId: number;
     analysis: SceneEmotionAnalysis;
     catalog: EmotionCatalog;
     technical: boolean;
     dateLocale: string;
+    onUseSuggestion?: (text: string) => void;
 }) {
     const { scene } = analysis;
 
@@ -271,7 +275,17 @@ function AnalysisView({
                                 <span className="font-mono text-[8px] tracking-wider text-primary">{suggestionKindLabel(suggestion.kind).toLocaleUpperCase()}</span>
                                 <p className="mt-1 text-[#d3dfca]">{suggestion.text}</p>
                                 {suggestion.why && <p className="mt-1 text-[10px] text-[#a2b697]">{suggestion.why}</p>}
-                                <div className="mt-2 flex justify-end">
+                                <div className="mt-2 flex items-center justify-end gap-3">
+                                    {onUseSuggestion && (
+                                        <button
+                                            type="button"
+                                            onClick={() => onUseSuggestion(suggestion.why ? `${suggestion.text} (${suggestion.why})` : suggestion.text)}
+                                            title={__('Open Refine with AI using this suggestion as the instruction')}
+                                            className="inline-flex items-center gap-1 text-[10px] text-primary hover:underline"
+                                        >
+                                            <Wand2 size={12} /> {__('Use as a base')}
+                                        </button>
+                                    )}
                                     <FeedbackButtons
                                         key={analysis.id}
                                         projectId={projectId}

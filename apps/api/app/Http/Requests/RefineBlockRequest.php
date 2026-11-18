@@ -41,7 +41,8 @@ class RefineBlockRequest extends FormRequest
                 'integer',
                 Rule::exists('characters', 'id')->where('project_id', $this->route('project')->id),
             ],
-            'instruction' => ['nullable', 'string', 'max:300'],
+            // Hasta 700 caracteres: "Usar como base" envía una sugerencia del análisis como instrucción.
+            'instruction' => ['nullable', 'string', 'max:700'],
         ];
     }
 }

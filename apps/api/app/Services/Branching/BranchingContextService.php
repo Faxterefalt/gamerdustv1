@@ -5,7 +5,7 @@ namespace App\Services\Branching;
 use App\Models\DialogueNode;
 
 /**
- * Reúne el contexto narrativo de un nodo para el motor de análisis existente. Solo lectura.
+ * Contexto narrativo de un nodo para el panel del editor (escena, hablante, opciones y Biblia). Solo lectura.
  */
 class BranchingContextService
 {
@@ -32,7 +32,9 @@ class BranchingContextService
                 'required_condition' => $option->required_condition,
                 'target' => $option->nextDialogueNode?->displayTitle(),
             ])->values()->all(),
-            'lore' => $node->project->loreEntries()->get(['id', 'title', 'type', 'description', 'narrative_function', 'emotional_tone'])->all(),
+            // Entradas de la Biblia vinculadas al nodo (dialogue_node_lore_entry).
+            'lore' => $node->loreEntries()->orderBy('title')->get(['lore_entries.id', 'title', 'type', 'description', 'narrative_function', 'emotional_tone'])
+                ->map(fn ($entry) => $entry->only(['id', 'title', 'type', 'description', 'narrative_function', 'emotional_tone']))->all(),
         ];
     }
 }

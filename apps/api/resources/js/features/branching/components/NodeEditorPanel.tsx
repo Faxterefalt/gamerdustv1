@@ -8,6 +8,7 @@ import type { BranchingGraph, GraphNode, GraphOption, GraphWarning, NodePatch, O
 import type { SaveError } from '../hooks/useBranchingGraph';
 import { DIALOGUE_TYPE_STYLE } from '../layout';
 import type { DialogueType } from '../../dialogues/dialogues.types';
+import type { EmotionCatalog } from '../../analysis/emotion.types';
 import NodeAnalysisSection from './NodeAnalysisSection';
 import OptionLogicEditor from './OptionLogicEditor';
 
@@ -30,6 +31,7 @@ interface NodeEditorPanelProps {
     onFlush: () => Promise<void>;
     onOpenVariables: () => void;
     onPlayFromHere: () => void;
+    emotionCatalog: EmotionCatalog;
 }
 
 const inputClass = 'nodrag nowheel w-full border border-zinc-700 bg-zinc-950 px-2 py-1.5 text-sm text-white outline-none focus:border-amber-500';
@@ -60,6 +62,7 @@ export default function NodeEditorPanel({
     onFlush,
     onOpenVariables,
     onPlayFromHere,
+    emotionCatalog,
 }: NodeEditorPanelProps) {
     const [linking, setLinking] = useState(false);
     const loreTitles = new Map(graph.lore_entries.map((entry) => [entry.id, entry.title]));
@@ -287,7 +290,7 @@ export default function NodeEditorPanel({
                     </section>
                 )}
 
-                <NodeAnalysisSection projectId={projectId} nodeId={node.id} beforeAnalyze={onFlush} />
+                <NodeAnalysisSection projectId={projectId} nodeId={node.id} catalog={emotionCatalog} beforeAnalyze={onFlush} />
 
                 <div className="flex items-center justify-between border-t border-zinc-800 pt-4">
                     <Link href={`/projects/${projectId}/dialogues/${node.id}/edit`} className="text-xs text-zinc-400 underline hover:text-white">

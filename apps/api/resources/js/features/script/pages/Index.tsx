@@ -152,8 +152,10 @@ export default function Index({ project, scenes, characters, locations, comments
     const [analyzeRequested, setAnalyzeRequested] = useState(false);
     const consumeAnalyze = useCallback(() => setAnalyzeRequested(false), []);
     const closeEmotions = useCallback(() => setEmotionOpen(false), []);
-    // Bloque que se está refinando con IA (copia del borrador en el momento de abrir).
+    // Bloque que se está refinando con IA (copia del borrador en el momento de abrir) y, desde "Usar como
+    // base", la sugerencia como instrucción y los bloques entre los que elegir.
     const [refining, setRefining] = useState<ScriptBlock | null>(null);
+    const [refineFrom, setRefineFrom] = useState<{ instruction: string; choices: ScriptBlock[] } | null>(null);
 
     const current = activeId === null ? undefined : docs[activeId];
     const dirty = Object.values(docs).some(isDirty);
@@ -793,6 +795,19 @@ export default function Index({ project, scenes, characters, locations, comments
                     pendingAnalyze={analyzeRequested}
                     onConsumed={consumeAnalyze}
                     onClose={closeEmotions}
+                    onUseSuggestion={(text) => {
+                        // Una sugerencia es de toda la escena: se propone el bloque enfocado o el primero con texto.
+                        const choices = current.snapshot.elements.filter((element) => element.kind !== 'character' && element.text.trim());
+
+                        if (!choices.length) {
+                            setError(__('Write a block with text to use this suggestion.'));
+
+                            return;
+                        }
+
+                        setRefineFrom({ instruction: text, choices });
+                        setRefining({ ...(choices.find((element) => element.id === focused) ?? choices[0]) });
+                    }}
                 />
             )}
 
@@ -804,14 +819,20 @@ export default function Index({ project, scenes, characters, locations, comments
                     blockLabel={toolLabel(refining.kind)}
                     characters={characters.filter((character) => current.snapshot.characters.includes(character.id))}
                     catalog={emotionCatalog}
-                    onClose={() => setRefining(null)}
-                    onApply={(text) => {
+                    initialInstruction={refineFrom?.instruction}
+                    choices={refineFrom?.choices}
+                    onClose={() => {
+                        setRefining(null);
+                        setRefineFrom(null);
+                    }}
+                    onApply={(text, blockId) => {
                         // Solo el borrador local: entra en deshacer/rehacer y se guarda con Guardar.
                         change((snapshot) => ({
                             ...snapshot,
-                            elements: snapshot.elements.map((element) => (element.id === refining.id ? { ...element, text } : element)),
+                            elements: snapshot.elements.map((element) => (element.id === blockId ? { ...element, text } : element)),
                         }));
                         setRefining(null);
+                        setRefineFrom(null);
                         setNotice(__('Proposal applied to your draft. Press Save to keep it.'));
                     }}
                 />

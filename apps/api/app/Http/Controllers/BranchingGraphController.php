@@ -19,7 +19,8 @@ use App\Services\Branching\BranchingNodeService;
 use App\Services\Branching\BranchingVariableService;
 use App\Services\Branching\DialoguePlayerView;
 use App\Services\Cost\NarrativeCostEstimatorService;
-use App\Services\Emotion\EmotionalAnalysisService;
+use App\Services\Emotion\EmotionTranslator;
+use App\Services\Emotion\NodeEmotionService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response as HttpResponse;
@@ -30,7 +31,7 @@ class BranchingGraphController extends Controller
 {
     public function __construct(private readonly BranchingNodeService $nodes) {}
 
-    public function index(Request $request, Project $project): Response
+    public function index(Request $request, Project $project, EmotionTranslator $emotions): Response
     {
         $this->authorize('view', $project);
 
@@ -38,6 +39,7 @@ class BranchingGraphController extends Controller
             'project' => $project->only(['id', 'title']),
             'graph' => (new BranchingGraphResource($project))->resolve($request),
             'selectedNodeId' => $request->integer('node') ?: null,
+            'emotionCatalog' => $emotions->catalog(),
         ]);
     }
 
@@ -159,31 +161,36 @@ class BranchingGraphController extends Controller
             ->header('Cache-Control', 'no-store');
     }
 
-    public function context(Project $project, DialogueNode $node, BranchingContextService $context): JsonResponse
+    public function context(Project $project, DialogueNode $node, BranchingContextService $context, NodeEmotionService $emotions): JsonResponse
     {
         $this->authorize('view', $project);
         $this->ensureNode($project, $node);
 
         return response()->json([
             'context' => $context->forNode($node),
-            'analyses' => $node->emotionalAnalyses()->limit(3)->get(),
+            'analysis' => $emotions->latest($node),
         ]);
     }
 
+    /** Último análisis emocional del nodo (no llama a la IA). */
+    public function analysis(Project $project, DialogueNode $node, NodeEmotionService $emotions): JsonResponse
+    {
+        $this->authorize('view', $project);
+        $this->ensureNode($project, $node);
+
+        return response()->json(['analysis' => $emotions->latest($node)]);
+    }
+
     /**
-     * Ejecuta el análisis emocional existente y lo guarda en emotional_analyses.
-     * Nunca modifica texto, opciones ni conexiones: el resultado es solo una sugerencia revisable.
+     * "Analizar emociones" del nodo (HU 45): Groq, o palabras clave sin clave o si falla.
+     * Responde solo con el análisis (no con el grafo) y nunca modifica el nodo ni sus opciones.
      */
-    public function analyze(Project $project, DialogueNode $node, EmotionalAnalysisService $service, BranchingContextService $context): JsonResponse
+    public function analyze(Request $request, Project $project, DialogueNode $node, NodeEmotionService $emotions): JsonResponse
     {
         $this->authorize('update', $project);
         $this->ensureNode($project, $node);
 
-        abort_if(blank($node->text), 422, __('There is not enough text to analyze.'));
-
-        $analysis = $service->createFor($project, $node, $node->text);
-
-        return response()->json(['analysis' => $analysis, 'context' => $context->forNode($node)]);
+        return response()->json(['analysis' => $emotions->analyze($node, $request->user()->id, $request->boolean('force'))]);
     }
 
     private function graphPayload(Request $request, Project $project): array
