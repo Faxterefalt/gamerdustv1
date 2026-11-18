@@ -6,6 +6,7 @@ use App\Models\CharacterEmotionalState;
 use App\Models\NarrativeValidation;
 use App\Models\Project;
 use App\Models\User;
+use App\Services\Branching\BranchingStateEvaluator;
 use App\Services\Branching\GraphInspector;
 use App\Services\Emotion\EmotionTimelineService;
 use App\Services\Emotion\SceneEmotionService;
@@ -112,7 +113,12 @@ class CumbreMudaSeederTest extends TestCase
         $nodes = $project->dialogueNodes()->with('options')->get();
 
         $inspection = app(GraphInspector::class)->inspect($nodes);
-        $this->assertSame($nodes->min('id'), $inspection['start_node_id']);
+        // Inicio y finales declarados: los finales no avisan de "sin salida".
+        $this->assertSame($nodes->firstWhere('title', 'Llegada a la sala común')->id, $inspection['start_node_id']);
+        $this->assertSame(1, $nodes->where('is_start', true)->count());
+        $endings = $nodes->where('is_ending', true);
+        $this->assertEqualsCanonicalizing(['Descenso con testigos', 'El juicio de Tomás', 'Pacto de silencio'], $endings->pluck('title')->all());
+        $this->assertCount(0, collect($inspection['warnings'])->where('code', 'no_outgoing')->whereIn('node_id', $endings->pluck('id')));
 
         $broken = collect($inspection['warnings'])->where('code', 'broken_option');
         $this->assertCount(1, $broken);
@@ -122,5 +128,44 @@ class CumbreMudaSeederTest extends TestCase
         // Las referencias {{Título}} de la confesión crearon opciones administradas hacia los tres finales.
         $confession = $nodes->firstWhere('title', 'Confesión en la terraza');
         $this->assertCount(3, $confession->options->whereNotNull('source_ref'));
+    }
+
+    public function test_las_variables_hacen_jugable_la_guardia_sola(): void
+    {
+        $project = $this->seedProject();
+        $this->assertEqualsCanonicalizing(['confianza_cordada', 'confianza_lucia', 'cabo_escondido'], $project->branchingVariables()->pluck('key')->all());
+
+        $evaluator = app(BranchingStateEvaluator::class);
+        $option = fn (string $text) => $project->dialogueNodes()->with('options')->get()->flatMap->options->firstWhere('player_option', $text);
+        $alone = $option('Hacer la guardia sola');
+        $state = $evaluator->initialState($project->branchingVariables()->get()->map->only(['key', 'type', 'initial_value']));
+
+        // Sin ganarse al grupo, la guardia sola no aparece; tras "Dejarlo estar por ahora" (+1), sí.
+        $this->assertSame(['var' => 'confianza_cordada', 'op' => '>=', 'value' => 1], $alone->condition);
+        $this->assertFalse($evaluator->isAvailable($alone->condition, $state));
+        $state = $evaluator->apply($option('Dejarlo estar por ahora')->effects, $state);
+        $this->assertTrue($evaluator->isAvailable($alone->condition, $state));
+
+        // Presionar a Marcos la cierra de nuevo.
+        $state = $evaluator->apply($option('Presionar: «¿Qué le pasó a la cuerda?»')->effects, $state);
+        $this->assertFalse($evaluator->isAvailable($alone->condition, $state));
+        $this->assertTrue($evaluator->apply($option('Esconder el cabo y esperar')->effects, $state)['cabo_escondido']);
+    }
+
+    public function test_incluye_una_editora_y_un_lector_de_ejemplo(): void
+    {
+        // Idempotente también con el equipo: los usuarios se reutilizan y los miembros caen con el proyecto.
+        $this->seedProject();
+        $project = $this->seedProject();
+        $this->assertSame(1, User::where('email', 'lector@example.com')->count());
+
+        $roles = $project->members()->with('user')->get()->mapWithKeys(fn ($member) => [$member->user->email => $member->role])->all();
+        $this->assertSame(['editora@example.com' => 'editor', 'lector@example.com' => 'viewer'], $roles);
+
+        $reader = User::where('email', 'lector@example.com')->firstOrFail();
+        $this->actingAs($reader)->get("/projects/{$project->id}/script")->assertOk();
+        $this->actingAs($reader)->postJson("/projects/{$project->id}/branching/nodes", ['title' => 'X'])->assertForbidden();
+        $this->actingAs(User::where('email', 'editora@example.com')->firstOrFail())->get('/projects')
+            ->assertInertia(fn ($page) => $page->where('projects.data.0.role', 'editor'));
     }
 }

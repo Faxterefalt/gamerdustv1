@@ -88,6 +88,7 @@ class CumbreMudaSeeder extends Seeder
         $this->createEmotionalAnalyses();
         $this->createComments();
         $this->createFeedback();
+        $this->createMembers();
 
         // Contradicciones de reglas (reglas irrompibles rotas, coste sin definir...): las mismas que ve el autor en el Panel.
         app(NarrativeValidationService::class)->run($this->project);
@@ -420,8 +421,11 @@ class CumbreMudaSeeder extends Seeder
         $n = [];
         $i = 0;
 
-        // El nodo inicial es el de menor id: se crea primero.
-        $node = function (string $title, string $scene, ?string $char, string $type, string $tone, string $text, ?string $trigger, float $x, float $y) use (&$n, &$i) {
+        // Inicio y finales declarados (HU 18): el inspector y el reproductor los respetan.
+        $start = 'Llegada a la sala común';
+        $endings = ['Descenso con testigos', 'El juicio de Tomás', 'Pacto de silencio'];
+
+        $node = function (string $title, string $scene, ?string $char, string $type, string $tone, string $text, ?string $trigger, float $x, float $y) use (&$n, &$i, $start, $endings) {
             $i++;
 
             return $n[$title] = $this->project->dialogueNodes()->create([
@@ -435,8 +439,19 @@ class CumbreMudaSeeder extends Seeder
                 'trigger_condition' => $trigger,
                 'pos_x' => $x,
                 'pos_y' => $y,
+                'is_start' => $title === $start,
+                'is_ending' => in_array($title, $endings, true),
             ]);
         };
+
+        // Variables del recorrido (HU 19): la confianza decide si Irene puede hacer la guardia sola.
+        foreach ([
+            ['confianza_cordada', 'number', 0, 'Confianza del grupo en Irene. Sube si escucha sin presionar.'],
+            ['confianza_lucia', 'number', 0, 'Lo que Lucía confía en Irene después del almacén.'],
+            ['cabo_escondido', 'bool', false, 'Irene escondió el cabo cortado.'],
+        ] as [$key, $type, $initial, $description]) {
+            $this->project->branchingVariables()->create(['key' => $key, 'type' => $type, 'initial_value' => $initial, 'description' => $description]);
+        }
 
         // ── Acto I
         $node('Llegada a la sala común', 'e1', 'irene', 'interactive_alternative_paths', 'calm',
@@ -477,36 +492,40 @@ class CumbreMudaSeeder extends Seeder
             'Acuerdan no decir nada. El helicóptero los baja y el cabo queda enterrado bajo la nieve. Seguirán juntos, pero ninguno volverá a mirar la cuerda de otro.', 'Final: paz falsa, culpa compartida.', 2880, 500);
 
         // Opciones manuales (con consecuencias y condiciones; nunca las toca la sincronización de referencias).
-        $opt = function (string $from, string $text, ?string $to, ?string $consequence = null, ?string $condition = null) use (&$n) {
+        // `consequence` y `required_condition` son las notas del autor; `when` y `effects` las evalúa el reproductor.
+        $opt = function (string $from, string $text, ?string $to, ?string $consequence = null, ?string $condition = null, ?array $when = null, ?array $effects = null) use (&$n) {
             $n[$from]->options()->create([
                 'next_dialogue_node_id' => $to ? $n[$to]->id : null,
                 'player_option' => $text, 'consequence' => $consequence, 'required_condition' => $condition,
+                'condition' => $when, 'effects' => $effects,
             ]);
         };
+        $add = fn (string $var, int $value) => [['var' => $var, 'op' => $value >= 0 ? 'add' : 'sub', 'value' => abs($value)]];
 
         $opt('Llegada a la sala común', 'Pedir a Lucía el parte meteorológico', 'Parte meteorológico', 'Desbloquea la ventana de calma del tercer amanecer.');
         $opt('Llegada a la sala común', 'Preguntar a Marcos por qué ha vuelto este año', 'Marcos esquiva la pregunta', 'Marcos se pone a la defensiva.');
         $opt('Llegada a la sala común', 'Dejar a Tomás a solas con su duelo', 'Tomás y la cuerda de Dani', 'Tomás confía algo más en ti.');
         $opt('Parte meteorológico', 'Anotar la ventana de calma y seguir', 'Reparto de guardias', 'Se anota la ventana de rescate para el desenlace.');
-        $opt('Marcos esquiva la pregunta', 'Presionar: «¿Qué le pasó a la cuerda?»', 'Reparto de guardias', 'Confianza de Marcos −1.');
-        $opt('Marcos esquiva la pregunta', 'Dejarlo estar por ahora', 'Reparto de guardias', 'Confianza de Marcos +1.');
-        $opt('Tomás y la cuerda de Dani', 'Sentarte a su lado en silencio', 'Reparto de guardias', 'Confianza de Tomás +1.');
+        $opt('Marcos esquiva la pregunta', 'Presionar: «¿Qué le pasó a la cuerda?»', 'Reparto de guardias', 'Confianza de cordada −1.', null, null, $add('confianza_cordada', -1));
+        $opt('Marcos esquiva la pregunta', 'Dejarlo estar por ahora', 'Reparto de guardias', 'Confianza de cordada +1.', null, null, $add('confianza_cordada', 1));
+        $opt('Tomás y la cuerda de Dani', 'Sentarte a su lado en silencio', 'Reparto de guardias', 'Confianza de cordada +1.', null, null, $add('confianza_cordada', 1));
         $opt('Reparto de guardias', 'Hacer la primera guardia con Marcos', 'Marcos vigila contigo', 'Vigilas a Marcos, pero Tomás queda libre para rondar el almacén.');
         $opt('Reparto de guardias', 'Hacer la primera guardia con Tomás', 'Tomás vigila contigo', 'Tomás baja contigo al almacén y ve el cabo a la vez que tú.');
-        $opt('Reparto de guardias', 'Hacer la guardia sola', 'El cabo cortado', 'Descubres el cabo antes que nadie, sin testigos.', 'Confianza de cordada ≥ 2');
+        // Solo aparece si Irene se ganó al grupo en el acto I.
+        $opt('Reparto de guardias', 'Hacer la guardia sola', 'El cabo cortado', 'Descubres el cabo antes que nadie, sin testigos.', 'Confianza de cordada ≥ 1', ['var' => 'confianza_cordada', 'op' => '>=', 'value' => 1]);
         $opt('Marcos vigila contigo', 'Bajar al almacén de todas formas', 'El cabo cortado', 'Marcos sospecha de ti.');
         $opt('Tomás vigila contigo', 'Bajar al almacén con él', 'El cabo cortado', 'Tomás ve el cabo en tus manos.');
         $opt('El cabo cortado', 'Mostrar el cabo a Tomás', 'Tomás estalla', 'Tomás pierde el control; Marcos queda acorralado.');
-        $opt('El cabo cortado', 'Esconder el cabo y esperar', 'El silencio de Irene', 'Ganas tiempo, pero Lucía te ve esconderlo.');
+        $opt('El cabo cortado', 'Esconder el cabo y esperar', 'El silencio de Irene', 'Ganas tiempo, pero Lucía te ve esconderlo.', null, null, [['var' => 'cabo_escondido', 'op' => 'set', 'value' => true]]);
         $opt('El cabo cortado', 'Enfrentar a Marcos a solas', 'Marcos a solas', 'Abres la vía de la confesión privada.');
         $opt('Tomás estalla', 'Contener a Tomás y exigir calma', 'La luz se apaga', 'Tomás confía en ti; Marcos queda a la defensiva.');
         $opt('Tomás estalla', 'Dejar que Tomás se enfrente a Marcos', 'La luz se apaga', 'Marcos queda herido; Tomás se acerca a un punto sin retorno.');
         // Opción rota a propósito: contradice la regla «Nadie se queda atrás» y el inspector la marca como error.
-        $opt('Tomás estalla', 'Dejar a Marcos fuera, en la tormenta', null, 'Rompe «Nadie se queda atrás»: pierdes el aval del macizo. (Destino sin escribir.)', 'Confianza de cordada ≤ 1');
-        $opt('El silencio de Irene', 'Seguir adelante con el secreto', 'La luz se apaga', 'Confianza de Lucía −2.');
+        $opt('Tomás estalla', 'Dejar a Marcos fuera, en la tormenta', null, 'Rompe «Nadie se queda atrás»: pierdes el aval del macizo. (Destino sin escribir.)', 'Confianza de cordada ≤ 0', ['var' => 'confianza_cordada', 'op' => '<=', 'value' => 0]);
+        $opt('El silencio de Irene', 'Seguir adelante con el secreto', 'La luz se apaga', 'Confianza de Lucía −2.', null, null, $add('confianza_lucia', -2));
         $opt('Marcos a solas', 'Exigirle que lo confiese ante todos', 'La luz se apaga', 'Marcos acepta confesar al amanecer.');
         $opt('La luz se apaga', 'Salir a buscar a Lucía', 'Confesión en la terraza', 'Gastas horas de generador; arriesgas a Irene en la tormenta.');
-        $opt('La luz se apaga', 'Esperar a que Lucía vuelva', 'Confesión en la terraza', 'Lucía regresa herida; pierdes confianza.');
+        $opt('La luz se apaga', 'Esperar a que Lucía vuelva', 'Confesión en la terraza', 'Lucía regresa herida; pierdes confianza.', null, null, $add('confianza_lucia', -1));
 
         // Referencias {{Título}}: crea las opciones administradas hacia los tres finales (ya existen, no se crean nodos nuevos).
         app(ReferenceSyncService::class)->sync($n['Confesión en la terraza']);
@@ -518,6 +537,32 @@ class CumbreMudaSeeder extends Seeder
         foreach ($managed as $title => $consequence) {
             $n['Confesión en la terraza']->options()->where('source_ref', Str::lower($title))->update(['consequence' => $consequence]);
         }
+    }
+
+    // ───────────────────────── Equipo de ejemplo ─────────────────────────
+
+    /**
+     * Colaboración (HU 5): una editora que escribe y un lector que solo lee, para probar los roles.
+     * Contraseña "password", como el usuario de pruebas.
+     */
+    private function createMembers(): void
+    {
+        foreach ([
+            ['editora@example.com', 'Ana (coguionista)', 'editor'],
+            ['lector@example.com', 'Bruno (lector de pruebas)', 'viewer'],
+        ] as [$email, $name, $role]) {
+            $user = User::query()->firstOrCreate(['email' => $email], ['name' => $name, 'password' => Hash::make('password')]);
+            $user->forceFill(['email_verified_at' => $user->email_verified_at ?? now()])->save();
+
+            $this->project->members()->create(['user_id' => $user->id, 'role' => $role, 'invited_by' => $this->user->id]);
+        }
+
+        $editor = User::query()->where('email', 'editora@example.com')->value('id');
+        $this->project->comments()->create([
+            'user_id' => $editor,
+            'scene_id' => $this->scenes['e2']->id,
+            'text' => 'He revisado el almacén: si Irene hace la guardia sola, el hallazgo del cabo gana mucha fuerza. ¿Lo dejamos como premio a la confianza?',
+        ]);
     }
 
     // ───────────────────────── Costes y comentarios ─────────────────────────

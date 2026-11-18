@@ -135,7 +135,7 @@ class DialogueHtmlExportTest extends TestCase
         $this->assertSame(__('This project has no dialogues yet.'), json_decode($match[1], true)['texts']['empty']);
     }
 
-    public function test_solo_el_propietario_puede_exportar(): void
+    public function test_un_usuario_ajeno_al_proyecto_no_puede_exportar(): void
     {
         $other = User::factory()->create();
 
