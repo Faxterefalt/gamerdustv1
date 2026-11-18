@@ -107,6 +107,7 @@ Route::middleware(['auth', 'verified'])->group(function (): void {
         Route::get('collaboration', [StudioController::class, 'collaboration'])->name('collaboration');
         Route::get('reports', [StudioController::class, 'reports'])->name('reports');
         Route::get('reports/markdown', [StudioController::class, 'markdown'])->name('reports.markdown');
+        Route::get('reports/dialogues', [StudioController::class, 'dialogues'])->name('reports.dialogues');
 
         Route::resource('mechanics', MechanicController::class)->only(['index', 'store', 'update', 'destroy']);
         Route::resource('comments', CommentController::class)->only(['store', 'destroy']);

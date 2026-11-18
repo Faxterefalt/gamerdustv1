@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\BranchingGraphResource;
 use App\Models\Project;
 use App\Models\Scene;
 use App\Services\Emotion\EmotionTimelineService;
@@ -21,6 +22,16 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 class StudioController extends Controller
 {
     /** Claves de traducción de la rigidez de las reglas (exportación). */
+    /** Claves de traducción de los tipos de diálogo (las mismas que `branching/layout.ts`). */
+    private const DIALOGUE_TYPE_LABELS = [
+        'cutscene' => 'Cutscene',
+        'ambient' => 'Ambient',
+        'bark' => 'Bark',
+        'interactive_no_branch' => 'Interactive, no branches',
+        'interactive_rubber_banding' => 'Interactive, rubber-banding',
+        'interactive_alternative_paths' => 'Interactive, alternative paths',
+    ];
+
     private const RIGIDITY_LABELS = ['unbreakable' => 'Unbreakable', 'costly' => 'Breakable at a cost', 'flexible' => 'Flexible'];
 
     public function bible(Project $project): Response
@@ -91,6 +102,7 @@ class StudioController extends Controller
                 'characters' => $project->characters()->count(),
                 'locations' => $project->loreEntries()->where('type', 'location')->count(),
                 'mechanics' => $project->mechanics()->count(),
+                'dialogues' => $project->dialogueNodes()->count(),
             ],
         ]);
     }
@@ -186,6 +198,26 @@ class StudioController extends Controller
             fn () => print (implode("\n", $lines)),
             Str::slug($project->title ?: 'project').'-'.Str::slug(__('world')).'.md',
             ['Content-Type' => 'text/markdown; charset=UTF-8'],
+        );
+    }
+
+    /**
+     * Diálogos ramificados en un HTML autónomo (sin red) al estilo Twine: mapa de nodos y modo lectura.
+     */
+    public function dialogues(Request $request, Project $project): StreamedResponse
+    {
+        $this->authorize('view', $project);
+
+        $html = view('reports.dialogues', [
+            'project' => $project,
+            'graph' => (new BranchingGraphResource($project))->resolve($request),
+            'typeLabels' => array_map(fn (string $label) => __($label), self::DIALOGUE_TYPE_LABELS),
+        ])->render();
+
+        return response()->streamDownload(
+            fn () => print ($html),
+            Str::slug($project->title ?: 'project').'-'.Str::slug(__('dialogues')).'.html',
+            ['Content-Type' => 'text/html; charset=UTF-8'],
         );
     }
 }

@@ -1,5 +1,5 @@
 import { Head } from '@inertiajs/react';
-import { Download, FileDown, FileText } from 'lucide-react';
+import { Download, FileDown, FileText, Network } from 'lucide-react';
 import ProjectLayout from '../../../layouts/ProjectLayout';
 import { PageHeading } from '../../../shared/components/ui';
 import { __, choice } from '../../../shared/lib/i18n';
@@ -9,7 +9,7 @@ import type { Project } from '../../projects/projects.types';
 
 interface ReportsProps {
     project: Project;
-    counts: { scenes: number; characters: number; locations: number; mechanics: number };
+    counts: { scenes: number; characters: number; locations: number; mechanics: number; dialogues: number };
 }
 
 export default function Index({ project, counts }: ReportsProps) {
@@ -46,7 +46,7 @@ export default function Index({ project, counts }: ReportsProps) {
                 </div>
             </section>
 
-            <div className="grid gap-5 lg:grid-cols-2">
+            <div className="grid gap-5 lg:grid-cols-2 xl:grid-cols-3">
                 <article className={`${card} flex flex-col items-start p-6 sm:p-8`}>
                     <FileText size={27} className="text-primary" strokeWidth={1.4} />
                     <h2 className="mt-6 font-display text-xl">{__('Bible and script in Markdown')}</h2>
@@ -65,6 +65,19 @@ export default function Index({ project, counts }: ReportsProps) {
                     </p>
                     <a href={`${base}/script/print`} target="_blank" rel="noopener" className={primarySm}>
                         <Download size={14} /> {__('Export PDF')}
+                    </a>
+                </article>
+                <article className={`${card} flex flex-col items-start p-6 sm:p-8 lg:col-span-2 xl:col-span-1`}>
+                    <Network size={27} className="text-primary" strokeWidth={1.4} />
+                    <h2 className="mt-6 font-display text-xl">{__('Interactive dialogue map')}</h2>
+                    <p className="mb-7 mt-3 flex-1 text-xs leading-7 text-[#adbea1]">
+                        {__('Every dialogue node and its choices in a standalone HTML file, like Twine: explore the decision map or play through the branches in any browser, without internet.')}
+                        <span className="mt-2 block text-[#9eb392]">
+                            {choice(':count node|:count nodes', counts.dialogues)}
+                        </span>
+                    </p>
+                    <a href={`${base}/reports/dialogues`} className={primarySm}>
+                        <Download size={14} /> {__('Download .html')}
                     </a>
                 </article>
             </div>
