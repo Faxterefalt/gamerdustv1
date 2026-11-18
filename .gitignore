@@ -15,6 +15,7 @@ node_modules/
 __pycache__/
 .venv/
 prompt-ia-emocional-gamerdust.md
+prompt-cierre-mvp.md
 /apps/api/vendor
 /apps/api/public/build
 /apps/api/public/hot
