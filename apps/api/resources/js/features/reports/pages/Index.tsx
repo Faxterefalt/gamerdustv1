@@ -1,5 +1,5 @@
 import { Head } from '@inertiajs/react';
-import { Download, FileDown, FileText, Network } from 'lucide-react';
+import { ClipboardList, Download, FileDown, FileText, Network } from 'lucide-react';
 import ProjectLayout from '../../../layouts/ProjectLayout';
 import { PageHeading } from '../../../shared/components/ui';
 import { __, choice } from '../../../shared/lib/i18n';
@@ -46,7 +46,7 @@ export default function Index({ project, counts }: ReportsProps) {
                 </div>
             </section>
 
-            <div className="grid gap-5 lg:grid-cols-2 xl:grid-cols-3">
+            <div className="grid gap-5 lg:grid-cols-2 2xl:grid-cols-4">
                 <article className={`${card} flex flex-col items-start p-6 sm:p-8`}>
                     <FileText size={27} className="text-primary" strokeWidth={1.4} />
                     <h2 className="mt-6 font-display text-xl">{__('Bible and script in Markdown')}</h2>
@@ -67,7 +67,7 @@ export default function Index({ project, counts }: ReportsProps) {
                         <Download size={14} /> {__('Export PDF')}
                     </a>
                 </article>
-                <article className={`${card} flex flex-col items-start p-6 sm:p-8 lg:col-span-2 xl:col-span-1`}>
+                <article className={`${card} flex flex-col items-start p-6 sm:p-8`}>
                     <Network size={27} className="text-primary" strokeWidth={1.4} />
                     <h2 className="mt-6 font-display text-xl">{__('Interactive dialogue map')}</h2>
                     <p className="mb-7 mt-3 flex-1 text-xs leading-7 text-[#adbea1]">
@@ -78,6 +78,16 @@ export default function Index({ project, counts }: ReportsProps) {
                     </p>
                     <a href={`${base}/reports/dialogues`} className={primarySm}>
                         <Download size={14} /> {__('Download .html')}
+                    </a>
+                </article>
+                <article className={`${card} flex flex-col items-start p-6 sm:p-8`}>
+                    <ClipboardList size={27} className="text-primary" strokeWidth={1.4} />
+                    <h2 className="mt-6 font-display text-xl">{__('Analysis report')}</h2>
+                    <p className="mb-7 mt-3 flex-1 text-xs leading-7 text-[#adbea1]">
+                        {__('The emotional reading of each scene in narrative language, red and amber alerts, inconsistencies, suggestions and coherence validations, with the script version each analysis read. Opens the print view.')}
+                    </p>
+                    <a href={`${base}/reports/analysis`} target="_blank" rel="noopener" className={primarySm}>
+                        <Download size={14} /> {__('Open report')}
                     </a>
                 </article>
             </div>

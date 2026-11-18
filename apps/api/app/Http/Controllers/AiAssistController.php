@@ -14,6 +14,7 @@ use App\Services\Assist\BlockRefineService;
 use App\Services\Assist\CharacterDraftService;
 use App\Services\Assist\ConsequenceReviewService;
 use App\Services\Assist\LudonarrativeReviewService;
+use App\Support\OpsLog;
 use Illuminate\Http\JsonResponse;
 
 /**
@@ -85,6 +86,11 @@ class AiAssistController extends Controller
     /** Sin degradación a palabras clave: un aviso amable y la edición sigue. */
     private function busy(AiUnavailableException $exception): JsonResponse
     {
+        // La respuesta llegó pero no pasó la validación en PHP (los fallos de red ya los registra GroqClient).
+        if ($exception->getMessage() === 'invalid_output') {
+            OpsLog::ai('invalid_output', ['generation_id' => $exception->generationId, 'user_id' => auth()->id()]);
+        }
+
         $message = $exception->getMessage() === 'groq_not_configured'
             ? __('The AI connection is not configured.')
             : __('AI is busy, try again in a minute');

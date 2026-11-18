@@ -1,9 +1,11 @@
 import { __ } from '../../../shared/lib/i18n';
-import { Head, Link, useForm } from '@inertiajs/react';
+import { Head, Link, useForm, usePage } from '@inertiajs/react';
 import type { FormEvent } from 'react';
 import LocaleSwitcher from '../../../layouts/components/LocaleSwitcher';
+import type { PageProps } from '../../projects/projects.types';
 
 export default function Login() {
+    const { flash } = usePage<PageProps>().props;
     const { data, setData, post, processing, errors } = useForm({
         email: 'test@example.com',
         password: 'password',
@@ -24,6 +26,11 @@ export default function Login() {
                     <LocaleSwitcher />
                 </div>
                 <p className="mt-2 text-sm text-zinc-400">{__('Local access to the narrative workspace.')}</p>
+                {flash?.success && (
+                    <p role="status" className="mt-5 border border-emerald-700 bg-emerald-950/60 px-3 py-2 text-sm text-emerald-100">
+                        {flash.success}
+                    </p>
+                )}
 
                 <form onSubmit={submit} className="mt-6 space-y-4">
                     <label className="block">
@@ -48,9 +55,12 @@ export default function Login() {
                     </button>
                 </form>
 
-                <div className="mt-5 text-sm text-zinc-400">
+                <div className="mt-5 flex flex-wrap justify-between gap-3 text-sm text-zinc-400">
                     <Link href="/register" className="text-amber-200 hover:text-amber-100">
                         {__('Create account')}
+                    </Link>
+                    <Link href="/forgot-password" className="text-amber-200 hover:text-amber-100">
+                        {__('Forgot your password?')}
                     </Link>
                 </div>
             </section>

@@ -14,6 +14,7 @@ use App\Http\Controllers\LocaleController;
 use App\Http\Controllers\LoreEntryController;
 use App\Http\Controllers\MechanicController;
 use App\Http\Controllers\NarrativeValidationController;
+use App\Http\Controllers\PasswordResetController;
 use App\Http\Controllers\ProjectConstraintController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\SceneController;
@@ -32,6 +33,12 @@ Route::middleware('guest')->group(function (): void {
     Route::post('login', [AuthController::class, 'store'])->name('login.store');
     Route::get('register', [AuthController::class, 'register'])->name('register');
     Route::post('register', [AuthController::class, 'storeRegistration'])->name('register.store');
+
+    // Recuperar contraseña (nombres estándar: el correo de Laravel enlaza a password.reset).
+    Route::get('forgot-password', [PasswordResetController::class, 'create'])->name('password.request');
+    Route::post('forgot-password', [PasswordResetController::class, 'store'])->middleware('throttle:password-reset')->name('password.email');
+    Route::get('reset-password/{token}', [PasswordResetController::class, 'edit'])->name('password.reset');
+    Route::post('reset-password', [PasswordResetController::class, 'update'])->middleware('throttle:password-reset')->name('password.store');
 });
 
 Route::post('logout', [AuthController::class, 'destroy'])
@@ -113,6 +120,7 @@ Route::middleware(['auth', 'verified'])->group(function (): void {
         Route::get('reports', [StudioController::class, 'reports'])->name('reports');
         Route::get('reports/markdown', [StudioController::class, 'markdown'])->name('reports.markdown');
         Route::get('reports/dialogues', [StudioController::class, 'dialogues'])->name('reports.dialogues');
+        Route::get('reports/analysis', [StudioController::class, 'analysisReport'])->name('reports.analysis');
 
         Route::resource('mechanics', MechanicController::class)->only(['index', 'store', 'update', 'destroy']);
         Route::resource('comments', CommentController::class)->only(['store', 'destroy']);

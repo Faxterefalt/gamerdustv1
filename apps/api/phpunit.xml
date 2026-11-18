@@ -35,6 +35,8 @@
         <!-- Sin clave real: los tests de IA la definen y usan Http::fake(). -->
         <env name="GROQ_API_KEY" value=""/>
         <env name="GAMERDUST_AI_DRIVER" value="keywords"/>
+        <!-- El canal gamerdust no escribe en storage/logs durante los tests (ObservabilityTest lo lee en memoria). -->
+        <env name="GAMERDUST_LOG_LEVEL" value="emergency"/>
         <!-- Los tests no renderizan en servidor (y no pueden hacer peticiones HTTP reales). -->
         <env name="INERTIA_SSR_ENABLED" value="false"/>
     </php>

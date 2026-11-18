@@ -33,5 +33,16 @@ class AppServiceProvider extends ServiceProvider
         // Llamadas de IA por usuario y minuto (presupuesto del plan gratuito de Groq).
         RateLimiter::for('ai', fn (Request $request) => Limit::perMinute((int) config('gamerdust.ai.rate_limit_per_minute', 10))
             ->by($request->user()?->id ?: $request->ip()));
+
+        // Recuperar contraseña: 5 intentos por minuto y por IP + correo, y 20 por IP (evita sondear correos).
+        // Al superarlo se vuelve al formulario con un aviso (no una página 429).
+        RateLimiter::for('password-reset', function (Request $request) {
+            $tooMany = fn () => back()->withErrors(['email' => __('passwords.throttled')])->onlyInput('email');
+
+            return [
+                Limit::perMinute(5)->by('password-reset:'.$request->ip().'|'.mb_strtolower((string) $request->input('email')))->response($tooMany),
+                Limit::perMinute(20)->by('password-reset-ip:'.$request->ip())->response($tooMany),
+            ];
+        });
     }
 }

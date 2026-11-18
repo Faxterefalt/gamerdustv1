@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Middleware\HandleInertiaRequests;
+use App\Http\Middleware\LogServerErrors;
 use App\Http\Middleware\SetLocale;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -14,6 +15,9 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        // Global: registra cualquier 5xx en el canal gamerdust (HU 59).
+        $middleware->append(LogServerErrors::class);
+
         $middleware->web(append: [
             SetLocale::class,
             HandleInertiaRequests::class,

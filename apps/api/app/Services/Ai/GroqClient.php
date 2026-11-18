@@ -3,6 +3,7 @@
 namespace App\Services\Ai;
 
 use App\Models\AiGeneration;
+use App\Support\OpsLog;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Http;
@@ -47,6 +48,7 @@ class GroqClient
                 $response = $this->request($model, $system, $user, $schema, $schemaName, $maxTokens);
             } catch (AiUnavailableException $exception) {
                 $error = $exception;
+                OpsLog::ai('attempt_failed', [...($log ?? []), 'model' => $model, 'attempt' => $index + 1, 'reason' => $exception->getMessage()]);
 
                 if (! $exception->retriable) {
                     break;
@@ -66,6 +68,12 @@ class GroqClient
                 'latency_ms' => $this->elapsed($started),
             ];
 
+            $generationId = $this->record($log, $user, $schemaName, $system, $result);
+
+            if ($index > 0) {
+                OpsLog::ai('fallback', [...($log ?? []), 'model' => $model, 'generation_id' => $generationId, 'latency_ms' => $result['latency_ms']], 'notice');
+            }
+
             return new AiResponse(
                 data: $result['data'],
                 model: $model,
@@ -74,7 +82,7 @@ class GroqClient
                 completionTokens: $result['completion_tokens'],
                 totalTokens: $result['total_tokens'],
                 latencyMs: $result['latency_ms'],
-                generationId: $this->record($log, $user, $schemaName, $system, $result),
+                generationId: $generationId,
             );
         }
 
@@ -85,6 +93,13 @@ class GroqClient
             'latency_ms' => $this->elapsed($started),
             'error' => $error->getMessage(),
         ]);
+
+        OpsLog::ai('unavailable', [
+            ...($log ?? []),
+            'reason' => $error->getMessage(),
+            'generation_id' => $generationId,
+            'latency_ms' => $this->elapsed($started),
+        ], 'error');
 
         throw $error->withGeneration($generationId);
     }
@@ -97,6 +112,8 @@ class GroqClient
         if ($generationId) {
             AiGeneration::whereKey($generationId)->update(['status' => 'degraded']);
         }
+
+        OpsLog::ai('degraded', ['generation_id' => $generationId, 'reason' => 'keywords_fallback'], 'notice');
     }
 
     private function request(string $model, string $system, string $user, array $schema, string $schemaName, int $maxTokens): Response

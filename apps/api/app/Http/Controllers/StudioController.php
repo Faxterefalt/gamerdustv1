@@ -9,10 +9,12 @@ use App\Services\Emotion\EmotionTimelineService;
 use App\Services\Emotion\EmotionTranslator;
 use App\Services\Narrative\NarrativeValidationService;
 use App\Services\Narrative\ProductionUsage;
+use App\Services\Reports\AnalysisReportService;
 use App\Services\Script\ScriptService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Illuminate\View\View;
 use Inertia\Inertia;
 use Inertia\Response;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -199,6 +201,16 @@ class StudioController extends Controller
     /**
      * Diálogos ramificados en un HTML autónomo (sin red) al estilo Twine: mapa de nodos y modo lectura.
      */
+    /**
+     * Reporte imprimible de análisis (HU 57): vista Blade como script/print, solo lectura.
+     */
+    public function analysisReport(Project $project, AnalysisReportService $reports): View
+    {
+        $this->authorize('view', $project);
+
+        return view('reports.analysis', ['project' => $project, 'report' => $reports->build($project)]);
+    }
+
     public function dialogues(Request $request, Project $project, DialoguePlayerView $player): StreamedResponse
     {
         $this->authorize('view', $project);

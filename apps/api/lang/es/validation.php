@@ -197,6 +197,7 @@ return [
         'email' => 'correo electrónico',
         'password' => 'contraseña',
         'password_confirmation' => 'confirmación de contraseña',
+        'token' => 'enlace de restablecimiento',
         'current_password' => 'contraseña actual',
 
         // Proyecto y planteamiento narrativo

@@ -123,6 +123,15 @@ return [
             'handler' => NullHandler::class,
         ],
 
+        // Observabilidad de Gamerdust (HU 59): fallos de IA y errores 5xx, sin la clave ni texto narrativo.
+        'gamerdust' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/gamerdust.log'),
+            'level' => env('GAMERDUST_LOG_LEVEL', 'info'),
+            'days' => env('GAMERDUST_LOG_DAYS', 30),
+            'replace_placeholders' => true,
+        ],
+
         'emergency' => [
             'path' => storage_path('logs/laravel.log'),
         ],
