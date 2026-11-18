@@ -14,7 +14,7 @@ Thumbs.db
 node_modules/
 __pycache__/
 .venv/
-
+prompt-ia-emocional-gamerdust.md
 /apps/api/vendor
 /apps/api/public/build
 /apps/api/public/hot
