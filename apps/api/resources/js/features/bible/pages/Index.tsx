@@ -6,7 +6,7 @@ import { __ } from '../../../shared/lib/i18n';
 import { card, secondary } from '../../../shared/lib/styles';
 import ConstraintForm from '../../projects/components/ConstraintForm';
 import BibleTabs from '../components/BibleTabs';
-import type { Project } from '../../projects/projects.types';
+import type { ConstraintUsage, Project } from '../../projects/projects.types';
 
 interface Reference {
     id: number;
@@ -21,9 +21,10 @@ interface BibleProps {
     locations: { id: number; title: string; description: string | null }[];
     rules: { id: number; title: string; statement: string | null; description: string | null }[];
     loreCount: number;
+    constraintUsage: ConstraintUsage;
 }
 
-export default function Index({ project, characters, locations, rules, loreCount }: BibleProps) {
+export default function Index({ project, characters, locations, rules, loreCount, constraintUsage }: BibleProps) {
     const base = `/projects/${project.id}`;
     const groups = [
         {
@@ -72,7 +73,7 @@ export default function Index({ project, characters, locations, rules, loreCount
 
             <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_320px]">
                 <div id="brief">
-                    <ConstraintForm project={project} />
+                    <ConstraintForm project={project} usage={constraintUsage} />
                 </div>
 
                 <div className="space-y-5">

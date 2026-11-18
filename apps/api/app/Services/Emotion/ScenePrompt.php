@@ -101,7 +101,7 @@ class ScenePrompt
 
         $essence = $project['essence'];
         if ($essence) {
-            $labels = ['premise' => 'Premisa', 'central_conflict' => 'Conflicto principal', 'central_theme' => 'Tema', 'tone' => 'Tono', 'setting' => 'Ambientación'];
+            $labels = ['premise' => 'Premisa', 'central_conflict' => 'Conflicto principal', 'central_theme' => 'Tema', 'tone' => 'Tono', 'setting' => 'Ambientación', 'assignment' => 'Encargo'];
             $lines[] = 'ESENCIA: '.implode(' / ', array_map(fn ($key, $value) => "{$labels[$key]}: {$value}", array_keys($essence), $essence));
         }
 
@@ -125,6 +125,8 @@ class ScenePrompt
             $traits = array_filter([
                 'Personalidad' => $character['personality'],
                 'Motivación' => $character['motivation'],
+                'Valores' => $character['values'] ?? null,
+                'Conflicto interno' => $character['inner_conflict'] ?? null,
                 'Miedos' => $character['fear'],
                 'Límites' => $character['limits'],
                 'Reglas' => implode('; ', array_map(

@@ -10,14 +10,18 @@ import LoreEntryCard from '../../lore/components/LoreEntryCard';
 import NarrativeValidationPanel from '../../analysis/components/NarrativeValidationPanel';
 import ProjectStats from '../components/ProjectStats';
 import SceneCard from '../../scenes/components/SceneCard';
-import type { Project } from '../projects.types';
+import type { ConstraintUsage, Project } from '../projects.types';
+import type { NarrativeValidation } from '../../analysis/validation.types';
 import { genreLabel, languageLabel, narrativeLabel, statusLabel } from '../projectOptions';
 
 interface ProjectShowProps {
     project: Project;
+    validations: NarrativeValidation[];
+    closedValidations: NarrativeValidation[];
+    constraintUsage: ConstraintUsage;
 }
 
-export default function Show({ project }: ProjectShowProps) {
+export default function Show({ project, validations, closedValidations, constraintUsage }: ProjectShowProps) {
     const latestAnalysis = project.emotional_analyses?.[0] ?? null;
 
     return (
@@ -66,8 +70,8 @@ export default function Show({ project }: ProjectShowProps) {
                 </section>
 
                 <div className="grid gap-6 xl:grid-cols-[1.2fr_0.8fr]">
-                    <ConstraintForm project={project} />
-                    <NarrativeValidationPanel projectId={project.id} validations={project.narrative_validations ?? []} />
+                    <ConstraintForm project={project} usage={constraintUsage} />
+                    <NarrativeValidationPanel projectId={project.id} validations={validations} closed={closedValidations} />
                 </div>
 
                 <EmotionalAnalysisPanel projectId={project.id} analysis={latestAnalysis} scenes={project.scenes ?? []} dialogues={project.dialogue_nodes ?? []} />

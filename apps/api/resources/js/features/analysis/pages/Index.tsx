@@ -15,10 +15,11 @@ interface AnalysisProps {
     project: Project;
     scenes: ScriptScene[];
     validations: NarrativeValidation[];
+    closedValidations: NarrativeValidation[];
     initialSceneId: number | null;
 }
 
-export default function Index({ project, scenes, validations, initialSceneId }: AnalysisProps) {
+export default function Index({ project, scenes, validations, closedValidations, initialSceneId }: AnalysisProps) {
     const [selected, setSelected] = useState<number | 'all'>(scenes.some((scene) => scene.id === initialSceneId) ? (initialSceneId as number) : 'all');
     const codes = sceneCodes(scenes);
     const current = selected === 'all' ? scenes : scenes.filter((scene) => scene.id === selected);
@@ -108,7 +109,7 @@ export default function Index({ project, scenes, validations, initialSceneId }: 
                 })}
             </p>
 
-            <NarrativeValidationPanel projectId={project.id} validations={validations} />
+            <NarrativeValidationPanel projectId={project.id} validations={validations} closed={closedValidations} />
         </ProjectLayout>
     );
 }

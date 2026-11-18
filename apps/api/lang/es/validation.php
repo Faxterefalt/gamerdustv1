@@ -211,6 +211,12 @@ return [
         'player_objective' => 'objetivo principal',
         'setting' => 'ambientación',
         'expected_outcome' => 'desenlace previsto',
+        'assignment' => 'encargo',
+        'max_characters' => 'máximo de personajes',
+        'max_pages' => 'máximo de páginas',
+        'max_budget' => 'presupuesto',
+        'requires_twist' => 'giro obligatorio',
+        'status' => 'estado',
 
         // Lore
         'type' => 'tipo',
@@ -226,6 +232,8 @@ return [
         'personality' => 'personalidad',
         'speech_style' => 'estilo de habla',
         'motivation' => 'motivación',
+        'values' => 'valores',
+        'inner_conflict' => 'conflicto interno',
         'fear' => 'miedo',
         'desire' => 'deseo',
         'emotional_arc' => 'arco emocional',

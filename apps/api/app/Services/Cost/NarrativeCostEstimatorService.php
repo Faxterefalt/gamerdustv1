@@ -48,7 +48,8 @@ class NarrativeCostEstimatorService
             $factors[] = 'narrative_consequence';
         }
 
-        if ($scene->dialogueNodes()->count() >= 4) {
+        // Usa el conteo precargado (withCount) si existe, para no consultar por cada escena.
+        if (($scene->dialogue_nodes_count ?? $scene->dialogueNodes()->count()) >= 4) {
             $score += 3;
             $factors[] = 'multiple_dialogue_nodes';
         }
@@ -65,7 +66,7 @@ class NarrativeCostEstimatorService
     {
         $lowCostTypes = ['bark', 'ambient'];
         $isLow = in_array($dialogue->dialogue_type, $lowCostTypes, true);
-        $optionCount = $dialogue->options()->count();
+        $optionCount = $dialogue->options_count ?? $dialogue->options()->count();
         $score = $isLow ? 1 : 3;
 
         if ($optionCount > 1) {

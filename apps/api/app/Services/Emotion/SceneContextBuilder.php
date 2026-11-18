@@ -57,6 +57,7 @@ class SceneContextBuilder
                     'central_theme' => $project->constraint?->central_theme,
                     'tone' => $project->constraint?->main_emotional_tone,
                     'setting' => $project->constraint?->setting,
+                    'assignment' => $project->constraint?->assignment,
                 ], 'filled'),
             ],
             'scene' => [
@@ -85,6 +86,8 @@ class SceneContextBuilder
                 'description' => $this->clip($character->background),
                 'personality' => $this->clip($character->personality),
                 'motivation' => $this->clip($character->motivation),
+                'values' => $this->clip($character->values),
+                'inner_conflict' => $this->clip($character->inner_conflict),
                 'fear' => $this->clip($character->fear),
                 'limits' => $this->clip($character->limits),
                 'rules' => $character->loreEntries

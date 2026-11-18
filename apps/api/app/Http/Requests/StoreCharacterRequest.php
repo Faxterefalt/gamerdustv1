@@ -27,6 +27,8 @@ class StoreCharacterRequest extends FormRequest
             'personality' => ['nullable', 'string', 'max:5000'],
             'speech_style' => ['nullable', 'string', 'max:5000'],
             'motivation' => ['nullable', 'string', 'max:5000'],
+            'values' => ['nullable', 'string', 'max:5000'],
+            'inner_conflict' => ['nullable', 'string', 'max:5000'],
             'fear' => ['nullable', 'string', 'max:5000'],
             'desire' => ['nullable', 'string', 'max:5000'],
             'emotional_arc' => ['nullable', 'string', 'max:5000'],

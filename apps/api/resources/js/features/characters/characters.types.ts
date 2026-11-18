@@ -10,6 +10,8 @@ export interface Character {
     personality?: string | null;
     speech_style?: string | null;
     motivation?: string | null;
+    values?: string | null;
+    inner_conflict?: string | null;
     fear?: string | null;
     desire?: string | null;
     emotional_arc?: string | null;

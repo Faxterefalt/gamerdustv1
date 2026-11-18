@@ -20,7 +20,7 @@ class CharacterDraftService
     /** Campos de texto corto (255) y largo (5000) que existen en `characters`. */
     private const SHORT = ['name', 'role', 'archetype', 'gender'];
 
-    private const LONG = ['background', 'personality', 'speech_style', 'motivation', 'fear', 'desire', 'emotional_arc', 'visual_description', 'voice_notes', 'limits'];
+    private const LONG = ['background', 'personality', 'speech_style', 'motivation', 'values', 'inner_conflict', 'fear', 'desire', 'emotional_arc', 'visual_description', 'voice_notes', 'limits'];
 
     public function __construct(
         private readonly GroqClient $groq,
@@ -88,6 +88,7 @@ class CharacterDraftService
             'Conflicto principal' => $project->central_conflict,
             'Tema' => $project->constraint?->central_theme,
             'Ambientación' => $project->constraint?->setting,
+            'Encargo' => $project->constraint?->assignment,
         ], 'filled');
         if ($essence) {
             $lines[] = 'ESENCIA: '.implode(' / ', array_map(fn ($key, $value) => "$key: ".Str::limit($value, 300), array_keys($essence), $essence));

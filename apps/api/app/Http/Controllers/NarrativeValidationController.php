@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\UpdateNarrativeValidationRequest;
 use App\Models\NarrativeValidation;
 use App\Models\Project;
 use App\Services\Narrative\NarrativeValidationService;
@@ -27,13 +28,17 @@ class NarrativeValidationController extends Controller
         return back()->with('success', __('Narrative validations updated.'));
     }
 
-    public function update(Project $project, NarrativeValidation $validation): RedirectResponse
+    public function update(UpdateNarrativeValidationRequest $request, Project $project, NarrativeValidation $validation): RedirectResponse
     {
-        $this->authorize('update', $project);
-        abort_unless($validation->project_id === $project->id, 404);
+        $status = $request->validated('status') ?? 'resolved';
 
-        $validation->update(['resolved' => true]);
+        // Reabrir una alerta cuya causa ya desapareció no tiene efecto: la siguiente ejecución la limpia.
+        $validation->update(['status' => $status]);
 
-        return back()->with('success', __('Validation marked as resolved.'));
+        return back()->with('success', match ($status) {
+            'dismissed' => __('Validation dismissed.'),
+            'pending' => __('Validation reopened.'),
+            default => __('Validation marked as resolved.'),
+        });
     }
 }

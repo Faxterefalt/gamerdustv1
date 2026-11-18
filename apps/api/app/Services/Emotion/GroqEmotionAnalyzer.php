@@ -7,7 +7,6 @@ use App\Models\Scene;
 use App\Services\Ai\AiUnavailableException;
 use App\Services\Ai\GroqClient;
 
-
 class GroqEmotionAnalyzer implements EmotionAnalyzer
 {
     public function __construct(

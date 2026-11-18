@@ -36,6 +36,8 @@ type Draft = {
     background: string;
     personality: string;
     motivation: string;
+    values: string;
+    inner_conflict: string;
     speech_style: string;
     limits: string;
     archetype: string;
@@ -71,6 +73,8 @@ function draftOf(entry: CharacterSheet | null): Draft {
         background: entry?.background ?? '',
         personality: entry?.personality ?? '',
         motivation: entry?.motivation ?? '',
+        values: entry?.values ?? '',
+        inner_conflict: entry?.inner_conflict ?? '',
         speech_style: entry?.speech_style ?? '',
         limits: entry?.limits ?? '',
         archetype: entry?.archetype ?? '',
@@ -113,6 +117,8 @@ export default function Index({ project, entries, selected, startNew, scenes, em
             background: text(draft.background),
             personality: text(draft.personality),
             motivation: text(draft.motivation),
+            values: text(draft.values),
+            inner_conflict: text(draft.inner_conflict),
             speech_style: text(draft.speech_style),
             limits: text(draft.limits),
             archetype: text(draft.archetype),
@@ -270,6 +276,8 @@ export default function Index({ project, entries, selected, startNew, scenes, em
                                 <div className="sm:col-span-2">{text('background', __('Background'), __('Where do they come from, what marked them?'))}</div>
                                 <div className="sm:col-span-2">{text('personality', __('Personality'), __('E.g. Cautious, persevering, loving'))}</div>
                                 <div className="sm:col-span-2">{text('motivation', __('Goal'), __('What do they want to achieve?'))}</div>
+                                <div className="sm:col-span-2">{text('values', __('Values'), __('What do they believe in? What would they defend?'))}</div>
+                                <div className="sm:col-span-2">{text('inner_conflict', __('Inner conflict'), __('What two things they want or believe pull them apart?'))}</div>
                                 <div className="sm:col-span-2">{text('speech_style', __('Voice'), __('How do they speak? E.g. Short, direct sentences.'))}</div>
                             </div>
                         </div>

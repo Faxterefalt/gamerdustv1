@@ -8,6 +8,7 @@ use App\Models\Scene;
 use App\Services\Emotion\EmotionTimelineService;
 use App\Services\Emotion\EmotionTranslator;
 use App\Services\Narrative\NarrativeValidationService;
+use App\Services\Narrative\ProductionUsage;
 use App\Services\Script\ScriptService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -34,7 +35,7 @@ class StudioController extends Controller
 
     private const RIGIDITY_LABELS = ['unbreakable' => 'Unbreakable', 'costly' => 'Breakable at a cost', 'flexible' => 'Flexible'];
 
-    public function bible(Project $project): Response
+    public function bible(Project $project, ProductionUsage $usage): Response
     {
         $this->authorize('view', $project);
 
@@ -44,6 +45,7 @@ class StudioController extends Controller
             'locations' => $project->loreEntries()->where('type', 'location')->orderBy('title')->get(['id', 'project_id', 'title', 'description']),
             'rules' => $project->loreEntries()->where('type', 'rule')->orderBy('title')->get(['id', 'project_id', 'title', 'statement', 'description']),
             'loreCount' => $project->loreEntries()->count(),
+            'constraintUsage' => $usage->for($project),
         ]);
     }
 
@@ -51,12 +53,10 @@ class StudioController extends Controller
     {
         $this->authorize('view', $project);
 
-        $validations->run($project);
-
         return Inertia::render('Analysis/Index', [
             'project' => $project,
             'scenes' => $project->scenes()->with('characters:id')->get()->map(fn (Scene $scene) => $script->present($scene)),
-            'validations' => $project->narrativeValidations()->where('resolved', false)->get(),
+            ...$validations->panel($project),
             'initialSceneId' => $request->integer('scene') ?: null,
         ]);
     }
@@ -132,8 +132,13 @@ class StudioController extends Controller
             '## '.__('Central theme'), $project->constraint?->central_theme ?: $none, '',
             '## '.__('Setting'), $project->constraint?->setting ?: $none, '',
             '## '.__('Main conflict'), $project->central_conflict ?: $none, '',
+            '## '.__('Assignment / client'), $project->constraint?->assignment ?: $none, '',
             '## '.__('Characters'),
-            ...$project->characters->map(fn ($character) => "- {$character->name}: ".($character->motivation ?: $character->background ?: '')),
+            ...$project->characters->flatMap(fn ($character) => array_filter([
+                "- {$character->name}: ".($character->motivation ?: $character->background ?: ''),
+                $character->values ? '  - '.__('Values').': '.$inline($character->values) : null,
+                $character->inner_conflict ? '  - '.__('Inner conflict').': '.$inline($character->inner_conflict) : null,
+            ])),
             '',
             '## '.__('Locations'),
             ...$locations->map(fn ($location) => "- {$location->title}"

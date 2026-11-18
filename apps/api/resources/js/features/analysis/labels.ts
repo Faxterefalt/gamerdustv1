@@ -19,7 +19,7 @@ const EMOTION_LABELS: Record<string, string> = {
     tension: 'Tension',
 };
 
-const SEVERITY_LABELS: Record<string, string> = { low: 'Low', medium: 'Medium', high: 'High' };
+const SEVERITY_LABELS: Record<string, string> = { low: 'Low', medium: 'Medium', high: 'High', review: 'Review' };
 
 const INTENSITY_LABELS: Record<string, string> = { low: 'Low', medium: 'Medium', high: 'High' };
 

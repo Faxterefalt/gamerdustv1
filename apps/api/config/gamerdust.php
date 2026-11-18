@@ -7,6 +7,11 @@
 
 return [
 
+    'validation' => [
+        // Estimación de páginas del guion: palabras de los bloques de todas las escenas / este valor.
+        'words_per_page' => 250,
+    ],
+
     'ai' => [
         // groq | keywords. Sin GROQ_API_KEY se usa siempre el análisis por palabras clave.
         'driver' => env('GAMERDUST_AI_DRIVER') ?: (env('GROQ_API_KEY') ? 'groq' : 'keywords'),

@@ -14,6 +14,11 @@ class ProjectConstraint extends Model
         'setting',
         'player_objective',
         'expected_outcome',
+        'assignment',
+        'max_characters',
+        'max_pages',
+        'max_budget',
+        'requires_twist',
         'main_emotional_tone',
         'dominant_emotion',
         'secondary_emotions',
@@ -31,6 +36,10 @@ class ProjectConstraint extends Model
             'secondary_emotions' => 'array',
             'required_elements' => 'array',
             'forbidden_elements' => 'array',
+            'max_characters' => 'integer',
+            'max_pages' => 'integer',
+            'max_budget' => 'float',
+            'requires_twist' => 'boolean',
         ];
     }
 

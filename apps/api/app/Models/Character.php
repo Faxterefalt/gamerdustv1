@@ -24,6 +24,8 @@ class Character extends Model
         'personality',
         'speech_style',
         'motivation',
+        'values',
+        'inner_conflict',
         'fear',
         'desire',
         'emotional_arc',
@@ -89,7 +91,7 @@ class Character extends Model
         return [
             ...$this->only([
                 'id', 'project_id', 'name', 'role', 'archetype', 'age', 'gender', 'background', 'personality', 'speech_style',
-                'motivation', 'fear', 'desire', 'emotional_arc', 'visual_description', 'voice_notes', 'limits',
+                'motivation', 'values', 'inner_conflict', 'fear', 'desire', 'emotional_arc', 'visual_description', 'voice_notes', 'limits',
                 'initial_emotion', 'initial_intensity',
             ]),
             'image_url' => $this->image_path

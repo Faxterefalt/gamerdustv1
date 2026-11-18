@@ -29,6 +29,11 @@ class ProjectConstraintController extends Controller
                     'player_objective' => $data['player_objective'] ?? null,
                     'setting' => $data['setting'] ?? null,
                     'expected_outcome' => $data['expected_outcome'] ?? null,
+                    'assignment' => $data['assignment'] ?? null,
+                    'max_characters' => $data['max_characters'] ?? null,
+                    'max_pages' => $data['max_pages'] ?? null,
+                    'max_budget' => $data['max_budget'] ?? null,
+                    'requires_twist' => (bool) ($data['requires_twist'] ?? false),
                 ]
             );
         });

@@ -4,7 +4,6 @@ import type { DialogueNode } from '../dialogues/dialogues.types';
 import type { EmotionalAnalysis } from '../analysis/emotion.types';
 import type { LoreEntry } from '../lore/lore.types';
 import type { Scene } from '../scenes/scenes.types';
-import type { NarrativeValidation } from '../analysis/validation.types';
 
 export type ProjectStatus = 'draft' | 'in_progress' | 'completed';
 export type NarrativeType = 'linear' | 'branching' | 'balanced';
@@ -51,6 +50,22 @@ export interface ProjectConstraint {
     setting?: string | null;
     player_objective?: string | null;
     expected_outcome?: string | null;
+    assignment?: string | null;
+    /** Restricciones de producción: null = sin límite. */
+    max_characters?: number | null;
+    max_pages?: number | null;
+    /** En puntos de coste narrativo (heurística), no en dinero. */
+    max_budget?: number | string | null;
+    requires_twist?: boolean;
+}
+
+/** Consumo actual frente a las restricciones (ProductionUsage). */
+export interface ConstraintUsage {
+    characters: number;
+    words: number;
+    pages: number;
+    words_per_page: number;
+    cost_points: number;
 }
 
 export interface Project {
@@ -73,7 +88,6 @@ export interface Project {
     scenes?: Scene[];
     dialogue_nodes?: DialogueNode[];
     emotional_analyses?: EmotionalAnalysis[];
-    narrative_validations?: NarrativeValidation[];
     cost_estimations?: CostEstimation[];
     lore_entries_count?: number;
     characters_count?: number;

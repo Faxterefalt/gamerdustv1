@@ -10,6 +10,7 @@ use App\Services\Branching\GraphInspector;
 use App\Services\Emotion\EmotionTimelineService;
 use App\Services\Emotion\SceneEmotionService;
 use App\Services\Narrative\NarrativeValidationService;
+use App\Services\Narrative\ProductionUsage;
 use Database\Seeders\CumbreMudaSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -96,6 +97,13 @@ class CumbreMudaSeederTest extends TestCase
         $types = NarrativeValidation::where('project_id', $project->id)->pluck('validation_type');
         $this->assertSame(2, $types->filter(fn ($type) => $type === 'unbreakable_rule_broken')->count());
         $this->assertContains('rule_without_consequence', $types->all());
+
+        // Restricciones de producción: el demo cabe en sus límites y solo pide revisar el giro.
+        $this->assertSame([], array_values(array_intersect(['character_limit_exceeded', 'page_limit_exceeded', 'budget_exceeded'], $types->all())));
+        $this->assertContains('twist_review', $types->all());
+        $usage = app(ProductionUsage::class)->for($project);
+        $this->assertSame($project->constraint->max_characters, $usage['characters']);
+        $this->assertLessThanOrEqual($project->constraint->max_budget, $usage['cost_points']);
     }
 
     public function test_el_grafo_tiene_decisiones_y_una_opcion_rota_deliberada(): void

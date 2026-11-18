@@ -6,6 +6,7 @@ use App\Http\Requests\StoreProjectRequest;
 use App\Http\Requests\UpdateProjectRequest;
 use App\Models\Project;
 use App\Services\Narrative\NarrativeValidationService;
+use App\Services\Narrative\ProductionUsage;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -45,11 +46,11 @@ class ProjectController extends Controller
             ->with('success', __('Narrative project created.'));
     }
 
-    public function show(Project $project, NarrativeValidationService $validationService): Response
+    public function show(Project $project, NarrativeValidationService $validationService, ProductionUsage $usage): Response
     {
         $this->authorize('view', $project);
 
-        $validationService->run($project);
+        $validations = $validationService->panel($project);
 
         $project->load([
             'constraint',
@@ -58,12 +59,13 @@ class ProjectController extends Controller
             'scenes' => fn ($query) => $query->orderBy('order')->limit(8),
             'dialogueNodes' => fn ($query) => $query->with(['scene:id,title', 'character:id,name'])->latest()->limit(8),
             'emotionalAnalyses' => fn ($query) => $query->latest()->limit(1),
-            'narrativeValidations' => fn ($query) => $query->where('resolved', false)->latest(),
             'costEstimations' => fn ($query) => $query->latest()->limit(8),
         ])->loadCount(['loreEntries', 'characters', 'scenes', 'dialogueNodes']);
 
         return Inertia::render('Projects/Show', [
             'project' => $project,
+            ...$validations,
+            'constraintUsage' => $usage->for($project),
         ]);
     }
 
