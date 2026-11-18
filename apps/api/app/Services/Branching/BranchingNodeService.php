@@ -11,7 +11,9 @@ use Illuminate\Validation\ValidationException;
 
 class BranchingNodeService
 {
-    private const NODE_FIELDS = ['scene_id', 'character_id', 'dialogue_type', 'text', 'emotional_tone', 'trigger_condition', 'pos_x', 'pos_y'];
+    private const NODE_FIELDS = ['scene_id', 'character_id', 'dialogue_type', 'text', 'emotional_tone', 'trigger_condition', 'pos_x', 'pos_y', 'is_start', 'is_ending'];
+
+    private const OPTION_FIELDS = ['player_option', 'next_dialogue_node_id', 'consequence', 'required_condition', 'condition', 'effects'];
 
     public function __construct(
         private readonly ReferenceSyncService $references,
@@ -29,6 +31,7 @@ class BranchingNodeService
             $attributes = array_filter($attributes, fn ($value, $key) => $key === 'text' || $value !== null, ARRAY_FILTER_USE_BOTH);
 
             $node = $this->references->createNode($project->id, $data['title'], $attributes);
+            $this->afterSave($node, $data);
 
             return ['node' => $node, 'sync' => $this->references->sync($node)];
         });
@@ -66,6 +69,7 @@ class BranchingNodeService
             }
 
             $node->fill($attributes)->save();
+            $this->afterSave($node, $data);
 
             $sync = ['created_nodes' => [], 'created_options' => 0, 'updated_options' => 0, 'removed_options' => []];
 
@@ -75,6 +79,20 @@ class BranchingNodeService
 
             return ['node' => $node, 'sync' => $sync, 'renamed' => $renamed];
         });
+    }
+
+    /**
+     * Un único inicio por proyecto y vínculos con la Biblia (solo si el cliente los envía).
+     */
+    private function afterSave(DialogueNode $node, array $data): void
+    {
+        if ($node->is_start) {
+            DialogueNode::where('project_id', $node->project_id)->whereKeyNot($node->id)->where('is_start', true)->update(['is_start' => false]);
+        }
+
+        if (array_key_exists('lore_entry_ids', $data)) {
+            $node->loreEntries()->sync($data['lore_entry_ids'] ?? []);
+        }
     }
 
     /**
@@ -129,12 +147,12 @@ class BranchingNodeService
 
     public function createOption(DialogueNode $node, array $data): DialogueOption
     {
-        return $node->options()->create(Arr::only($data, ['player_option', 'next_dialogue_node_id', 'consequence', 'required_condition']));
+        return $node->options()->create($this->optionAttributes($data));
     }
 
     public function updateOption(DialogueOption $option, array $data): DialogueOption
     {
-        $attributes = Arr::only($data, ['player_option', 'next_dialogue_node_id', 'consequence', 'required_condition']);
+        $attributes = $this->optionAttributes($data);
 
         if ($option->isManaged()) {
             $locked = collect(['player_option', 'next_dialogue_node_id'])
@@ -152,6 +170,24 @@ class BranchingNodeService
         $option->update($attributes);
 
         return $option;
+    }
+
+    /** Una condición vacía o una lista de efectos vacía se guardan como null. */
+    private function optionAttributes(array $data): array
+    {
+        $attributes = Arr::only($data, self::OPTION_FIELDS);
+
+        foreach (['condition', 'effects'] as $field) {
+            if (array_key_exists($field, $attributes) && empty($attributes[$field])) {
+                $attributes[$field] = null;
+            }
+        }
+
+        if (! empty($attributes['effects'])) {
+            $attributes['effects'] = array_values($attributes['effects']);
+        }
+
+        return $attributes;
     }
 
     public function deleteOption(DialogueOption $option): void

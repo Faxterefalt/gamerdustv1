@@ -1,6 +1,6 @@
 import { __ } from '../../../shared/lib/i18n';
 import { Handle, Position, type Node, type NodeProps } from '@xyflow/react';
-import { Flag, MapPin, User } from 'lucide-react';
+import { Flag, FlagTriangleRight, MapPin, User } from 'lucide-react';
 import { memo } from 'react';
 import type { GraphNode, WarningCode } from '../branching.types';
 import { DIALOGUE_TYPE_STYLE, NODE_WIDTH } from '../layout';
@@ -11,6 +11,7 @@ export type DialogueFlowNodeType = Node<DialogueFlowNodeData, 'dialogue'>;
 const FLAG_LABEL: Partial<Record<WarningCode, string>> = {
     isolated: 'Isolated',
     no_incoming: 'No incoming',
+    unreachable: 'Unreachable',
     no_outgoing: 'No outgoing',
 };
 
@@ -29,6 +30,7 @@ function DialogueFlowNode({ data, selected }: NodeProps<DialogueFlowNodeType>) {
 
             <div className="flex items-start gap-2">
                 {node.is_start && <Flag size={14} className="mt-0.5 shrink-0 text-amber-400" aria-label={__('Start node')} />}
+                {node.is_ending && <FlagTriangleRight size={14} className="mt-0.5 shrink-0 text-emerald-400" aria-label={__('Ending')} />}
                 <h3 className="line-clamp-2 text-sm font-semibold leading-snug text-white">{node.display_title}</h3>
             </div>
 
@@ -55,7 +57,7 @@ function DialogueFlowNode({ data, selected }: NodeProps<DialogueFlowNodeType>) {
                     {brokenCount > 0 && <span className="border border-rose-800 bg-rose-950/50 px-1.5 py-0.5 text-rose-200">{__(':count without target', { count: brokenCount })}</span>}
                     {flags.map((flag) =>
                         FLAG_LABEL[flag] ? (
-                            <span key={flag} className={`border px-1.5 py-0.5 ${flag === 'isolated' ? 'border-amber-800 bg-amber-950/40 text-amber-200' : 'border-zinc-700 text-zinc-400'}`}>
+                            <span key={flag} className={`border px-1.5 py-0.5 ${flag === 'isolated' || flag === 'unreachable' ? 'border-amber-800 bg-amber-950/40 text-amber-200' : 'border-zinc-700 text-zinc-400'}`}>
                                 {__(FLAG_LABEL[flag] as string)}
                             </span>
                         ) : null,

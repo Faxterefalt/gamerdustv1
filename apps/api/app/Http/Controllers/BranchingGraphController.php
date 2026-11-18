@@ -4,19 +4,25 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\Branching\StoreBranchingNodeRequest;
 use App\Http\Requests\Branching\StoreBranchingOptionRequest;
+use App\Http\Requests\Branching\StoreBranchingVariableRequest;
 use App\Http\Requests\Branching\UpdateBranchingNodeRequest;
 use App\Http\Requests\Branching\UpdateBranchingOptionRequest;
+use App\Http\Requests\Branching\UpdateBranchingVariableRequest;
 use App\Http\Requests\Branching\UpdateNodePositionsRequest;
 use App\Http\Resources\BranchingGraphResource;
+use App\Models\BranchingVariable;
 use App\Models\DialogueNode;
 use App\Models\DialogueOption;
 use App\Models\Project;
 use App\Services\Branching\BranchingContextService;
 use App\Services\Branching\BranchingNodeService;
+use App\Services\Branching\BranchingVariableService;
+use App\Services\Branching\DialoguePlayerView;
 use App\Services\Cost\NarrativeCostEstimatorService;
 use App\Services\Emotion\EmotionalAnalysisService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response as HttpResponse;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -111,6 +117,46 @@ class BranchingGraphController extends Controller
         $this->nodes->deleteOption($option);
 
         return response()->json(['graph' => $this->graphPayload($request, $project)]);
+    }
+
+    public function storeVariable(StoreBranchingVariableRequest $request, Project $project, BranchingVariableService $variables): JsonResponse
+    {
+        $variable = $variables->create($project, $request->validated());
+
+        return response()->json(['variable_id' => $variable->id, 'graph' => $this->graphPayload($request, $project)], 201);
+    }
+
+    public function updateVariable(UpdateBranchingVariableRequest $request, Project $project, BranchingVariable $variable, BranchingVariableService $variables): JsonResponse
+    {
+        $rewritten = $variables->update($variable, $request->validated());
+
+        return response()->json(['variable_id' => $variable->id, 'rewritten_options' => $rewritten, 'graph' => $this->graphPayload($request, $project)]);
+    }
+
+    public function destroyVariable(Request $request, Project $project, BranchingVariable $variable, BranchingVariableService $variables): JsonResponse
+    {
+        $this->authorize('update', $project);
+        abort_unless($variable->project_id === $project->id, 404);
+
+        $variables->delete($variable);
+
+        return response()->json(['graph' => $this->graphPayload($request, $project)]);
+    }
+
+    /**
+     * "Probar recorrido": el mismo reproductor que la exportación HTML, en el navegador.
+     * Solo lectura: las variables viven en la página y nunca se escribe en la BD.
+     */
+    public function playtest(Request $request, Project $project, DialoguePlayerView $player): HttpResponse
+    {
+        $this->authorize('view', $project);
+
+        $start = $request->integer('node') ?: null;
+        $start = $start && $project->dialogueNodes()->whereKey($start)->exists() ? $start : null;
+
+        return response($player->render($request, $project, playtest: true, startNodeId: $start))
+            ->header('Content-Type', 'text/html; charset=UTF-8')
+            ->header('Cache-Control', 'no-store');
     }
 
     public function context(Project $project, DialogueNode $node, BranchingContextService $context): JsonResponse

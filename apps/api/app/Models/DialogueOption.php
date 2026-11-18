@@ -13,8 +13,15 @@ class DialogueOption extends Model
         'player_option',
         'consequence',
         'required_condition',
+        'condition',
+        'effects',
         'source_ref',
     ];
+
+    protected function casts(): array
+    {
+        return ['condition' => 'array', 'effects' => 'array'];
+    }
 
     public function isManaged(): bool
     {

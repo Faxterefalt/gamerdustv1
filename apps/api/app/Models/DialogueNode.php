@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 
@@ -28,13 +29,15 @@ class DialogueNode extends Model
         'text',
         'emotional_tone',
         'trigger_condition',
+        'is_start',
+        'is_ending',
         'pos_x',
         'pos_y',
     ];
 
     protected function casts(): array
     {
-        return ['pos_x' => 'float', 'pos_y' => 'float'];
+        return ['pos_x' => 'float', 'pos_y' => 'float', 'is_start' => 'boolean', 'is_ending' => 'boolean'];
     }
 
     public function displayTitle(): string
@@ -55,6 +58,12 @@ class DialogueNode extends Model
     public function character(): BelongsTo
     {
         return $this->belongsTo(Character::class);
+    }
+
+    /** Entradas de la Biblia (lugares, reglas, lore) vinculadas al nodo. */
+    public function loreEntries(): BelongsToMany
+    {
+        return $this->belongsToMany(LoreEntry::class, 'dialogue_node_lore_entry');
     }
 
     public function options(): HasMany

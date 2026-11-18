@@ -4,7 +4,8 @@
     "type": "module",
     "scripts": {
         "build": "vite build",
-        "dev": "vite"
+        "dev": "vite",
+        "test:parity": "node tests/js/branching-state-parity.cjs resources/views/reports/partials/branching-state.blade.php tests/Fixtures/branching-state-cases.json"
     },
     "dependencies": {
         "@inertiajs/react": "^2.2.18",

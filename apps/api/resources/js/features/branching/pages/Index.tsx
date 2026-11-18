@@ -1,11 +1,13 @@
 import { __ } from '../../../shared/lib/i18n';
 import { Head, Link } from '@inertiajs/react';
-import { CheckCircle2, CircleAlert, Loader2, Save, X } from 'lucide-react';
+import { CheckCircle2, CircleAlert, Loader2, Play, Save, Variable, X } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 import ProjectLayout from '../../../layouts/ProjectLayout';
 import type { BranchingGraph, SaveStatus } from '../branching.types';
 import BranchingCanvas from '../components/BranchingCanvas';
 import NodeEditorPanel from '../components/NodeEditorPanel';
+import PlaytestDialog from '../components/PlaytestDialog';
+import VariablesDialog from '../components/VariablesDialog';
 import { useBranchingGraph } from '../hooks/useBranchingGraph';
 
 interface BranchingIndexProps {
@@ -33,6 +35,15 @@ export default function Index({ project, graph: initialGraph, selectedNodeId }: 
     const { graph, displayNode, createNode, deleteNode, createOption, deleteOption, movePositions, flush } = editor;
     const [selectedId, setSelectedId] = useState<number | null>(selectedNodeId);
     const [focusNonce, setFocusNonce] = useState(selectedNodeId ? 1 : 0);
+    const [showVariables, setShowVariables] = useState(false);
+    // undefined = cerrado; null = desde el inicio; número = desde ese nodo.
+    const [playFrom, setPlayFrom] = useState<number | null | undefined>(undefined);
+
+    // El reproductor lee el grafo guardado: primero se guardan los borradores pendientes.
+    const playtest = async (nodeId: number | null) => {
+        await flush();
+        setPlayFrom(nodeId);
+    };
 
     useEffect(() => {
         if (selectedId !== null && !graph.nodes.some((node) => node.id === selectedId)) {
@@ -112,6 +123,17 @@ export default function Index({ project, graph: initialGraph, selectedNodeId }: 
                     <button type="button" onClick={() => void flush()} className="flex items-center gap-1.5 border border-amber-600 px-3 py-2 text-sm text-amber-100 hover:bg-amber-950">
                         <Save size={14} /> {__('Save')}
                     </button>
+                    <button
+                        type="button"
+                        onClick={() => void playtest(null)}
+                        disabled={!graph.nodes.length}
+                        className="flex items-center gap-1.5 border border-zinc-700 px-3 py-2 text-sm hover:border-amber-500 disabled:opacity-40"
+                    >
+                        <Play size={14} /> {__('Test run')}
+                    </button>
+                    <button type="button" onClick={() => setShowVariables(true)} className="flex items-center gap-1.5 border border-zinc-700 px-3 py-2 text-sm hover:border-amber-500">
+                        <Variable size={14} /> {__('Variables')} ({graph.variables.length})
+                    </button>
                     <Link href={`/projects/${project.id}`} className="border border-zinc-700 px-3 py-2 text-sm hover:border-amber-500">
                         {__('Dashboard')}
                     </Link>
@@ -161,17 +183,24 @@ export default function Index({ project, graph: initialGraph, selectedNodeId }: 
                             warnings={graph.warnings.filter((warning) => warning.node_id === selected.id)}
                             error={editor.error}
                             displayOption={editor.displayOption}
-                            onEdit={(patch) => editor.editNode(selected.id, patch)}
+                            onEdit={(patch, immediate) => editor.editNode(selected.id, patch, immediate)}
                             onEditOption={editor.editOption}
                             onCreateOption={() => void createOption(selected.id, { player_option: __('New option') })}
                             onDeleteOption={(id) => void deleteOption(id)}
                             onDelete={() => void handleDelete()}
                             onClose={() => setSelectedId(null)}
                             onFlush={flush}
+                            onOpenVariables={() => setShowVariables(true)}
+                            onPlayFromHere={() => void playtest(selected.id)}
                         />
                     </div>
                 )}
             </div>
+
+            {showVariables && (
+                <VariablesDialog variables={graph.variables} error={editor.error} onSave={editor.saveVariable} onDelete={editor.deleteVariable} onClose={() => setShowVariables(false)} />
+            )}
+            {playFrom !== undefined && <PlaytestDialog projectId={project.id} startNodeId={playFrom} onClose={() => setPlayFrom(undefined)} />}
         </ProjectLayout>
     );
 }

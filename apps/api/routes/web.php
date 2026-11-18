@@ -82,6 +82,10 @@ Route::middleware(['auth', 'verified'])->group(function (): void {
             Route::post('nodes/{node}/options', 'storeOption')->name('options.store');
             Route::put('options/{option}', 'updateOption')->name('options.update');
             Route::delete('options/{option}', 'destroyOption')->name('options.destroy');
+            Route::post('variables', 'storeVariable')->name('variables.store');
+            Route::put('variables/{variable}', 'updateVariable')->name('variables.update');
+            Route::delete('variables/{variable}', 'destroyVariable')->name('variables.destroy');
+            Route::get('playtest', 'playtest')->name('playtest');
             Route::get('nodes/{node}/context', 'context')->name('nodes.context');
             Route::post('nodes/{node}/analysis', 'analyze')->name('nodes.analysis');
         });

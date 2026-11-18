@@ -168,7 +168,7 @@ function Canvas({ graph, displayNode, selectedId, focusNonce, onSelect, onMove, 
     const counts = useMemo(() => {
         const count = (code: string) => graph.warnings.filter((warning) => warning.code === code).length;
 
-        return { isolated: count('isolated'), incoming: count('no_incoming'), outgoing: count('no_outgoing'), broken: count('broken_option') };
+        return { isolated: count('isolated'), incoming: count('no_incoming'), unreachable: count('unreachable'), outgoing: count('no_outgoing'), broken: count('broken_option') };
     }, [graph.warnings]);
 
     const buttonClass = 'flex items-center gap-1.5 border border-zinc-700 bg-zinc-900 px-3 py-1.5 text-xs text-zinc-200 hover:border-amber-500 disabled:opacity-40';
@@ -215,6 +215,7 @@ function Canvas({ graph, displayNode, selectedId, focusNonce, onSelect, onMove, 
                     <span>{choice(':count connection|:count connections', graph.edges.length)}</span>
                     <span className={counts.isolated ? 'text-amber-300' : ''}>{__(':count isolated', { count: counts.isolated })}</span>
                     <span>{__(':count without incoming', { count: counts.incoming })}</span>
+                    <span className={counts.unreachable ? 'text-amber-300' : ''}>{__(':count unreachable', { count: counts.unreachable })}</span>
                     <span>{__(':count without outgoing', { count: counts.outgoing })}</span>
                     <span className={counts.broken ? 'text-rose-300' : ''}>{__(':count options without target', { count: counts.broken })}</span>
                 </Panel>

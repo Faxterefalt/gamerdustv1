@@ -98,4 +98,9 @@ class Project extends Model
     {
         return $this->hasMany(AiGeneration::class)->latest();
     }
+
+    public function branchingVariables(): HasMany
+    {
+        return $this->hasMany(BranchingVariable::class)->orderBy('key');
+    }
 }

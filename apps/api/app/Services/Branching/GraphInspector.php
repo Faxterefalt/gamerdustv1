@@ -7,6 +7,12 @@ use Illuminate\Support\Collection;
 
 /**
  * Detecta problemas estructurales del grafo (solo lectura).
+ *
+ * Inicio: el nodo marcado con `is_start`; si no hay ninguno, el de menor id (respaldo).
+ * Cada nodo recibe como mucho un aviso estructural, por prioridad:
+ * isolated > no_incoming > unreachable > no_outgoing. `unreachable` se calcula con un BFS desde el
+ * inicio por las opciones con destino, así que los ciclos alcanzables no generan aviso y un ciclo
+ * aislado del inicio sí. `no_outgoing` no aplica a los finales declarados (`is_ending`).
  */
 class GraphInspector
 {
@@ -16,9 +22,10 @@ class GraphInspector
      */
     public function inspect(Collection $nodes): array
     {
-        $startId = $nodes->min('id');
+        $startId = $nodes->firstWhere('is_start', true)?->id ?? $nodes->min('id');
         $incoming = [];
         $outgoing = [];
+        $adjacency = [];
         $warnings = [];
 
         foreach ($nodes as $node) {
@@ -36,12 +43,16 @@ class GraphInspector
                     continue;
                 }
 
+                $adjacency[$node->id][] = $option->next_dialogue_node_id;
+
                 if ($option->next_dialogue_node_id !== $node->id) {
                     $outgoing[$node->id] = true;
                     $incoming[$option->next_dialogue_node_id] = true;
                 }
             }
         }
+
+        $reachable = $this->reachable($startId, $adjacency);
 
         foreach ($nodes as $node) {
             $hasIn = isset($incoming[$node->id]);
@@ -52,11 +63,38 @@ class GraphInspector
                 $warnings[] = ['node_id' => $node->id, 'code' => 'isolated', 'severity' => 'warning', 'message' => __('Isolated node: no connections.')];
             } elseif (! $hasIn && ! $isStart) {
                 $warnings[] = ['node_id' => $node->id, 'code' => 'no_incoming', 'severity' => 'info', 'message' => __('No node leads here.')];
-            } elseif (! $hasOut) {
+            } elseif (! isset($reachable[$node->id])) {
+                $warnings[] = ['node_id' => $node->id, 'code' => 'unreachable', 'severity' => 'warning', 'message' => __('Unreachable: no path leads here from the start node.')];
+            } elseif (! $hasOut && ! $node->is_ending) {
                 $warnings[] = ['node_id' => $node->id, 'code' => 'no_outgoing', 'severity' => 'info', 'message' => __('No outgoing: the branch ends here.')];
             }
         }
 
         return ['start_node_id' => $startId, 'warnings' => $warnings];
+    }
+
+    /**
+     * @param  array<int, array<int, int>>  $adjacency
+     * @return array<int, true>
+     */
+    private function reachable(?int $startId, array $adjacency): array
+    {
+        if ($startId === null) {
+            return [];
+        }
+
+        $seen = [$startId => true];
+        $queue = [$startId];
+
+        while ($queue) {
+            foreach ($adjacency[array_shift($queue)] ?? [] as $next) {
+                if (! isset($seen[$next])) {
+                    $seen[$next] = true;
+                    $queue[] = $next;
+                }
+            }
+        }
+
+        return $seen;
     }
 }

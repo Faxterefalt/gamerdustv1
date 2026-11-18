@@ -94,8 +94,10 @@ class DialogueNodeController extends Controller
 
     private function syncOptions(DialogueNode $dialogue, array $options): void
     {
-        // El formulario reenvía todas las opciones sin id; se conserva el marcador de las administradas por {{ }}.
-        $managed = $dialogue->options()->whereNotNull('source_ref')->get();
+        // El formulario reenvía todas las opciones sin id. Al emparejarlas con las anteriores (mismo texto y
+        // destino) se conservan el marcador de las administradas por {{ }} y la condición y los efectos,
+        // que este formulario no edita.
+        $previous = $dialogue->options()->orderBy('id')->get();
 
         $dialogue->options()->delete();
 
@@ -104,12 +106,14 @@ class DialogueNodeController extends Controller
                 continue;
             }
 
-            $match = $managed->first(fn ($old) => $old->next_dialogue_node_id == ($option['next_dialogue_node_id'] ?? null)
+            $match = $previous->first(fn ($old) => $old->next_dialogue_node_id == ($option['next_dialogue_node_id'] ?? null)
                 && $old->player_option === $option['player_option']);
 
             if ($match) {
-                $managed = $managed->reject(fn ($old) => $old->id === $match->id);
+                $previous = $previous->reject(fn ($old) => $old->id === $match->id);
                 $option['source_ref'] = $match->source_ref;
+                $option['condition'] = $match->condition;
+                $option['effects'] = $match->effects;
             }
 
             $dialogue->options()->create($option);

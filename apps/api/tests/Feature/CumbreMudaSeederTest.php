@@ -117,6 +117,7 @@ class CumbreMudaSeederTest extends TestCase
         $broken = collect($inspection['warnings'])->where('code', 'broken_option');
         $this->assertCount(1, $broken);
         $this->assertCount(0, collect($inspection['warnings'])->where('code', 'isolated'));
+        $this->assertCount(0, collect($inspection['warnings'])->where('code', 'unreachable'));
 
         // Las referencias {{Título}} de la confesión crearon opciones administradas hacia los tres finales.
         $confession = $nodes->firstWhere('title', 'Confesión en la terraza');

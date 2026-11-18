@@ -10,6 +10,7 @@ import type {
     OptionPatch,
     SaveResponse,
     SaveStatus,
+    VariableDraft,
 } from '../branching.types';
 import { useDebouncedSave } from './useDebouncedSave';
 
@@ -197,9 +198,14 @@ export function useBranchingGraph(projectId: number, initial: BranchingGraph) {
     }, [drafts, positions]);
 
     const editNode = useCallback(
-        (id: number, patch: NodePatch) => {
+        (id: number, patch: NodePatch, immediate = false) => {
             updateNodeDrafts({ ...nodeDraftsRef.current, [id]: { ...nodeDraftsRef.current[id], ...patch } });
-            drafts.schedule();
+
+            if (immediate) {
+                void drafts.flush();
+            } else {
+                drafts.schedule();
+            }
         },
         [drafts],
     );
@@ -283,6 +289,30 @@ export function useBranchingGraph(projectId: number, initial: BranchingGraph) {
         [base, run],
     );
 
+    const saveVariable = useCallback(
+        async (id: number | null, data: VariableDraft) => {
+            await flush();
+
+            const response = await run(() => api<SaveResponse>(id ? 'PUT' : 'POST', id ? `${base}/variables/${id}` : `${base}/variables`, data));
+
+            if (response?.rewritten_options) {
+                notify('info', __('Variable renamed in :count options.', { count: response.rewritten_options }));
+            }
+
+            return response;
+        },
+        [base, flush, notify, run],
+    );
+
+    const deleteVariable = useCallback(
+        async (id: number) => {
+            await flush();
+
+            return run(() => api<SaveResponse>('DELETE', `${base}/variables/${id}`));
+        },
+        [base, flush, run],
+    );
+
     useEffect(() => {
         const sendKeepalive = () => {
             Object.entries(nodeDraftsRef.current).forEach(([id, patch]) => void api('PUT', `${base}/nodes/${id}`, patch, { keepalive: true }).catch(() => undefined));
@@ -341,7 +371,13 @@ export function useBranchingGraph(projectId: number, initial: BranchingGraph) {
                 return node;
             }
 
-            return { ...node, ...draft, display_title: draft.title !== undefined ? draft.title || node.node_key : node.display_title };
+            return {
+                ...node,
+                ...draft,
+                is_start: draft.is_start ?? node.is_start,
+                start_marked: draft.is_start ?? node.start_marked,
+                display_title: draft.title !== undefined ? draft.title || node.node_key : node.display_title,
+            };
         },
         [nodeDrafts],
     );
@@ -364,6 +400,8 @@ export function useBranchingGraph(projectId: number, initial: BranchingGraph) {
         deleteNode,
         createOption,
         deleteOption,
+        saveVariable,
+        deleteVariable,
         flush,
     };
 }

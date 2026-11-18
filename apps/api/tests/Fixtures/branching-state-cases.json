@@ -1,0 +1,90 @@
+[
+    {
+        "name": "sin condición la opción siempre está disponible",
+        "variables": [{ "key": "confianza", "type": "number", "initial_value": 0 }],
+        "effects": null,
+        "condition": null,
+        "state": { "confianza": 0 },
+        "available": true
+    },
+    {
+        "name": "add 1 desbloquea confianza >= 1",
+        "variables": [{ "key": "confianza", "type": "number", "initial_value": 0 }],
+        "effects": [{ "var": "confianza", "op": "add", "value": 1 }],
+        "condition": { "var": "confianza", "op": ">=", "value": 1 },
+        "state": { "confianza": 1 },
+        "available": true
+    },
+    {
+        "name": "sin elegir la primera opción, confianza >= 1 no se cumple",
+        "variables": [{ "key": "confianza", "type": "number", "initial_value": 0 }],
+        "effects": [],
+        "condition": { "var": "confianza", "op": ">=", "value": 1 },
+        "state": { "confianza": 0 },
+        "available": false
+    },
+    {
+        "name": "sub, set y decimales se redondean a 6 cifras",
+        "variables": [{ "key": "oro", "type": "number", "initial_value": 0.1 }],
+        "effects": [{ "var": "oro", "op": "add", "value": 0.2 }, { "var": "oro", "op": "sub", "value": 0.05 }],
+        "condition": { "var": "oro", "op": "==", "value": 0.25 },
+        "state": { "oro": 0.25 },
+        "available": true
+    },
+    {
+        "name": "set numérico reemplaza el valor",
+        "variables": [{ "key": "oro", "type": "number", "initial_value": 7 }],
+        "effects": [{ "var": "oro", "op": "set", "value": 2 }],
+        "condition": { "var": "oro", "op": "<", "value": 3 },
+        "state": { "oro": 2 },
+        "available": true
+    },
+    {
+        "name": "bool con set y !=",
+        "variables": [{ "key": "tiene_llave", "type": "bool", "initial_value": false }],
+        "effects": [{ "var": "tiene_llave", "op": "set", "value": true }],
+        "condition": { "var": "tiene_llave", "op": "!=", "value": false },
+        "state": { "tiene_llave": true },
+        "available": true
+    },
+    {
+        "name": "bool ignora add y comparaciones de orden",
+        "variables": [{ "key": "tiene_llave", "type": "bool", "initial_value": true }],
+        "effects": [{ "var": "tiene_llave", "op": "add", "value": 1 }],
+        "condition": { "var": "tiene_llave", "op": ">", "value": false },
+        "state": { "tiene_llave": true },
+        "available": false
+    },
+    {
+        "name": "variable desconocida: el efecto se ignora y la condición es falsa",
+        "variables": [{ "key": "confianza", "type": "number", "initial_value": 2 }],
+        "effects": [{ "var": "fantasma", "op": "set", "value": 5 }],
+        "condition": { "var": "fantasma", "op": "==", "value": 5 },
+        "state": { "confianza": 2 },
+        "available": false
+    },
+    {
+        "name": "tipos cruzados no se aplican",
+        "variables": [{ "key": "confianza", "type": "number", "initial_value": 2 }, { "key": "vivo", "type": "bool", "initial_value": true }],
+        "effects": [{ "var": "confianza", "op": "set", "value": true }, { "var": "vivo", "op": "set", "value": 0 }],
+        "condition": { "var": "confianza", "op": "==", "value": true },
+        "state": { "confianza": 2, "vivo": true },
+        "available": false
+    },
+    {
+        "name": "valor inicial con tipo incorrecto se descarta",
+        "variables": [{ "key": "roto", "type": "number", "initial_value": "3" }, { "key": "ok", "type": "bool", "initial_value": false }],
+        "effects": null,
+        "condition": { "var": "ok", "op": "==", "value": false },
+        "state": { "ok": false },
+        "available": true
+    },
+    {
+        "name": "negativos y operador desconocido",
+        "variables": [{ "key": "salud", "type": "number", "initial_value": 1 }],
+        "effects": [{ "var": "salud", "op": "sub", "value": 3 }, { "var": "salud", "op": "mul", "value": 2 }],
+        "condition": { "var": "salud", "op": "=>", "value": -2 },
+        "state": { "salud": -2 },
+        "available": false
+    }
+]
