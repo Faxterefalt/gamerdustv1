@@ -1,6 +1,6 @@
 # Despliegue de Gamerdust en producción
 
-Guía para publicar la aplicación (`apps/api`, Laravel 13 + Inertia/React) en un servidor Linux con Nginx, PHP-FPM y MySQL. Todos los comandos se ejecutan dentro de `apps/api` salvo que se indique otra cosa. Esta guía no despliega nada por sí sola: cada paso lo ejecuta quien administra el servidor.
+Guía para publicar la aplicación (Laravel 13 + Inertia/React; la raíz del repositorio es la app) en un servidor Linux con Nginx, PHP-FPM y MySQL. Todos los comandos se ejecutan en la raíz del repositorio (`/var/www/gamerdust`) salvo que se indique otra cosa. Esta guía no despliega nada por sí sola: cada paso lo ejecuta quien administra el servidor.
 
 ## 1. Requisitos del servidor
 
@@ -10,14 +10,14 @@ Guía para publicar la aplicación (`apps/api`, Laravel 13 + Inertia/React) en u
 | Composer | 2.x | |
 | Node.js | 20.19+ o 22.12+ | Solo para compilar el frontend (`npm run build`); puede hacerse en otra máquina. |
 | MySQL | 8.4 | Base `gamerdust` con `utf8mb4`. `compose.yaml` levanta una igual para pruebas. |
-| Servidor web | Nginx (o Apache) | El *document root* es `apps/api/public`. Nunca la raíz del repositorio. |
+| Servidor web | Nginx (o Apache) | El *document root* es `public/`. Nunca la raíz del repositorio (ahí están `.env`, `vendor/` y el código). |
 | Certificado TLS | Let's Encrypt (Certbot) u otro | HTTPS obligatorio: sesión, CSRF y contraseñas viajan en cada petición. |
 
 ## 2. Código y dependencias
 
 ```bash
 git clone <repositorio> /var/www/gamerdust
-cd /var/www/gamerdust/apps/api
+cd /var/www/gamerdust
 
 composer install --no-dev --optimize-autoloader
 npm ci
@@ -116,7 +116,7 @@ server {
 server {
     listen 443 ssl http2;
     server_name gamerdust.ejemplo.org;
-    root /var/www/gamerdust/apps/api/public;
+    root /var/www/gamerdust/public;
     index index.php;
 
     ssl_certificate     /etc/letsencrypt/live/gamerdust.ejemplo.org/fullchain.pem;
@@ -171,7 +171,7 @@ After=network.target mysql.service
 User=www-data
 Group=www-data
 Restart=always
-WorkingDirectory=/var/www/gamerdust/apps/api
+WorkingDirectory=/var/www/gamerdust
 ExecStart=/usr/bin/php artisan queue:work --sleep=3 --tries=3 --max-time=3600
 
 [Install]
@@ -224,9 +224,8 @@ grep '"status":500' storage/logs/gamerdust-*.log
 
 ```bash
 cd /var/www/gamerdust
-php apps/api/artisan down --retry=30
+php artisan down --retry=30
 git pull
-cd apps/api
 composer install --no-dev --optimize-autoloader
 npm ci && npm run build
 php artisan migrate --force
@@ -235,10 +234,12 @@ php artisan queue:restart
 php artisan up
 ```
 
+**Servidores instalados antes de la reorganización** (cuando la app vivía en `apps/api`): antes del primer `git pull` con la nueva estructura, ejecuta `php apps/api/artisan down`; después del `git pull`, mueve `apps/api/.env` y el contenido de `apps/api/storage/app/private` a la raíz (`.env` y `storage/app/private`), cambia `root` de Nginx a `/var/www/gamerdust/public` y `WorkingDirectory` del servicio de cola a `/var/www/gamerdust`, recarga (`sudo nginx -s reload`, `sudo systemctl daemon-reload && sudo systemctl restart gamerdust-queue`) y sigue con los pasos anteriores desde `composer install`. Cuando todo funcione, borra lo que quede en `apps/` (solo `vendor/`, `node_modules/`, `public/build` y archivos generados en `storage/`). La base de datos y la tabla `migrations` no cambian.
+
 ## 11. Copias de seguridad
 
 - Base de datos: `mysqldump --single-transaction gamerdust | gzip > gamerdust-$(date +%F).sql.gz` (diaria, fuera del servidor).
-- Archivos: `apps/api/storage/app/private` (concept art).
+- Archivos: `storage/app/private` (concept art).
 - El `.env` (sobre todo `APP_KEY`): sin él no se pueden descifrar las sesiones ni los datos cifrados.
 
 ## 12. Lista de verificación
@@ -248,7 +249,7 @@ php artisan up
 - [ ] `SESSION_SECURE_COOKIE=true`.
 - [ ] `APP_KEY` generada una sola vez y respaldada.
 - [ ] `.env` fuera del repositorio y con permisos 640.
-- [ ] El *document root* apunta a `apps/api/public`.
+- [ ] El *document root* apunta a `public/` (`/var/www/gamerdust/public`).
 - [ ] Migraciones aplicadas; seeder de demostración **no** ejecutado.
 - [ ] `php artisan optimize` ejecutado tras el último cambio de `.env`.
 - [ ] Correo SMTP real configurado y recuperación de contraseña probada.

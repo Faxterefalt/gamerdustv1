@@ -7,7 +7,7 @@
             "request": "launch",
             "port": 9003,
             "pathMappings": {
-                "${workspaceFolder}/apps/api": "${workspaceFolder}/apps/api"
+                "${workspaceFolder}": "${workspaceFolder}"
             }
         }
     ]

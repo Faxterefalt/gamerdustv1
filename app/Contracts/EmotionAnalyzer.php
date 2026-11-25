@@ -9,7 +9,7 @@ use App\Services\Emotion\SceneEmotionResult;
  * Análisis emocional de una escena guardada. Solo lee: nunca modifica el texto.
  *
  * Implementaciones: KeywordEmotionAnalyzer (sin red, tests y degradación) y la de Groq.
- * El contrato permite sustituirlas en el futuro por apps/narrative-engine sin tocar
+ * El contrato permite sustituirlas en el futuro por un motor externo (docs/narrative-engine.md) sin tocar
  * controladores ni interfaz.
  */
 interface EmotionAnalyzer

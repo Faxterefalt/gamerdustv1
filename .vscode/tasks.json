@@ -5,7 +5,7 @@
             "label": "api: serve",
             "type": "shell",
             "command": "php artisan serve",
-            "options": { "cwd": "${workspaceFolder}/apps/api" },
+            "options": { "cwd": "${workspaceFolder}" },
             "isBackground": true,
             "problemMatcher": []
         },
@@ -13,7 +13,7 @@
             "label": "web: vite dev",
             "type": "shell",
             "command": "npm run dev",
-            "options": { "cwd": "${workspaceFolder}/apps/api" },
+            "options": { "cwd": "${workspaceFolder}" },
             "isBackground": true,
             "problemMatcher": []
         },
@@ -26,7 +26,7 @@
             "label": "api: tests",
             "type": "shell",
             "command": "php artisan test",
-            "options": { "cwd": "${workspaceFolder}/apps/api" },
+            "options": { "cwd": "${workspaceFolder}" },
             "problemMatcher": []
         }
     ]

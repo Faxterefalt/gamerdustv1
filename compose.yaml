@@ -1,4 +1,4 @@
-# Servicios de desarrollo local. La base de datos replica la configuración de apps/api/.env.
+# Servicios de desarrollo local. La base de datos replica la configuración de .env.
 services:
     mysql:
         image: mysql:8.4

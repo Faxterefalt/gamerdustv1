@@ -1,6 +1,6 @@
 # Modelo de asistencia emocional de Gamerdust (OE2)
 
-Este documento describe el modelo de asistencia con IA emocional y procesamiento de lenguaje natural que Gamerdust usa para analizar, generar y refinar contenido narrativo de videojuegos. Sirve de base para el capítulo del objetivo específico 2 y como referencia técnica del código (`apps/api`).
+Este documento describe el modelo de asistencia con IA emocional y procesamiento de lenguaje natural que Gamerdust usa para analizar, generar y refinar contenido narrativo de videojuegos. Sirve de base para el capítulo del objetivo específico 2 y como referencia técnica del código (la app Laravel en la raíz del repositorio).
 
 **Alcance y límites.** No se entrena un modelo propio: se usa un modelo de lenguaje general (Groq, familia *gpt-oss*) guiado por contexto, una salida estructurada y reglas deterministas. El análisis es solo de texto. La IA **propone, pero nunca modifica el texto ni guarda nada** sin que el autor lo confirme.
 
@@ -46,7 +46,7 @@ flowchart TD
 - `GroqEmotionAnalyzer` es la implementación con IA real; se activa cuando existe `GROQ_API_KEY`.
 - `KeywordEmotionAnalyzer` adapta el análisis simulado anterior, que cuenta palabras clave. No necesita red y se usa en los tests y como degradación.
 - `AppServiceProvider` elige la implementación según `config('gamerdust.ai.driver')` (`groq` | `keywords`).
-- El contrato permite sustituir la implementación en el futuro por el motor Python `apps/narrative-engine` sin tocar controladores ni interfaz.
+- El contrato permite sustituir la implementación en el futuro por un motor Python externo (diseño previsto en [narrative-engine.md](narrative-engine.md)) sin tocar controladores ni interfaz.
 
 ### 2.2 Cuándo se llama a la IA
 
@@ -313,7 +313,7 @@ Mediciones reales (escena de ejemplo, en español):
 
 ## 11. Decisiones tomadas
 
-1. **Contrato con dos implementaciones** en lugar de sustituir el servicio simulado: así hay degradación, tests sin red y un camino hacia `apps/narrative-engine`.
+1. **Contrato con dos implementaciones** en lugar de sustituir el servicio simulado: así hay degradación, tests sin red y un camino hacia un motor Python externo ([narrative-engine.md](narrative-engine.md)).
 2. **Reutilizar las claves de emoción existentes** y ampliarlas a 12. `tension` se reasigna a `anxiety`, porque la tensión es una dimensión (activación) y no una emoción.
 3. **"VAD invisible"**: la interfaz solo habla de Tono, Tensión y Control del personaje; los valores crudos aparecen solo en el modo técnico.
 4. **Una sola fuente de verdad** (`config/gamerdust.php`) para umbrales, centroides y colores; el frontend no duplica números.

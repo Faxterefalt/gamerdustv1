@@ -4,7 +4,7 @@ Recorren la app real en Chrome headless, controlado con el protocolo DevTools de
 
 ## Ejecutar
 
-Desde `apps/api`:
+Desde la raíz del repositorio:
 
 ```bash
 npm run test:e2e                          # compila el frontend y ejecuta todo
@@ -13,7 +13,7 @@ npm run test:e2e -- --only=script,ai      # solo algunos escenarios
 npm run test:e2e -- --keep                # conserva la carpeta temporal (BD, server.log, perfiles)
 ```
 
-O desde la raíz del repositorio: `node tests/e2e/run.mjs [opciones]`.
+O directamente con Node: `node tests/e2e/run.mjs [opciones]`.
 
 | Variable | Para qué | Por defecto |
 |---|---|---|

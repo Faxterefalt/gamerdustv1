@@ -19,7 +19,7 @@ class GroqCheckCommand extends Command
     public function handle(GroqClient $groq): int
     {
         if (! $groq->isConfigured()) {
-            $this->error('GROQ_API_KEY no está definida en apps/api/.env.');
+            $this->error('GROQ_API_KEY no está definida en .env.');
 
             return self::FAILURE;
         }
