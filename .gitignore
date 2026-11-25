@@ -26,3 +26,6 @@ prompt-cierre-mvp.md
 /.phpunit.cache
 .phpunit.result.cache
 /auth.json
+
+# Volcados de base de datos (nunca al repo)
+*.sql
