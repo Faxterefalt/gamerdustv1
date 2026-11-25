@@ -47,7 +47,7 @@ export default function VersionDiff({ before, after, kindLabel }: VersionDiffPro
                     const shown = item.after ?? item.before!;
 
                     return (
-                        <li key={index} className={`rounded-sm border-l-2 px-3 py-2 font-mono text-xs leading-6 ${STYLE[item.change]}`}>
+                        <li key={index} className={`rounded-sm border-l-2 px-3 py-2 font-script text-sm leading-6 ${STYLE[item.change]}`}>
                             <span className="mr-2 text-xs opacity-70">
                                 {kindLabel(shown.kind)}
                                 {item.change !== 'same' && ` · ${__(LABEL[item.change])}`}

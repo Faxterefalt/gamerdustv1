@@ -104,7 +104,7 @@ export default function RefineDialog({ projectId, sceneId, block: initialBlock, 
             ) : (
                 <p className="mb-2 text-xs text-muted">{__('Block to refine: :kind', { kind: blockLabel })}</p>
             )}
-            <p className="mb-5 whitespace-pre-wrap rounded-md border border-border bg-background p-3 font-mono text-xs leading-6 text-muted">{block.text}</p>
+            <p className="mb-5 whitespace-pre-wrap rounded-md border border-border bg-background p-3 font-script text-sm leading-6 text-muted">{block.text}</p>
 
             <fieldset disabled={pending}>
                 <legend className="mb-2 text-xs">{__('What do you want to achieve?')}</legend>
@@ -161,11 +161,11 @@ export default function RefineDialog({ projectId, sceneId, block: initialBlock, 
                     <div className="grid gap-3 sm:grid-cols-2">
                         <div>
                             <p className="mb-1.5 text-xs text-muted">{__('Original')}</p>
-                            <p className="h-full whitespace-pre-wrap rounded-md border border-border p-3 font-mono text-xs leading-6 text-muted">{block.text}</p>
+                            <p className="h-full whitespace-pre-wrap rounded-md border border-border p-3 font-script text-sm leading-6 text-muted">{block.text}</p>
                         </div>
                         <div>
                             <p className="mb-1.5 text-xs text-primary">{__('Proposal')}</p>
-                            <p className="h-full whitespace-pre-wrap rounded-md border border-primary/35 bg-primary/5 p-3 font-mono text-xs leading-6 text-foreground">{result.proposal}</p>
+                            <p className="h-full whitespace-pre-wrap rounded-md border border-primary/35 bg-primary/5 p-3 font-script text-sm leading-6 text-foreground">{result.proposal}</p>
                         </div>
                     </div>
 

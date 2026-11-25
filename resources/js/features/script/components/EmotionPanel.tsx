@@ -137,12 +137,12 @@ export default function EmotionPanel({ projectId, sceneId, sceneCode, dirty, cat
         <aside
             role="dialog"
             aria-label={__('Emotional analysis of :scene', { scene: sceneCode })}
-            className="fixed inset-y-0 right-0 z-40 flex w-full max-w-[400px] flex-col border-l border-border bg-surface text-foreground shadow-[0_0_45px_rgba(0,0,0,.45)]"
+            className="fixed inset-y-0 right-0 z-40 flex w-full max-w-[400px] flex-col border-l border-border bg-surface text-foreground"
         >
             <div className="flex items-start justify-between gap-3 border-b border-border px-5 py-4">
                 <div>
-                    <p className="font-mono text-xs text-muted">{__('EMOTIONAL ANALYSIS')} · {sceneCode}</p>
-                    <h2 className="mt-1 flex items-center gap-2 font-display text-lg">
+                    <p className="font-pixel text-primary">{sceneCode}</p>
+                    <h2 className="mt-1 flex items-center gap-2 text-lg font-bold">
                         <HeartPulse size={17} className="text-primary" /> {__('How this scene feels')}
                     </h2>
                 </div>
@@ -272,7 +272,7 @@ function AnalysisView({
                     <ul className="space-y-3">
                         {analysis.suggestions.map((suggestion, index) => (
                             <li key={index} className="rounded-lg border border-dashed border-border p-3 text-xs leading-5">
-                                <span className="font-mono text-xs text-primary">{suggestionKindLabel(suggestion.kind).toLocaleUpperCase()}</span>
+                                <span className="text-sm font-bold text-primary">{suggestionKindLabel(suggestion.kind)}</span>
                                 <p className="mt-1 text-foreground">{suggestion.text}</p>
                                 {suggestion.why && <p className="mt-1 text-xs text-muted">{suggestion.why}</p>}
                                 <div className="mt-2 flex items-center justify-end gap-3">

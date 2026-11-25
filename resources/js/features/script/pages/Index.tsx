@@ -32,7 +32,7 @@ import useEditLock from '../../../shared/hooks/useEditLock';
 import useProjectAccess from '../../../shared/hooks/useProjectAccess';
 import useUnsaved from '../../../shared/hooks/useUnsaved';
 import { api, ApiError } from '../../../shared/lib/api';
-import { __, locale } from '../../../shared/lib/i18n';
+import { __, choice, locale } from '../../../shared/lib/i18n';
 import { primarySm, secondary } from '../../../shared/lib/styles';
 import type { EmotionCatalog } from '../../analysis/emotion.types';
 import type { ProjectComment } from '../../collaboration/collaboration.types';
@@ -480,9 +480,9 @@ export default function Index({ project, scenes, characters, locations, comments
 
     const tree = (
         <div className="flex h-full flex-col">
-            <div className="flex items-center justify-between gap-3 border-b border-border px-4 py-5">
-                <span className="font-mono text-xs text-muted">{__('STRUCTURE')}</span>
-                <span className="rounded bg-primary/10 px-1.5 py-0.5 font-mono text-xs text-primary">{String(allDocs.length).padStart(2, '0')}</span>
+            <div className="flex items-center justify-between gap-3 border-b border-border px-4 py-4">
+                <h2 className="text-sm font-bold">{__('Structure')}</h2>
+                <span className="font-pixel text-sm text-primary" aria-label={choice(':count scene|:count scenes', allDocs.length)}>{String(allDocs.length).padStart(2, '0')}</span>
             </div>
             <div className="min-h-0 flex-1 space-y-5 overflow-y-auto py-5">
                 {acts.map((act) => {
@@ -495,7 +495,7 @@ export default function Index({ project, scenes, characters, locations, comments
                                 disabled={pending}
                                 onClick={() => setCollapsedActs((previous) => (previous.includes(act) ? previous.filter((item) => item !== act) : [...previous, act]))}
                                 aria-expanded={!collapsed}
-                                className="flex w-full items-start justify-between gap-2 px-4 text-left text-xs font-medium leading-6 text-foreground"
+                                className="flex min-h-11 w-full items-center justify-between gap-2 px-4 text-left text-sm font-bold text-foreground"
                             >
                                 <span>{actLabel(act)}</span>
                                 {collapsed ? <ChevronRight size={14} className="mt-1 shrink-0" /> : <ChevronDown size={14} className="mt-1 shrink-0" />}
@@ -515,15 +515,15 @@ export default function Index({ project, scenes, characters, locations, comments
                                                     onClick={() => selectScene(doc.scene.id)}
                                                     aria-current={selected ? 'true' : undefined}
                                                     className={`flex min-h-11 w-full items-start gap-2 rounded-md border-l-2 px-2.5 py-3 text-left transition ${
-                                                        selected ? 'border-primary bg-primary/10 text-primary' : 'border-transparent text-muted hover:bg-surface hover:text-foreground'
+                                                        selected ? 'border-primary bg-surface-3 text-foreground' : 'border-transparent text-muted hover:bg-surface-2 hover:text-foreground'
                                                     }`}
                                                 >
-                                                    <FileText size={13} className="mt-0.5 shrink-0" />
-                                                    <span className="min-w-0 text-xs leading-5">
-                                                        <span className="mr-1.5 font-mono text-xs">{codes.get(doc.scene.id)}</span>
+                                                    <FileText size={15} aria-hidden="true" className="mt-0.5 shrink-0" />
+                                                    <span className="min-w-0 text-sm">
+                                                        <span className="mr-1.5 font-pixel text-primary">{codes.get(doc.scene.id)}</span>
                                                         {doc.scene.title}
                                                     </span>
-                                                    {isDirty(doc) && <span aria-label={__('Unsaved')} className="mt-2 h-1 w-1 shrink-0 rounded-full bg-primary" />}
+                                                    {isDirty(doc) && <span aria-label={__('Unsaved')} className="mt-2 size-2 shrink-0 rounded-full bg-warning" />}
                                                 </button>
                                             );
                                         })}
@@ -602,19 +602,16 @@ export default function Index({ project, scenes, characters, locations, comments
             >
                 <div className="flex flex-wrap items-center justify-between gap-4 px-5 pb-4 pt-6 sm:px-6">
                     <div>
-                        <p className="mb-2 font-mono text-xs text-subtle">{__('GIVE VOICE TO YOUR UNIVERSE')}</p>
-                        <h1 className="font-display text-2xl font-medium">
-                            {__('Script editor')}
-                            <span className="ml-3 hidden align-middle font-mono text-xs text-subtle sm:inline">/ {project.title}</span>
-                        </h1>
+                        <h1 className="text-2xl font-bold">{__('Script editor')}</h1>
+                        <p className="mt-1 text-sm text-muted">{project.title}</p>
                     </div>
-                    <div role="status" className={`flex items-center gap-2 text-xs ${currentFailed ? 'text-danger' : 'text-primary'}`}>
+                    <div role="status" className={`flex items-center gap-2 text-sm ${currentFailed ? 'text-danger' : currentDirty ? 'text-warning' : 'text-success'}`}>
                         {pending ? (
                             <LoaderCircle size={13} className="animate-spin motion-reduce:animate-none" />
                         ) : currentFailed ? (
                             <CircleAlert size={14} />
                         ) : currentDirty ? (
-                            <span className="h-1.5 w-1.5 rounded-full bg-primary" />
+                            <span aria-hidden="true" className="size-2 rounded-full bg-warning" />
                         ) : (
                             <Cloud size={14} />
                         )}
@@ -626,8 +623,8 @@ export default function Index({ project, scenes, characters, locations, comments
                                   : __('Not saved: the server failed and this browser cannot keep the draft.')
                               : currentDirty
                                 ? localOk
-                                    ? __('Unsaved changes · draft kept in this browser')
-                                    : __('Unsaved changes · this browser cannot keep the draft')
+                                    ? __('Unsaved changes, draft kept in this browser')
+                                    : __('Unsaved changes, this browser cannot keep the draft')
                                 : __('All changes saved')}
                     </div>
                 </div>
@@ -641,11 +638,11 @@ export default function Index({ project, scenes, characters, locations, comments
                                 disabled={!current || pending}
                                 title={__('Add :block block', { block: __(label).toLocaleLowerCase() })}
                                 onClick={() => insert(kind)}
-                                className={`inline-flex min-h-9 items-center gap-2 rounded-md border px-2.5 py-2 text-xs transition disabled:opacity-35 ${
-                                    focusedKind === kind ? 'border-primary/35 bg-primary/10 text-primary' : 'border-border text-muted hover:border-primary/40 hover:bg-primary/5'
+                                className={`inline-flex min-h-10 items-center gap-2 rounded-md border px-3 text-sm transition-colors disabled:cursor-not-allowed disabled:opacity-50 pointer-coarse:min-h-11 ${
+                                    focusedKind === kind ? 'border-primary/50 bg-surface-3 text-foreground' : 'border-border text-muted hover:border-border-strong hover:text-foreground'
                                 }`}
                             >
-                                <Icon size={14} strokeWidth={1.6} />
+                                <Icon size={16} strokeWidth={1.75} aria-hidden="true" />
                                 {__(label)}
                             </button>
                         ))}
@@ -655,7 +652,7 @@ export default function Index({ project, scenes, characters, locations, comments
                             type="button"
                             aria-label={__('Undo')}
                             title={__('Undo (Ctrl+Z)')}
-                            className={`${secondary} !min-h-9 !px-2.5`}
+                            className={`${secondary} !px-2.5`}
                             disabled={!current?.past.length || pending}
                             onClick={() => undo()}
                         >
@@ -665,18 +662,18 @@ export default function Index({ project, scenes, characters, locations, comments
                             type="button"
                             aria-label={__('Redo')}
                             title={__('Redo (Ctrl+Shift+Z)')}
-                            className={`${secondary} !min-h-9 !px-2.5`}
+                            className={`${secondary} !px-2.5`}
                             disabled={!current?.future.length || pending}
                             onClick={() => undo(true)}
                         >
                             <Redo2 size={15} />
                         </button>
-                        <span className="mx-1 h-5 w-px bg-border" />
+                        <span aria-hidden="true" className="mx-1 h-6 w-px bg-border" />
                         <button
                             type="button"
                             disabled={!current || pending}
                             title={__('The analysis uses the saved version of the scene.')}
-                            className={`${secondary} !min-h-9 !px-2.5 !text-xs`}
+                            className={secondary}
                             onClick={() => {
                                 setEmotionOpen(true);
                                 setAnalyzeRequested(true);
@@ -688,15 +685,15 @@ export default function Index({ project, scenes, characters, locations, comments
                             type="button"
                             disabled={!canRefine || pending}
                             title={canRefine ? __('Propose an alternative for the selected block') : __('Select a block with text to refine it')}
-                            className={`${secondary} !min-h-9 !px-2.5 !text-xs`}
+                            className={secondary}
                             onClick={() => focusedBlock && setRefining({ ...focusedBlock })}
                         >
                             <Wand2 size={14} /> {__('Refine with AI')}
                         </button>
-                        <button type="button" disabled={!current || pending} className={`${secondary} !min-h-9 !px-2.5 !text-xs`} onClick={openVersions}>
+                        <button type="button" disabled={!current || pending} className={secondary} onClick={openVersions}>
                             <History size={14} /> {__('Versions')}
                         </button>
-                        <button type="button" disabled={!allDocs.length} className={`${secondary} !min-h-9 !px-2.5 !text-xs`} onClick={exportPdf}>
+                        <button type="button" disabled={!allDocs.length} className={secondary} onClick={exportPdf}>
                             <FileDown size={14} /> {__('Export PDF')}
                         </button>
                         <button type="button" disabled={!current || pending} onClick={() => save()} className={`${primarySm} !min-h-9 !px-3 !py-2 !text-xs`}>
@@ -760,33 +757,33 @@ export default function Index({ project, scenes, characters, locations, comments
                 )}
 
                 <div className="flex flex-1 items-stretch">
-                    <aside aria-label={__('Script structure')} className="hidden w-[190px] shrink-0 border-r border-border bg-surface md:block">
+                    <aside aria-label={__('Script structure')} className="hidden w-56 shrink-0 border-r border-border bg-surface md:block">
                         {tree}
                     </aside>
 
                     <div className="flex min-w-0 flex-1 flex-col bg-surface-2">
                         {current ? (
                             <>
-                                <div className="flex min-h-11 flex-wrap items-center justify-between gap-2 border-b border-border px-4 py-2 text-xs text-muted">
+                                <div className="flex min-h-11 flex-wrap items-center justify-between gap-2 border-b border-border px-4 py-2 text-sm text-muted">
                                     <span className="flex min-w-0 items-center gap-2">
-                                        <FileText size={12} className="shrink-0" />
+                                        <FileText size={15} aria-hidden="true" className="shrink-0" />
                                         <span className="truncate">
-                                            {codes.get(current.scene.id)} — {current.scene.title}
+                                            <span className="font-pixel text-primary">{codes.get(current.scene.id)}</span> {current.scene.title}
                                         </span>
                                     </span>
-                                    <button type="button" onClick={() => setMobileContext(true)} className="hidden items-center gap-1.5 text-primary md:flex xl:hidden">
-                                        <PanelRight size={13} /> {__('Context and comments')}
+                                    <button type="button" onClick={() => setMobileContext(true)} className="hidden min-h-10 items-center gap-1.5 text-primary md:flex xl:hidden">
+                                        <PanelRight size={16} aria-hidden="true" /> {__('Context and comments')}
                                     </button>
-                                    <span className="ml-auto font-mono text-xs">
-                                        {__('SCRIPT')} / {languageLabel(project.language ?? 'es').toLocaleUpperCase(locale)}
+                                    <span className="ml-auto">
+                                        {__('Script in :language', { language: languageLabel(project.language ?? 'es').toLocaleLowerCase(locale) })}
                                     </span>
                                 </div>
                                 <div className="flex-1 px-3 py-5 sm:px-6 sm:py-7">
                                     <section
                                         aria-label={__('Script of :scene', { scene: current.scene.title })}
-                                        className="mx-auto min-h-[620px] w-full max-w-[740px] rounded-sm border border-border-strong bg-surface-3 px-8 pb-20 pt-10 font-mono text-primary-ink shadow-[0_8px_35px_rgba(0,0,0,.15)] sm:px-10 sm:pt-12 xl:min-h-[720px] xl:px-12"
+                                        className="mx-auto min-h-[620px] w-full max-w-[740px] rounded-sm border border-paper-rule bg-paper px-8 pb-20 pt-10 font-script text-paper-ink sm:px-10 sm:pt-12 xl:min-h-[720px] xl:px-12"
                                     >
-                                        <div className="mb-8 flex items-center justify-between gap-3 border-b border-border-strong pb-4 font-mono text-xs text-subtle">
+                                        <div className="mb-8 flex items-center justify-between gap-3 border-b border-paper-rule pb-4 text-sm text-paper-muted">
                                             <span>GAMERDUST / {codes.get(current.scene.id)}</span>
                                             <span>01</span>
                                         </div>
@@ -818,23 +815,27 @@ export default function Index({ project, scenes, characters, locations, comments
                                             />
                                         ))}
                                         {!current.snapshot.elements.length && (
-                                            <button type="button" onClick={() => insert('heading')} className="flex w-full flex-col items-center gap-4 py-16 text-center text-subtle">
-                                                <Type size={25} />
-                                                <span className="text-xs">{__('Add a heading to start this scene.')}</span>
+                                            <button type="button" onClick={() => insert('heading')} className="flex w-full flex-col items-center gap-4 py-16 text-center font-sans text-paper-muted">
+                                                <Type size={25} aria-hidden="true" />
+                                                <span className="text-base">{__('Add a heading to start this scene.')}</span>
                                             </button>
                                         )}
                                     </section>
                                 </div>
-                                <div className="flex flex-wrap items-center justify-between gap-3 border-t border-border px-5 py-3 font-mono text-xs text-muted">
-                                    <span>{__(':words WORDS · :blocks BLOCKS', { words: wordCount, blocks: current.snapshot.elements.length })}</span>
-                                    <span>{__('CTRL / ⌘ + S TO SAVE')}</span>
+                                <div className="flex flex-wrap items-center justify-between gap-3 border-t border-border px-5 py-3 text-sm text-muted">
+                                    <span>
+                                        <span className="font-pixel text-foreground">{wordCount}</span> {__('words')}, <span className="font-pixel text-foreground">{current.snapshot.elements.length}</span> {__('blocks')}
+                                    </span>
+                                    <span>
+                                        <kbd className="font-sans">Ctrl</kbd> / <kbd className="font-sans">⌘</kbd> + <kbd className="font-sans">S</kbd> {__('to save')}
+                                    </span>
                                 </div>
                             </>
                         ) : (
                             <div className="flex min-h-[550px] flex-col items-center justify-center px-8 py-16 text-center">
-                                <BookOpen size={38} strokeWidth={1.2} className="text-primary" />
-                                <h2 className="mt-6 font-display text-2xl">{__('The first chapter is yours.')}</h2>
-                                <p className="mt-3 max-w-sm text-xs leading-7 text-muted">
+                                <BookOpen size={38} strokeWidth={1.2} aria-hidden="true" className="text-primary" />
+                                <h2 className="mt-6 text-2xl font-bold">{__('The first chapter is yours.')}</h2>
+                                <p className="mt-3 max-w-sm text-muted">
                                     {__('Create a scene to start writing. The characters and locations of your Narrative Bible will be one click away.')}
                                 </p>
                                 <button type="button" className={`${primarySm} mt-7`} onClick={() => setAdding(true)}>
@@ -1013,7 +1014,7 @@ export default function Index({ project, scenes, characters, locations, comments
                                         <div className="max-h-72 overflow-y-auto rounded-md border border-border bg-background p-4">
                                             <h3 className="mb-3 text-xs text-primary">{selectedVersion.title}</h3>
                                             {selectedVersion.script.map((element, index) => (
-                                                <p key={index} className="mb-3 whitespace-pre-wrap break-words font-mono text-xs leading-6 text-muted">
+                                                <p key={index} className="mb-3 whitespace-pre-wrap break-words font-script text-sm leading-6 text-muted">
                                                     {element.text}
                                                 </p>
                                             ))}

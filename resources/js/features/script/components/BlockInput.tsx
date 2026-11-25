@@ -4,11 +4,12 @@ import { __ } from '../../../shared/lib/i18n';
 import type { BlockKind, ScriptBlock } from '../script.types';
 
 const BLOCK_CLASSES: Record<BlockKind, string> = {
-    heading: 'mb-8 text-base font-bold uppercase italic leading-7 sm:text-lg',
-    action: 'mb-8 text-xs leading-7 sm:text-xs',
-    character: 'mb-1 mt-7 text-center text-xs font-bold uppercase leading-6 sm:text-xs',
-    dialogue: 'mx-auto mb-5 w-[78%] text-xs leading-6 sm:w-[65%] sm:text-xs',
-    parenthetical: 'mx-auto mb-2 w-[65%] text-center text-xs italic leading-6',
+    // Convención de guion: Courier a ~12 pt (16 px), encabezado y personaje en mayúsculas.
+    heading: 'mb-6 text-base font-bold uppercase leading-7',
+    action: 'mb-6 text-base leading-7',
+    character: 'mb-0.5 mt-6 text-center text-base font-bold uppercase leading-7',
+    dialogue: 'mx-auto mb-5 w-[82%] text-base leading-7 sm:w-[62%]',
+    parenthetical: 'mx-auto mb-1 w-[70%] text-center text-base italic leading-7 text-paper-muted',
 };
 
 // Claves de traducción de los marcadores de posición.
@@ -65,7 +66,7 @@ export default function BlockInput({ block, label, index, disabled, onChange, on
     const centered = block.kind === 'character' || block.kind === 'parenthetical';
 
     return (
-        <div className={`group relative ${BLOCK_CLASSES[block.kind]}`}>
+        <div className={`group relative rounded-sm focus-within:outline-2 focus-within:outline-offset-4 focus-within:outline-paper-muted ${BLOCK_CLASSES[block.kind]}`}>
             <textarea
                 ref={ref}
                 id={`script-block-${block.id}`}
@@ -86,7 +87,7 @@ export default function BlockInput({ block, label, index, disabled, onChange, on
                     }
                 }}
                 placeholder={__(PLACEHOLDERS[block.kind])}
-                className={`block min-h-6 w-full resize-none overflow-hidden rounded-sm border-0 bg-transparent p-0 text-inherit placeholder:text-subtle focus-visible:!outline-0 ${centered ? 'text-center' : 'text-left'}`}
+                className={`block min-h-6 w-full resize-none overflow-hidden rounded-sm border-0 bg-transparent p-0 text-inherit placeholder:text-paper-muted focus-visible:!outline-0 ${centered ? 'text-center' : 'text-left'}`}
             />
             <button
                 type="button"
@@ -94,9 +95,9 @@ export default function BlockInput({ block, label, index, disabled, onChange, on
                 aria-label={__('Delete block :number', { number: index + 1 })}
                 title={__('Delete block')}
                 onClick={onRemove}
-                className="absolute -right-6 top-1 rounded p-1 text-subtle opacity-0 transition hover:bg-background/5 hover:text-danger focus:opacity-100 group-focus-within:opacity-100 group-hover:opacity-100 sm:-right-7"
+                className="absolute -right-8 top-0.5 inline-flex size-7 items-center justify-center rounded-sm text-paper-muted opacity-0 transition-opacity hover:bg-paper-rule hover:text-paper-ink focus:opacity-100 group-focus-within:opacity-100 group-hover:opacity-100 sm:-right-9"
             >
-                <Trash2 size={12} />
+                <Trash2 size={15} />
             </button>
         </div>
     );
