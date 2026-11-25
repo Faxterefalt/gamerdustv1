@@ -1,6 +1,7 @@
 import { ExternalLink, RotateCcw, X } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { __ } from '../../../shared/lib/i18n';
+import { iconButton } from '../../../shared/lib/styles';
 
 interface PlaytestDialogProps {
     projectId: number;
@@ -45,7 +46,7 @@ export default function PlaytestDialog({ projectId, startNodeId, onClose }: Play
                         <a href={url} target="_blank" rel="noopener" className="flex items-center gap-1.5 rounded px-2 py-1.5 text-xs hover:bg-surface-2">
                             <ExternalLink size={13} /> {__('Open in a new tab')}
                         </a>
-                        <button type="button" onClick={onClose} aria-label={__('Close window')} className="rounded p-1.5 hover:bg-surface-2">
+                        <button type="button" onClick={onClose} aria-label={__('Close window')} className={iconButton}>
                             <X size={16} />
                         </button>
                     </div>

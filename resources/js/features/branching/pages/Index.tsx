@@ -11,7 +11,7 @@ import NodeEditorPanel from '../components/NodeEditorPanel';
 import PlaytestDialog from '../components/PlaytestDialog';
 import VariablesDialog from '../components/VariablesDialog';
 import { useBranchingGraph } from '../hooks/useBranchingGraph';
-import { secondary } from '../../../shared/lib/styles';
+import { iconButton, primarySm, secondary } from '../../../shared/lib/styles';
 
 interface BranchingIndexProps {
     project: { id: number; title: string };
@@ -30,7 +30,7 @@ const STATUS_LABEL: Record<SaveStatus, string> = {
 
 const NOTICE_TONE = {
     info: 'border-border-strong bg-surface text-foreground',
-    warning: 'border-primary/50 bg-primary/10 text-foreground',
+    warning: 'border-warning/50 bg-warning/10 text-foreground',
     error: 'border-danger/50 bg-danger/10 text-danger',
 } as const;
 
@@ -113,26 +113,26 @@ export default function Index({ project, graph: initialGraph, selectedNodeId, em
     return (
         <ProjectLayout
             fullWidth
-            title={`${__('Branching editor')} - ${project.title}`}
+            title={__('Branching editor')}
             actions={
                 <div className="flex flex-wrap items-center gap-2">
                     <span
                         role="status"
-                        className={`flex items-center gap-1.5 text-xs ${status === 'error' ? 'text-danger' : status === 'saved' ? 'text-success' : 'text-muted'}`}
+                        className={`mr-2 flex items-center gap-1.5 text-sm ${status === 'error' ? 'text-danger' : status === 'saved' ? 'text-success' : 'text-muted'}`}
                     >
                         {status === 'saving' && <Loader2 size={13} className="animate-spin motion-reduce:animate-none" />}
                         {status === 'saved' && <CheckCircle2 size={13} />}
                         {status === 'error' && <CircleAlert size={13} />}
                         {__(STATUS_LABEL[status])}
                     </span>
-                    <button type="button" onClick={() => void flush()} className="flex items-center gap-1.5 border border-primary px-3 py-2 text-sm text-foreground hover:bg-primary/10">
+                    <button type="button" onClick={() => void flush()} className={primarySm}>
                         <Save size={14} /> {__('Save')}
                     </button>
                     <button
                         type="button"
                         onClick={() => void playtest(null)}
                         disabled={!graph.nodes.length}
-                        className="flex items-center gap-1.5 border border-border-strong px-3 py-2 text-sm hover:border-primary disabled:opacity-40"
+                        className={secondary}
                     >
                         <Play size={14} /> {__('Test run')}
                     </button>
@@ -141,11 +141,11 @@ export default function Index({ project, graph: initialGraph, selectedNodeId, em
                         onClick={() => setReviewing(true)}
                         disabled={!graph.edges.length}
                         title={__('The AI looks for decisions that may not fit together. It only suggests.')}
-                        className="flex items-center gap-1.5 border border-border-strong px-3 py-2 text-sm hover:border-primary disabled:opacity-40"
+                        className={secondary}
                     >
                         <ScanSearch size={14} /> {__('Review consequences')}
                     </button>
-                    <button type="button" onClick={() => setShowVariables(true)} className="flex items-center gap-1.5 border border-border-strong px-3 py-2 text-sm hover:border-primary">
+                    <button type="button" onClick={() => setShowVariables(true)} className={secondary}>
                         <Variable size={14} /> {__('Variables')} ({graph.variables.length})
                     </button>
                     <Link href={`/projects/${project.id}`} className={secondary}>
@@ -157,24 +157,24 @@ export default function Index({ project, graph: initialGraph, selectedNodeId, em
                 </div>
             }
         >
-            <Head title={`${__('Branching editor')} - ${project.title}`} />
+            <Head title={__('Branching editor')} />
 
             {editor.notices.length > 0 && (
                 <div className="mb-3 space-y-2">
                     {editor.notices.map((notice) => (
-                        <div key={notice.id} className={`flex items-start justify-between gap-3 border px-3 py-2 text-xs ${NOTICE_TONE[notice.tone]}`}>
+                        <div key={notice.id} role="status" className={`flex items-center justify-between gap-3 rounded-md border py-1 pl-3 pr-1 text-sm ${NOTICE_TONE[notice.tone]}`}>
                             <span>{notice.message}</span>
-                            <button type="button" aria-label={__('Close notice')} onClick={() => editor.dismissNotice(notice.id)}>
-                                <X size={14} />
+                            <button type="button" aria-label={__('Close notice')} onClick={() => editor.dismissNotice(notice.id)} className={iconButton}>
+                                <X size={16} />
                             </button>
                         </div>
                     ))}
                 </div>
             )}
 
-            {editor.error && !selected && <div className="mb-3 border border-danger/50 bg-danger/10 px-3 py-2 text-xs text-danger">{editor.error.message}</div>}
+            {editor.error && !selected && <div role="alert" className="mb-3 rounded-md border border-danger/50 bg-danger/10 px-3 py-2 text-sm text-danger">{editor.error.message}</div>}
 
-            <div className="flex h-[calc(100vh-230px)] min-h-[520px] border border-border">
+            <div className="flex h-[calc(100dvh-var(--header-h)-var(--crumb-h)-8rem)] min-h-[520px] overflow-hidden rounded-lg border border-border">
                 <div className="min-w-0 flex-1">
                     <BranchingCanvas
                         graph={graph}
@@ -189,7 +189,7 @@ export default function Index({ project, graph: initialGraph, selectedNodeId, em
                 </div>
 
                 {selected && (
-                    <div className="w-[400px] max-w-[45%] shrink-0">
+                    <div className="w-[26rem] max-w-[45%] shrink-0">
                         <NodeEditorPanel
                             projectId={project.id}
                             node={displayNode(selected)}

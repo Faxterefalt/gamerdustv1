@@ -8,6 +8,7 @@ import FeedbackButtons from '../../analysis/components/FeedbackButtons';
 import type { EmotionCatalog } from '../../analysis/emotion.types';
 import { severityLabel, suggestionKindLabel } from '../../analysis/labels';
 import type { ContextResponse, NodeAnalysis, NodeContext } from '../branching.types';
+import { secondary } from '../../../shared/lib/styles';
 
 interface NodeAnalysisSectionProps {
     projectId: number;
@@ -70,7 +71,7 @@ export default function NodeAnalysisSection({ projectId, nodeId, catalog, before
                     type="button"
                     onClick={() => void analyze(Boolean(analysis))}
                     disabled={loading}
-                    className="flex items-center gap-1.5 border border-ember/50 px-2.5 py-1 text-xs text-ember hover:bg-ember/10 disabled:opacity-50"
+                    className={secondary}
                 >
                     {analysis ? <RefreshCw size={13} /> : <Brain size={13} />} {loading ? __('Analyzing...') : analysis ? __('Reanalyze') : __('Analyze emotions')}
                 </button>
@@ -98,7 +99,7 @@ export default function NodeAnalysisSection({ projectId, nodeId, catalog, before
                             {analysis.from_cache && ` · ${__('saved analysis')}`}
                         </span>
                     </div>
-                    {analysis.stale && <p className="text-xs text-primary">{__('The node or its context changed after this analysis. Reanalyze to update it.')}</p>}
+                    {analysis.stale && <p className="text-sm text-warning">{__('The node or its context changed after this analysis. Reanalyze to update it.')}</p>}
                     {analysis.degraded && <p className="text-xs text-primary">{__('The AI did not respond: this is the keyword analysis. Try again in a minute.')}</p>}
                     <NarrativeLine labels={analysis.labels} vad={analysis.vad} technical={false} />
                     {analysis.summary && <p className="text-muted">{analysis.summary}</p>}

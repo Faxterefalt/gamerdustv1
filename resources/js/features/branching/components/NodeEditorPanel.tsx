@@ -13,6 +13,7 @@ import type { DialogueType } from '../../dialogues/dialogues.types';
 import type { EmotionCatalog } from '../../analysis/emotion.types';
 import NodeAnalysisSection from './NodeAnalysisSection';
 import OptionLogicEditor from './OptionLogicEditor';
+import { dangerButton, iconButton, secondary } from '../../../shared/lib/styles';
 
 // Claves de traducción de los tipos de entrada de la Biblia que se pueden vincular.
 const LORE_TYPE_LABEL: Record<string, string> = { location: 'Place', rule: 'World rule' };
@@ -93,20 +94,20 @@ export default function NodeEditorPanel({
                     </p>
                     <h2 className="truncate font-semibold text-foreground">{node.display_title}</h2>
                 </div>
-                <button type="button" onClick={onClose} aria-label={__('Close panel')} className="p-1 text-muted hover:text-foreground">
+                <button type="button" onClick={onClose} aria-label={__('Close panel')} className={iconButton}>
                     <X size={16} />
                 </button>
             </div>
 
             <div className="space-y-4 p-4">
                 {lockHolder && (
-                    <p role="status" className="flex items-start gap-2 border border-primary/50 bg-primary/10 p-2 text-xs text-foreground">
+                    <p role="status" className="flex items-start gap-2 rounded-md border border-warning/50 bg-warning/10 p-2 text-sm text-foreground">
                         <UserRound size={14} className="mt-0.5 shrink-0" />
                         {__(':name is editing this node right now. Changes are saved automatically: the last one to write wins.', { name: lockHolder.name })}
                     </p>
                 )}
                 {error && !error.optionId && (error.nodeId === node.id || error.nodeId === undefined) && (
-                    <p className="border border-danger/50 bg-danger/10 p-2 text-xs text-danger">{error.message}</p>
+                    <p className="rounded-md border border-danger/50 bg-danger/10 p-2 text-sm text-danger">{error.message}</p>
                 )}
 
                 {warnings.length > 0 && (
@@ -185,7 +186,7 @@ export default function NodeEditorPanel({
                         <h3 className="flex items-center gap-1.5 text-sm font-semibold text-foreground">
                             <BookOpen size={14} /> {__('Narrative Bible')} ({node.lore_entry_ids.length})
                         </h3>
-                        <button type="button" onClick={() => setLinking(true)} className="flex items-center gap-1 border border-border-strong px-2 py-1 text-xs hover:border-primary">
+                        <button type="button" onClick={() => setLinking(true)} className={secondary}>
                             <Plus size={12} /> {__('Link')}
                         </button>
                     </div>
@@ -206,7 +207,7 @@ export default function NodeEditorPanel({
                 <section className="space-y-3 border-t border-border pt-4">
                     <div className="flex items-center justify-between">
                         <h3 className="text-sm font-semibold text-foreground">{__('Options')} ({node.options.length})</h3>
-                        <button type="button" onClick={onCreateOption} className="flex items-center gap-1 border border-border-strong px-2 py-1 text-xs hover:border-primary">
+                        <button type="button" onClick={onCreateOption} className={secondary}>
                             <Plus size={12} /> {__('Option')}
                         </button>
                     </div>
@@ -232,7 +233,7 @@ export default function NodeEditorPanel({
                                         onClick={() => onDeleteOption(option.id)}
                                         disabled={option.managed}
                                         title={option.managed ? __('Remove the reference from the text to delete it') : __('Delete option')}
-                                        className="p-1 text-muted hover:text-danger disabled:opacity-30"
+                                        className={`${iconButton} hover:text-danger`}
                                     >
                                         <Trash2 size={14} />
                                     </button>
@@ -307,7 +308,7 @@ export default function NodeEditorPanel({
                     <Link href={`/projects/${projectId}/dialogues/${node.id}/edit`} className="text-xs text-muted underline hover:text-foreground">
                         {__('Open in form')}
                     </Link>
-                    <button type="button" onClick={onDelete} className="flex items-center gap-1.5 border border-danger/50 px-3 py-1.5 text-xs text-danger hover:bg-danger/10">
+                    <button type="button" onClick={onDelete} className={dangerButton}>
                         <Trash2 size={13} /> {__('Delete node')}
                     </button>
                 </div>

@@ -35,8 +35,8 @@ export default function ProjectLayout({ title, actions, fullWidth = false, bare 
     const content = (
         <>
             {(title || actions) && (
-                <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                    {title && <h1 className="text-2xl font-bold text-foreground">{title}</h1>}
+                <div className="mb-6 flex flex-wrap items-center justify-between gap-x-6 gap-y-4">
+                    {title && <h1 className="max-w-full shrink-0 text-2xl font-bold text-foreground">{title}</h1>}
                     {actions}
                 </div>
             )}

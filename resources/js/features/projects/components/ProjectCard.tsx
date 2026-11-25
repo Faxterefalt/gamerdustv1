@@ -51,8 +51,10 @@ export default function ProjectCard({ project, list }: ProjectCardProps) {
                 </div>
                 {project.owner && (
                     <p className="mt-2 flex items-center gap-2 text-sm text-info">
-                        <Users size={14} aria-hidden="true" /> {__('Shared by :name', { name: project.owner })}
-                        <span className="rounded-sm border border-info/50 px-1.5 text-xs">{__(ROLE_LABELS[project.role ?? 'viewer'])}</span>
+                        <Users size={14} aria-hidden="true" />
+                        <span>
+                            {__('Shared by :name', { name: project.owner })} <span className="ml-1 rounded-sm border border-info/50 px-1.5 text-xs">{__(ROLE_LABELS[project.role ?? 'viewer'])}</span>
+                        </span>
                     </p>
                 )}
                 <p className="mb-4 mt-3 line-clamp-2 text-sm text-muted">{project.description || __('A new world awaits its first story.')}</p>

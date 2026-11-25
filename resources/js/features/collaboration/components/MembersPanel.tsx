@@ -4,7 +4,7 @@ import type { FormEvent } from 'react';
 import { FormError, Pending } from '../../../shared/components/ui';
 import useProjectAccess from '../../../shared/hooks/useProjectAccess';
 import { __ } from '../../../shared/lib/i18n';
-import { card, field, primarySm } from '../../../shared/lib/styles';
+import { card, field, iconButton, primarySm } from '../../../shared/lib/styles';
 import type { PageProps } from '../../projects/projects.types';
 import type { MemberRole, ProjectMemberRow } from '../collaboration.types';
 
@@ -78,7 +78,7 @@ export default function MembersPanel({ projectId, members, roles }: MembersPanel
                                         onClick={() => remove(member)}
                                         aria-label={self ? __('Leave project') : __('Remove :name', { name: member.name ?? '' })}
                                         title={self ? __('Leave project') : __('Remove from the project')}
-                                        className="rounded p-1 text-subtle hover:text-danger"
+                                        className={`${iconButton} hover:text-danger`}
                                     >
                                         {self ? <LogOut size={13} /> : <Trash2 size={13} />}
                                     </button>

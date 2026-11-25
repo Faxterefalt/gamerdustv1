@@ -2,7 +2,7 @@ import { Pencil, Plus, Trash2 } from 'lucide-react';
 import { useState, type FormEvent } from 'react';
 import Modal, { FormError } from '../../../shared/components/ui';
 import { __ } from '../../../shared/lib/i18n';
-import { field, primarySm, secondary } from '../../../shared/lib/styles';
+import { field, iconButton, primarySm, secondary } from '../../../shared/lib/styles';
 import type { BranchingVariable, SaveResponse, VariableDraft, VariableType } from '../branching.types';
 import type { SaveError } from '../hooks/useBranchingGraph';
 import { ValueInput } from './OptionLogicEditor';
@@ -68,10 +68,10 @@ export default function VariablesDialog({ variables, error, onSave, onDelete, on
                         </span>
                         {variable.description && <span className="min-w-0 flex-1 truncate text-muted">{variable.description}</span>}
                         <span className="ml-auto flex gap-1">
-                            <button type="button" aria-label={__('Edit :key', { key: variable.key })} onClick={() => open(variable)} className="rounded p-1.5 hover:bg-surface-2">
+                            <button type="button" aria-label={__('Edit :key', { key: variable.key })} onClick={() => open(variable)} className={iconButton}>
                                 <Pencil size={13} />
                             </button>
-                            <button type="button" aria-label={__('Delete :key', { key: variable.key })} onClick={() => void remove(variable)} className="rounded p-1.5 hover:bg-surface-2 hover:text-danger">
+                            <button type="button" aria-label={__('Delete :key', { key: variable.key })} onClick={() => void remove(variable)} className={`${iconButton} hover:text-danger`}>
                                 <Trash2 size={13} />
                             </button>
                         </span>

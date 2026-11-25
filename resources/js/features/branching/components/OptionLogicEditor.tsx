@@ -2,6 +2,7 @@ import { Plus, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { __ } from '../../../shared/lib/i18n';
 import type { BranchingVariable, ConditionOp, EffectOp, GraphOption, OptionCondition, OptionEffect, OptionPatch, VariableValue } from '../branching.types';
+import { iconButton, secondary } from '../../../shared/lib/styles';
 
 interface OptionLogicEditorProps {
     option: GraphOption;
@@ -128,7 +129,7 @@ export default function OptionLogicEditor({ option, variables, onChange, onOpenV
                                     type="button"
                                     aria-label={__('Remove effect')}
                                     onClick={() => setEffects(effects.filter((_, position) => position !== index))}
-                                    className="p-1 text-subtle hover:text-danger"
+                                    className={`${iconButton} hover:text-danger`}
                                 >
                                     <X size={12} />
                                 </button>
@@ -141,7 +142,7 @@ export default function OptionLogicEditor({ option, variables, onChange, onOpenV
                             const first = variables[0];
                             setEffects([...effects, { var: first.key, op: defaults(first).effect, value: defaults(first).value }]);
                         }}
-                        className="flex items-center gap-1 border border-border-strong px-2 py-0.5 hover:border-primary"
+                        className={secondary}
                     >
                         <Plus size={11} /> {__('Effect')}
                     </button>

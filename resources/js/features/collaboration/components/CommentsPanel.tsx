@@ -4,7 +4,7 @@ import { useState, type FormEvent } from 'react';
 import { FormError, Pending } from '../../../shared/components/ui';
 import useProjectAccess from '../../../shared/hooks/useProjectAccess';
 import { __, locale } from '../../../shared/lib/i18n';
-import { field, primarySm } from '../../../shared/lib/styles';
+import { field, iconButton, primarySm } from '../../../shared/lib/styles';
 import type { PageProps } from '../../projects/projects.types';
 import type { ProjectComment } from '../collaboration.types';
 
@@ -74,7 +74,7 @@ export default function CommentsPanel({ projectId, comments, sceneId, compact = 
                                 </p>
                             </div>
                             {access.can_update && (comment.user_id === userId || access.can_manage) && (
-                                <button type="button" onClick={() => destroy(comment)} aria-label={__('Delete comment')} className="rounded p-1 text-subtle hover:text-danger">
+                                <button type="button" onClick={() => destroy(comment)} aria-label={__('Delete comment')} className={`${iconButton} hover:text-danger`}>
                                     <Trash2 size={12} />
                                 </button>
                             )}
