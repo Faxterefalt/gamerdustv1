@@ -1,7 +1,7 @@
 import { Link, useForm } from '@inertiajs/react';
 import type { FormEvent } from 'react';
 import { __ } from '../../../shared/lib/i18n';
-import AuthShell, { AuthField, authButton, authInput } from '../components/AuthShell';
+import AuthShell, { AuthField, authButton, authInput, authLink, authLinks } from '../components/AuthShell';
 
 interface ResetPasswordProps {
     token: string;
@@ -23,7 +23,7 @@ export default function ResetPassword({ token, email }: ResetPasswordProps) {
 
     return (
         <AuthShell title={__('Choose a new password')} description={__('The link is valid for 60 minutes and can only be used once.')}>
-            <form onSubmit={submit} className="mt-6 space-y-4">
+            <form onSubmit={submit} className="mt-8 space-y-5">
                 <AuthField label={__('Email')} error={errors.email}>
                     <input type="email" autoComplete="email" required value={data.email} onChange={(event) => setData('email', event.target.value)} className={authInput} />
                 </AuthField>
@@ -40,13 +40,13 @@ export default function ResetPassword({ token, email }: ResetPasswordProps) {
                         className={authInput}
                     />
                 </AuthField>
-                {errors.token && <p className="text-sm text-danger">{errors.token}</p>}
+                {errors.token && <p role="alert" className="text-sm text-danger">{errors.token}</p>}
                 <button type="submit" disabled={processing} className={authButton}>
                     {__('Reset password')}
                 </button>
             </form>
-            <div className="mt-5 text-sm text-muted">
-                <Link href="/forgot-password" className="text-primary hover:text-foreground">
+            <div className={authLinks}>
+                <Link href="/forgot-password" className={authLink}>
                     {__('Request a new link')}
                 </Link>
             </div>
