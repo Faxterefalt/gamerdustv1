@@ -24,23 +24,25 @@ Frontend (`resources/js`): `app/` (arranque), `layouts/`, `features/<módulo>/{p
 
 ## Instalación y ejecución
 
-Requisitos: PHP 8.4+, Composer, Node 22+ y MySQL.
+Requisitos: PHP 8.4+ en la línea de comandos (en Laragon, la de `laragon/bin/php/php-8.5…`), Composer, Node 22+ y MySQL (el de Laragon o `docker compose up -d`).
+
+**Primera vez**, en la raíz del repositorio:
+
+1. Crea `.env` a mano: no existe `.env.example`, así que `composer setup` no sirve en una instalación nueva. Hay una plantilla local en la sección 10 del [cuaderno de arquitectura](docs/architecture/Gamerdust_Documentacion.ipynb) (MySQL `gamerdust`, `MAIL_MAILER=log`, `GROQ_API_KEY` opcional).
+2. Instala y prepara:
 
 ```
 composer install
-copy .env.example .env   # si no existe, usa el .env actual
-php artisan key:generate
-php artisan migrate
+php artisan key:generate      # solo la primera vez
+php artisan migrate --seed    # datos de ejemplo: test@example.com / password
 npm install
+npm run build
 ```
 
-En dos terminales en la raíz del repositorio:
+**Para arrancar:**
 
-```
-php artisan serve
-npm run dev
-```
+- **Con Laragon:** apunta el host virtual a `public/` (`<repositorio>/public`, nunca a la raíz), pulsa *Start All* y abre `http://gamerdustv1.test`. Deja `npm run dev` abierto solo si editas el frontend.
+- **Sin Laragon**, en dos terminales: `php artisan serve` y `npm run dev`, y abre `http://127.0.0.1:8000` (no el puerto 5173 de Vite).
+- `composer dev` lo arranca todo junto, pero solo en Linux y macOS: Pail necesita la extensión `pcntl`, que no existe en Windows.
 
-Con Laragon, apunta el host virtual a `public/` (`<repositorio>/public`).
-
-Pruebas: `php artisan test`, `npm run test:js` y `npm run test:e2e` (ver [tests/e2e/README.md](tests/e2e/README.md)). Producción: [docs/despliegue.md](docs/despliegue.md).
+Pruebas: `APP_LOCALE=es php artisan test` (requiere `npm run build`), `npm run test:js` y `npm run test:e2e` (ver [tests/e2e/README.md](tests/e2e/README.md)). Producción: [docs/despliegue.md](docs/despliegue.md).
