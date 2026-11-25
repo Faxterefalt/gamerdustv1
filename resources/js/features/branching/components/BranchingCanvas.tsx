@@ -1,4 +1,5 @@
 import { __, choice } from '../../../shared/lib/i18n';
+import { token } from '../../../shared/lib/tokens';
 import {
     Background,
     BackgroundVariant,
@@ -124,7 +125,7 @@ function Canvas({ graph, displayNode, selectedId, focusNonce, onSelect, onMove, 
                 source: String(edge.source),
                 target: String(edge.target),
                 type: 'option',
-                markerEnd: { type: MarkerType.ArrowClosed, width: 18, height: 18, color: edge.managed ? '#d946ef' : '#a1a1aa' },
+                markerEnd: { type: MarkerType.ArrowClosed, width: 18, height: 18, color: edge.managed ? token('ember') : token('subtle') },
                 data: { label: edge.label, managed: edge.managed, index, count: totals.get(key) ?? 1 },
             };
         });
@@ -171,7 +172,7 @@ function Canvas({ graph, displayNode, selectedId, focusNonce, onSelect, onMove, 
         return { isolated: count('isolated'), incoming: count('no_incoming'), unreachable: count('unreachable'), outgoing: count('no_outgoing'), broken: count('broken_option') };
     }, [graph.warnings]);
 
-    const buttonClass = 'flex items-center gap-1.5 border border-zinc-700 bg-zinc-900 px-3 py-1.5 text-xs text-zinc-200 hover:border-amber-500 disabled:opacity-40';
+    const buttonClass = 'flex items-center gap-1.5 border border-border-strong bg-surface px-3 py-1.5 text-xs text-foreground hover:border-primary disabled:opacity-40';
 
     return (
         <div ref={wrapper} className="h-full w-full">
@@ -192,11 +193,11 @@ function Canvas({ graph, displayNode, selectedId, focusNonce, onSelect, onMove, 
                 maxZoom={2}
                 onlyRenderVisibleElements
                 colorMode="dark"
-                className="!bg-zinc-950"
+                className="!bg-background"
             >
-                <Background variant={BackgroundVariant.Lines} gap={32} color="#27272a" />
+                <Background variant={BackgroundVariant.Lines} gap={32} color={token('surface-2')} />
                 <Controls showInteractive={false} />
-                <MiniMap pannable zoomable className="!border !border-zinc-800 !bg-zinc-900" maskColor="rgba(9,9,11,0.7)" nodeColor={(node) => DIALOGUE_TYPE_STYLE[(node.data as { node: GraphNode }).node.dialogue_type].minimap} />
+                <MiniMap pannable zoomable className="!border !border-border !bg-surface" maskColor={token('scrim')} nodeColor={(node) => token(DIALOGUE_TYPE_STYLE[(node.data as { node: GraphNode }).node.dialogue_type].minimap)} />
 
                 <Panel position="top-left" className="flex flex-wrap gap-2">
                     <button type="button" className={buttonClass} onClick={() => void fitView({ padding: 0.25, duration: 300 })}>
@@ -205,19 +206,19 @@ function Canvas({ graph, displayNode, selectedId, focusNonce, onSelect, onMove, 
                     <button type="button" className={buttonClass} disabled={selectedId === null} onClick={() => center(selectedId)}>
                         <Crosshair size={14} /> {__('Center on selected')}
                     </button>
-                    <button type="button" className={`${buttonClass} !border-amber-600 !text-amber-100`} onClick={createAtCenter}>
+                    <button type="button" className={`${buttonClass} !border-primary !text-foreground`} onClick={createAtCenter}>
                         <Plus size={14} /> {__('New node')}
                     </button>
                 </Panel>
 
-                <Panel position="bottom-center" className="flex flex-wrap gap-3 border border-zinc-800 bg-zinc-900/90 px-3 py-1.5 text-[11px] text-zinc-400">
+                <Panel position="bottom-center" className="flex flex-wrap gap-3 border border-border bg-surface px-3 py-1.5 text-xs text-muted">
                     <span>{choice(':count node|:count nodes', graph.nodes.length)}</span>
                     <span>{choice(':count connection|:count connections', graph.edges.length)}</span>
-                    <span className={counts.isolated ? 'text-amber-300' : ''}>{__(':count isolated', { count: counts.isolated })}</span>
+                    <span className={counts.isolated ? 'text-primary' : ''}>{__(':count isolated', { count: counts.isolated })}</span>
                     <span>{__(':count without incoming', { count: counts.incoming })}</span>
-                    <span className={counts.unreachable ? 'text-amber-300' : ''}>{__(':count unreachable', { count: counts.unreachable })}</span>
+                    <span className={counts.unreachable ? 'text-primary' : ''}>{__(':count unreachable', { count: counts.unreachable })}</span>
                     <span>{__(':count without outgoing', { count: counts.outgoing })}</span>
-                    <span className={counts.broken ? 'text-rose-300' : ''}>{__(':count options without target', { count: counts.broken })}</span>
+                    <span className={counts.broken ? 'text-danger' : ''}>{__(':count options without target', { count: counts.broken })}</span>
                 </Panel>
             </ReactFlow>
         </div>

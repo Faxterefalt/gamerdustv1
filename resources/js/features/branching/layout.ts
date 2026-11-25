@@ -1,6 +1,7 @@
 import { __ } from '../../shared/lib/i18n';
 import type { GraphEdge, GraphNode } from './branching.types';
 import type { DialogueType } from '../dialogues/dialogues.types';
+import type { ColorToken } from '../../shared/lib/tokens';
 
 export const NODE_WIDTH = 260;
 export const NODE_HEIGHT = 150;
@@ -8,13 +9,13 @@ export const NODE_HEIGHT = 150;
 const COLUMN_GAP = 120;
 const ROW_GAP = 40;
 
-export const DIALOGUE_TYPE_STYLE: Record<DialogueType, { label: string; accent: string; badge: string; minimap: string }> = {
-    cutscene: { label: 'Cutscene', accent: 'border-l-violet-500', badge: 'border-violet-700 bg-violet-950/50 text-violet-200', minimap: '#8b5cf6' },
-    ambient: { label: 'Ambient', accent: 'border-l-zinc-500', badge: 'border-zinc-600 bg-zinc-800/60 text-zinc-300', minimap: '#71717a' },
-    bark: { label: 'Bark', accent: 'border-l-yellow-500', badge: 'border-yellow-700 bg-yellow-950/40 text-yellow-200', minimap: '#eab308' },
-    interactive_no_branch: { label: 'Interactive, no branches', accent: 'border-l-sky-500', badge: 'border-sky-700 bg-sky-950/40 text-sky-200', minimap: '#0ea5e9' },
-    interactive_rubber_banding: { label: 'Interactive, rubber-banding', accent: 'border-l-amber-500', badge: 'border-amber-700 bg-amber-950/40 text-amber-200', minimap: '#f59e0b' },
-    interactive_alternative_paths: { label: 'Interactive, alternative paths', accent: 'border-l-fuchsia-500', badge: 'border-fuchsia-700 bg-fuchsia-950/40 text-fuchsia-200', minimap: '#d946ef' },
+export const DIALOGUE_TYPE_STYLE: Record<DialogueType, { label: string; accent: string; badge: string; minimap: ColorToken }> = {
+    cutscene: { label: 'Cutscene', accent: 'border-l-kind-cutscene', badge: 'border-kind-cutscene/50 bg-kind-cutscene/10 text-kind-cutscene', minimap: 'kind-cutscene' },
+    ambient: { label: 'Ambient', accent: 'border-l-kind-ambient', badge: 'border-kind-ambient/50 bg-kind-ambient/10 text-kind-ambient', minimap: 'kind-ambient' },
+    bark: { label: 'Bark', accent: 'border-l-kind-bark', badge: 'border-kind-bark/50 bg-kind-bark/10 text-kind-bark', minimap: 'kind-bark' },
+    interactive_no_branch: { label: 'Interactive, no branches', accent: 'border-l-kind-linear', badge: 'border-kind-linear/50 bg-kind-linear/10 text-kind-linear', minimap: 'kind-linear' },
+    interactive_rubber_banding: { label: 'Interactive, rubber-banding', accent: 'border-l-kind-rubber', badge: 'border-kind-rubber/50 bg-kind-rubber/10 text-kind-rubber', minimap: 'kind-rubber' },
+    interactive_alternative_paths: { label: 'Interactive, alternative paths', accent: 'border-l-kind-paths', badge: 'border-kind-paths/50 bg-kind-paths/10 text-kind-paths', minimap: 'kind-paths' },
 };
 
 /** Etiqueta traducida de un tipo de diálogo (las `label` de arriba son claves de traducción). */

@@ -16,9 +16,9 @@ export default function ProjectStats({ project }: ProjectStatsProps) {
     return (
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             {stats.map(([label, value]) => (
-                <div key={label} className="border border-zinc-800 bg-zinc-900 px-4 py-3">
-                    <div className="text-sm text-zinc-400">{label}</div>
-                    <div className="mt-1 text-2xl font-semibold text-white">{value}</div>
+                <div key={label} className="border border-border bg-surface px-4 py-3">
+                    <div className="text-sm text-muted">{label}</div>
+                    <div className="mt-1 text-2xl font-semibold text-foreground">{value}</div>
                 </div>
             ))}
         </div>

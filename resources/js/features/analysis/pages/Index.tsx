@@ -47,8 +47,8 @@ export default function Index({ project, scenes, validations, closedValidations,
                 <div className="flex items-start gap-3">
                     <Sparkles size={19} className="mt-0.5 shrink-0 text-primary" />
                     <div>
-                        <p className="font-mono text-[9px] tracking-wider text-primary">{__('METRICS OF YOUR TEXT · NO AI CALLS ON THIS TAB')}</p>
-                        <p className="mt-2 max-w-2xl text-xs leading-6 text-[#b1c2a5]">
+                        <p className="text-xs text-primary">{__('METRICS OF YOUR TEXT · NO AI CALLS ON THIS TAB')}</p>
+                        <p className="mt-2 max-w-2xl text-xs leading-6 text-muted">
                             {__('These figures count words, dialogue and links. The emotional analysis with AI runs only when you press Analyze emotions in the Script; its results appear in Emotional evolution.')}
                         </p>
                     </div>
@@ -75,7 +75,7 @@ export default function Index({ project, scenes, validations, closedValidations,
                     <div key={label} className={`${card} p-5`}>
                         <Icon size={19} className="text-primary" strokeWidth={1.5} />
                         <p className="mt-5 font-display text-3xl">{value}</p>
-                        <h2 className="mt-2 text-[11px] text-[#a8bb9b]">{label}</h2>
+                        <h2 className="mt-2 text-xs text-muted">{label}</h2>
                     </div>
                 ))}
             </div>
@@ -90,20 +90,20 @@ export default function Index({ project, scenes, validations, closedValidations,
                             className="flex flex-wrap items-center justify-between gap-4 px-6 py-5 hover:bg-primary/[.025]"
                         >
                             <span className="flex items-center gap-3">
-                                <span className="font-mono text-[10px] text-primary">{codes.get(scene.id)}</span>
+                                <span className="text-xs text-primary">{codes.get(scene.id)}</span>
                                 <span className="text-sm">{scene.title}</span>
                             </span>
-                            <span className="flex items-center gap-6 text-[11px] text-[#a2b596]">
+                            <span className="flex items-center gap-6 text-xs text-muted">
                                 {choice(':count word|:count words', countWords(sceneText(scene)))}
                                 <ArrowUpRight size={15} className="text-primary" />
                             </span>
                         </Link>
                     ))}
                 </div>
-                {!current.length && <p className="p-8 text-xs leading-6 text-[#a4b898]">{__('Add a scene and write its first blocks to see its metrics.')}</p>}
+                {!current.length && <p className="p-8 text-xs leading-6 text-muted">{__('Add a scene and write its first blocks to see its metrics.')}</p>}
             </section>
 
-            <p className="mb-8 mt-5 text-[10px] leading-6 text-[#9caf8e]">
+            <p className="mb-8 mt-5 text-xs leading-6 text-muted">
                 {__('Dialogue makes up :percent% of the words in the selected scope.', {
                     percent: totalWords ? Math.round((dialogueWords / totalWords) * 100) : 0,
                 })}

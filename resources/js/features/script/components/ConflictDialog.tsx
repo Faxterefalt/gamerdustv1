@@ -28,7 +28,7 @@ export default function ConflictDialog({ theirs, savedBy, mine, kindLabel, pendi
 
     return (
         <Modal title={__('This scene changed while you were editing')} wide onClose={() => !pending && onClose()}>
-            <p className="text-xs leading-6 text-[#c6d4bb]">
+            <p className="text-xs leading-6 text-muted">
                 {savedBy
                     ? __(':name saved this scene after you opened it. Choose what to do with your changes.', { name: savedBy })
                     : __('Someone saved this scene after you opened it. Choose what to do with your changes.')}
@@ -48,14 +48,14 @@ export default function ConflictDialog({ theirs, savedBy, mine, kindLabel, pendi
                 </button>
             </div>
 
-            <ul className="mt-4 space-y-1 text-[10px] leading-5 text-[#9eb392]">
+            <ul className="mt-4 space-y-1 text-xs leading-5 text-muted">
                 <li>{__('Overwrite: saves your version on top of theirs (theirs stays in the version history).')}</li>
                 <li>{__('Copy my version: copies your text to the clipboard and loads the saved version; Undo brings yours back.')}</li>
             </ul>
 
             {showDiff && (
                 <div className="mt-5 max-h-[50vh] overflow-y-auto rounded-md border border-border p-3">
-                    <p className="mb-3 text-[10px] text-[#a9bb9d]">{__('From your version to the saved one: in green what they added, in red what is only in yours.')}</p>
+                    <p className="mb-3 text-xs text-muted">{__('From your version to the saved one: in green what they added, in red what is only in yours.')}</p>
                     <VersionDiff before={mine} after={theirs.script} kindLabel={kindLabel} />
                 </div>
             )}

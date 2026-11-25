@@ -17,14 +17,14 @@ export default function Register() {
     };
 
     return (
-        <main className="min-h-screen bg-zinc-950 px-4 py-10 text-zinc-100">
+        <main className="min-h-screen bg-background px-4 py-10 text-foreground">
             <Head title={__('Create account')} />
-            <section className="mx-auto max-w-md border border-zinc-800 bg-zinc-900 p-6">
+            <section className="mx-auto max-w-md border border-border bg-surface p-6">
                 <div className="flex items-center justify-between gap-4">
-                    <h1 className="text-2xl font-semibold text-white">{__('Create account')}</h1>
+                    <h1 className="text-2xl font-semibold text-foreground">{__('Create account')}</h1>
                     <LocaleSwitcher />
                 </div>
-                <p className="mt-2 text-sm text-zinc-400">{__('Local sign-up to start organizing narrative projects.')}</p>
+                <p className="mt-2 text-sm text-muted">{__('Local sign-up to start organizing narrative projects.')}</p>
 
                 <form onSubmit={submit} className="mt-6 space-y-4">
                     <Field label={__('Name')} error={errors.name}>
@@ -45,13 +45,13 @@ export default function Register() {
                         />
                     </Field>
 
-                    <button type="submit" disabled={processing} className="w-full border border-amber-600 px-4 py-2 text-sm font-medium text-amber-100 hover:bg-amber-950 disabled:opacity-50">
+                    <button type="submit" disabled={processing} className="w-full border border-primary px-4 py-2 text-sm font-medium text-foreground hover:bg-primary/10 disabled:opacity-50">
                         {__('Create account')}
                     </button>
                 </form>
 
-                <div className="mt-5 text-sm text-zinc-400">
-                    <Link href="/login" className="text-amber-200 hover:text-amber-100">
+                <div className="mt-5 text-sm text-muted">
+                    <Link href="/login" className="text-primary hover:text-foreground">
                         {__('I already have an account')}
                     </Link>
                 </div>
@@ -60,14 +60,14 @@ export default function Register() {
     );
 }
 
-const inputClass = 'w-full border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm text-zinc-100 outline-none focus:border-amber-500';
+const inputClass = 'w-full border border-border-strong bg-background px-3 py-2 text-sm text-foreground focus:border-primary';
 
 function Field({ label, error, children }: { label: string; error?: string; children: ReactNode }) {
     return (
         <label className="block">
-            <span className="mb-2 block text-sm font-medium text-zinc-200">{label}</span>
+            <span className="mb-2 block text-sm font-medium text-foreground">{label}</span>
             {children}
-            {error && <span className="mt-1 block text-sm text-rose-300">{error}</span>}
+            {error && <span className="mt-1 block text-sm text-danger">{error}</span>}
         </label>
     );
 }

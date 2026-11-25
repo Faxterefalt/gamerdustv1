@@ -27,21 +27,21 @@ export default function EmotionalAnalysisPanel({ projectId, analysis, scenes = [
     const sources = data.source_type === 'scene' ? scenes : dialogues;
 
     return (
-        <section className="border border-zinc-800 bg-zinc-900 p-4">
+        <section className="border border-border bg-surface p-4">
             <div className="flex flex-col gap-1">
-                <h2 className="font-semibold text-white">{__('Emotional analysis')}</h2>
-                <p className="text-sm text-zinc-400">{__('Local keyword-based placeholder, ready to connect AI later.')}</p>
+                <h2 className="font-semibold text-foreground">{__('Emotional analysis')}</h2>
+                <p className="text-sm text-muted">{__('Local keyword-based placeholder, ready to connect AI later.')}</p>
             </div>
 
             {analysis ? (
-                <div className="mt-4 space-y-2 text-sm text-zinc-300">
+                <div className="mt-4 space-y-2 text-sm text-muted">
                     <div>
-                        {__('Dominant emotion:')} <span className="text-amber-200">{emotionLabel(analysis.dominant_emotion)}</span>
+                        {__('Dominant emotion:')} <span className="text-primary">{emotionLabel(analysis.dominant_emotion)}</span>
                     </div>
                     {analysis.interpretation && <p>{analysis.interpretation}</p>}
                 </div>
             ) : (
-                <p className="mt-4 text-sm text-zinc-400">{__('No saved analyses yet.')}</p>
+                <p className="mt-4 text-sm text-muted">{__('No saved analyses yet.')}</p>
             )}
 
             <form onSubmit={submit} className="mt-4 grid gap-3 sm:grid-cols-[160px_1fr_auto]">
@@ -52,7 +52,7 @@ export default function EmotionalAnalysisPanel({ projectId, analysis, scenes = [
                         const first = sourceType === 'scene' ? scenes[0]?.id : dialogues[0]?.id;
                         setData({ source_type: sourceType, source_id: first ?? '' });
                     }}
-                    className="border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm"
+                    className="border border-border-strong bg-background px-3 py-2 text-sm"
                 >
                     <option value="scene">{__('Scene')}</option>
                     <option value="dialogue">{__('Dialogue')}</option>
@@ -60,7 +60,7 @@ export default function EmotionalAnalysisPanel({ projectId, analysis, scenes = [
                 <select
                     value={data.source_id}
                     onChange={(event) => setData('source_id', event.target.value ? Number(event.target.value) : '')}
-                    className="border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm"
+                    className="border border-border-strong bg-background px-3 py-2 text-sm"
                 >
                     {sources.map((source) => (
                         <option key={source.id} value={source.id}>
@@ -68,7 +68,7 @@ export default function EmotionalAnalysisPanel({ projectId, analysis, scenes = [
                         </option>
                     ))}
                 </select>
-                <button type="submit" disabled={processing || sources.length === 0} className="border border-amber-600 px-4 py-2 text-sm text-amber-100 hover:bg-amber-950 disabled:opacity-50">
+                <button type="submit" disabled={processing || sources.length === 0} className="border border-primary px-4 py-2 text-sm text-foreground hover:bg-primary/10 disabled:opacity-50">
                     {__('Analyze')}
                 </button>
             </form>

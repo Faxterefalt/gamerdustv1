@@ -19,12 +19,12 @@ export default function InitialEmotionField({ catalog, emotion, intensity, onCha
     const color = emotion ? catalog.emotions[emotion]?.color : undefined;
 
     return (
-        <section className="rounded-lg border border-[#3a4a33] bg-background/40 p-4 sm:p-5">
+        <section className="rounded-lg border border-border bg-background/40 p-4 sm:p-5">
             <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
-                <h3 className="flex items-center gap-2 text-xs font-medium text-[#dce6d5]">
+                <h3 className="flex items-center gap-2 text-xs font-medium text-foreground">
                     <HeartPulse size={15} className="text-primary" /> {__('How does this character feel at the start of the story?')}
                 </h3>
-                <span className="rounded-full border border-primary/25 px-2 py-0.5 text-[9px] text-primary">{__('Set by you')}</span>
+                <span className="rounded-full border border-primary/25 px-2 py-0.5 text-xs text-primary">{__('Set by you')}</span>
             </div>
 
             <div className="grid gap-4 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-end">
@@ -58,7 +58,7 @@ export default function InitialEmotionField({ catalog, emotion, intensity, onCha
                                 aria-pressed={intensity === key}
                                 onClick={() => onChange(emotion, key)}
                                 className={`min-h-11 px-4 text-xs transition ${
-                                    intensity === key ? 'bg-primary text-[#172012] font-semibold' : 'text-[#becbb6] hover:bg-primary/5'
+                                    intensity === key ? 'bg-primary text-primary-ink font-semibold' : 'text-muted hover:bg-primary/5'
                                 }`}
                             >
                                 {intensityLabel(key)}
@@ -68,7 +68,7 @@ export default function InitialEmotionField({ catalog, emotion, intensity, onCha
                 </fieldset>
             </div>
 
-            <p className="mt-3 text-[10px] leading-5 text-[#9eb292]">
+            <p className="mt-3 text-xs leading-5 text-muted">
                 {__('It is the starting point of their emotional arc: the AI analysis compares their first scenes with it.')}
             </p>
         </section>

@@ -29,13 +29,13 @@ export default function Show({ project, validations, closedValidations, constrai
             title={project.title}
             actions={
                 <div className="flex flex-wrap gap-2">
-                    <Link href={`/projects/${project.id}/branching`} className="border border-amber-600 px-4 py-2 text-sm text-amber-100 hover:bg-amber-950">
+                    <Link href={`/projects/${project.id}/branching`} className="border border-primary px-4 py-2 text-sm text-foreground hover:bg-primary/10">
                         {__('Branching editor')}
                     </Link>
-                    <Link href={`/projects/${project.id}/edit`} className="border border-zinc-700 px-4 py-2 text-sm hover:border-amber-500">
+                    <Link href={`/projects/${project.id}/edit`} className="border border-border-strong px-4 py-2 text-sm hover:border-primary">
                         {__('Edit')}
                     </Link>
-                    <Link href="/projects" className="border border-zinc-700 px-4 py-2 text-sm hover:border-amber-500">
+                    <Link href="/projects" className="border border-border-strong px-4 py-2 text-sm hover:border-primary">
                         {__('Projects')}
                     </Link>
                 </div>
@@ -45,24 +45,24 @@ export default function Show({ project, validations, closedValidations, constrai
 
             <div className="space-y-6">
                 <section className="grid gap-4 lg:grid-cols-[1.5fr_1fr]">
-                    <div className="border border-zinc-800 bg-zinc-900 p-5">
-                        <div className="flex flex-wrap gap-2 text-xs text-zinc-300">
-                            <span className="border border-zinc-700 px-2 py-1">{statusLabel(project.status)}</span>
-                            <span className="border border-zinc-700 px-2 py-1">{narrativeLabel(project.narrative_type)}</span>
-                            {project.game_genre && <span className="border border-zinc-700 px-2 py-1">{genreLabel(project.game_genre)}</span>}
-                            {project.language && <span className="border border-zinc-700 px-2 py-1">{languageLabel(project.language)}</span>}
+                    <div className="border border-border bg-surface p-5">
+                        <div className="flex flex-wrap gap-2 text-xs text-muted">
+                            <span className="border border-border-strong px-2 py-1">{statusLabel(project.status)}</span>
+                            <span className="border border-border-strong px-2 py-1">{narrativeLabel(project.narrative_type)}</span>
+                            {project.game_genre && <span className="border border-border-strong px-2 py-1">{genreLabel(project.game_genre)}</span>}
+                            {project.language && <span className="border border-border-strong px-2 py-1">{languageLabel(project.language)}</span>}
                         </div>
-                        {project.description && <p className="mt-4 text-zinc-300">{project.description}</p>}
+                        {project.description && <p className="mt-4 text-muted">{project.description}</p>}
                         {project.premise && (
                             <div className="mt-5">
-                                <h2 className="text-sm font-semibold text-amber-200">{__('Premise')}</h2>
-                                <p className="mt-2 text-sm text-zinc-300">{project.premise}</p>
+                                <h2 className="text-sm font-semibold text-primary">{__('Premise')}</h2>
+                                <p className="mt-2 text-sm text-muted">{project.premise}</p>
                             </div>
                         )}
                         {project.central_conflict && (
                             <div className="mt-5">
-                                <h2 className="text-sm font-semibold text-rose-200">{__('Main conflict')}</h2>
-                                <p className="mt-2 text-sm text-zinc-300">{project.central_conflict}</p>
+                                <h2 className="text-sm font-semibold text-danger">{__('Main conflict')}</h2>
+                                <p className="mt-2 text-sm text-muted">{project.central_conflict}</p>
                             </div>
                         )}
                     </div>
@@ -119,7 +119,7 @@ function QuickLinks({ projectId }: { projectId: number }) {
     return (
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-6">
             {links.map(([label, href]) => (
-                <Link key={href} href={href} className="border border-zinc-800 bg-zinc-900 px-4 py-3 text-sm text-zinc-200 hover:border-amber-500">
+                <Link key={href} href={href} className="border border-border bg-surface px-4 py-3 text-sm text-foreground hover:border-primary">
                     {label}
                 </Link>
             ))}
@@ -131,12 +131,12 @@ function DashboardSection({ title, href, createHref, children }: { title: string
     return (
         <section>
             <div className="mb-3 flex items-center justify-between gap-4">
-                <h2 className="text-lg font-semibold text-white">{title}</h2>
+                <h2 className="text-lg font-semibold text-foreground">{title}</h2>
                 <div className="flex gap-2">
-                    <Link href={href} className="border border-zinc-700 px-3 py-2 text-sm hover:border-amber-500">
+                    <Link href={href} className="border border-border-strong px-3 py-2 text-sm hover:border-primary">
                         {__('View all')}
                     </Link>
-                    <Link href={createHref} className="border border-amber-600 px-3 py-2 text-sm text-amber-100 hover:bg-amber-950">
+                    <Link href={createHref} className="border border-primary px-3 py-2 text-sm text-foreground hover:bg-primary/10">
                         {__('Create')}
                     </Link>
                 </div>

@@ -31,14 +31,14 @@ export default function ProjectForm({ project }: ProjectFormProps) {
     };
 
     return (
-        <form onSubmit={submit} className="space-y-5 rounded-xl border border-border bg-[#171d16] p-5">
+        <form onSubmit={submit} className="space-y-5 rounded-xl border border-border bg-surface p-5">
             <GeneralFields data={data} setData={setData} errors={errors} idPrefix="edit" extraGenre={project.game_genre} />
             <div className="flex flex-wrap items-center justify-between gap-3 border-t border-border pt-4">
-                <p className="text-xs text-[#98a58e]">
+                <p className="text-xs text-subtle">
                     <span className="text-primary">*</span> {__('Required fields')}
                 </p>
                 <div className="flex items-center gap-3">
-                    {recentlySuccessful && <span className="text-sm text-emerald-300">{__('Changes saved successfully.')}</span>}
+                    {recentlySuccessful && <span className="text-sm text-success">{__('Changes saved successfully.')}</span>}
                     <button type="submit" disabled={processing} className={`${button} disabled:opacity-50`}>
                         {processing ? __('Saving...') : __('Save changes')}
                     </button>

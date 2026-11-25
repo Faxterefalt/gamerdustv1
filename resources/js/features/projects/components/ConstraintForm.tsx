@@ -33,10 +33,10 @@ export default function ConstraintForm({ project, usage }: ConstraintFormProps) 
     };
 
     return (
-        <form onSubmit={submit} className="space-y-4 border border-zinc-800 bg-zinc-900 p-5">
+        <form onSubmit={submit} className="space-y-4 border border-border bg-surface p-5">
             <div>
-                <h2 className="font-semibold text-white">{__('Narrative setup')}</h2>
-                <p className="mt-1 text-sm text-zinc-400">{__('All fields are optional: fill them in gradually during development.')}</p>
+                <h2 className="font-semibold text-foreground">{__('Narrative setup')}</h2>
+                <p className="mt-1 text-sm text-muted">{__('All fields are optional: fill them in gradually during development.')}</p>
             </div>
 
             <Field label={__('Premise')} help={__('Brief summary of the main idea.')} error={errors.premise}>
@@ -113,11 +113,11 @@ export default function ConstraintForm({ project, usage }: ConstraintFormProps) 
                 />
             </Field>
 
-            <fieldset id="limits" className="scroll-mt-24 space-y-4 border-t border-zinc-800 pt-4">
+            <fieldset id="limits" className="scroll-mt-24 space-y-4 border-t border-border pt-4">
                 <legend className="sr-only">{__('Production limits')}</legend>
                 <div>
-                    <h3 className="text-sm font-semibold text-white">{__('Production limits')}</h3>
-                    <p className="mt-1 text-xs text-zinc-500">{__('Leave a limit empty to have no limit. Reaching a limit exactly is not an excess.')}</p>
+                    <h3 className="text-sm font-semibold text-foreground">{__('Production limits')}</h3>
+                    <p className="mt-1 text-xs text-subtle">{__('Leave a limit empty to have no limit. Reaching a limit exactly is not an excess.')}</p>
                 </div>
                 <div className="grid gap-4 md:grid-cols-3">
                     <Field
@@ -143,40 +143,40 @@ export default function ConstraintForm({ project, usage }: ConstraintFormProps) 
                     </Field>
                 </div>
                 {usage && (
-                    <p className="text-xs text-zinc-500">
+                    <p className="text-xs text-subtle">
                         {__('Pages are estimated from the words of the script (:per per page). Cost points add up the heuristic estimate of each scene and dialogue node.', {
                             per: usage.words_per_page,
                         })}
                     </p>
                 )}
-                <label className="flex items-start gap-3 text-sm text-zinc-200">
-                    <input type="checkbox" checked={data.requires_twist} onChange={(event) => setData('requires_twist', event.target.checked)} className="mt-1 accent-amber-500" />
+                <label className="flex items-start gap-3 text-sm text-foreground">
+                    <input type="checkbox" checked={data.requires_twist} onChange={(event) => setData('requires_twist', event.target.checked)} className="mt-1 accent-primary" />
                     <span>
                         {__('The story must include a plot twist')}
-                        <span className="block text-xs text-zinc-500">{__('It is reported as a contextual review, not as an error.')}</span>
+                        <span className="block text-xs text-subtle">{__('It is reported as a contextual review, not as an error.')}</span>
                     </span>
                 </label>
             </fieldset>
 
             <div className="flex items-center gap-3">
-                <button type="submit" disabled={processing} className="border border-amber-600 px-4 py-2 text-sm text-amber-100 hover:bg-amber-950 disabled:opacity-50">
+                <button type="submit" disabled={processing} className="border border-primary px-4 py-2 text-sm text-foreground hover:bg-primary/10 disabled:opacity-50">
                     {processing ? __('Saving...') : __('Save setup')}
                 </button>
-                {recentlySuccessful && <span className="text-sm text-emerald-300">{__('Changes saved successfully.')}</span>}
+                {recentlySuccessful && <span className="text-sm text-success">{__('Changes saved successfully.')}</span>}
             </div>
         </form>
     );
 }
 
-const inputClass = 'w-full border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm text-zinc-100 outline-none focus:border-amber-500';
+const inputClass = 'w-full border border-border-strong bg-background px-3 py-2 text-sm text-foreground focus:border-primary';
 
 function Field({ label, help, error, children }: { label: string; help?: string; error?: string; children: ReactNode }) {
     return (
         <label className="block">
-            <span className="mb-1 block text-sm font-medium text-zinc-200">{label}</span>
-            {help && <span className="mb-2 block text-xs text-zinc-500">{help}</span>}
+            <span className="mb-1 block text-sm font-medium text-foreground">{label}</span>
+            {help && <span className="mb-2 block text-xs text-subtle">{help}</span>}
             {children}
-            {error && <span className="mt-1 block text-sm text-rose-300">{error}</span>}
+            {error && <span className="mt-1 block text-sm text-danger">{error}</span>}
         </label>
     );
 }

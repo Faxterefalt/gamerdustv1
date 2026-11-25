@@ -23,7 +23,7 @@ export default function BibleTabs({ projectId, active }: { projectId: number; ac
                     key={key}
                     href={href}
                     aria-current={active === key ? 'page' : undefined}
-                    className={`-mb-px flex shrink-0 items-center gap-2 border-b-2 px-4 py-3 text-xs transition ${active === key ? 'border-primary text-primary' : 'border-transparent text-[#a9ba9e] hover:text-foreground'}`}
+                    className={`-mb-px flex shrink-0 items-center gap-2 border-b-2 px-4 py-3 text-xs transition ${active === key ? 'border-primary text-primary' : 'border-transparent text-muted hover:text-foreground'}`}
                 >
                     <Icon size={14} />
                     {label}

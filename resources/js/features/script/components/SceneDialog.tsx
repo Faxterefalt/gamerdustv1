@@ -53,7 +53,7 @@ export default function SceneDialog({ projectId, act, onClose, onCreated }: Scen
                         {__('Act')}
                         <input name="act" required maxLength={100} defaultValue={act || __('Act 1 - The arrival')} className={field} />
                     </label>
-                    <p className="mt-4 text-[11px] leading-6 text-[#a1b293]">{__('The scene will be added at the end of the sequence. Its script will start with an editable heading.')}</p>
+                    <p className="mt-4 text-xs leading-6 text-muted">{__('The scene will be added at the end of the sequence. Its script will start with an editable heading.')}</p>
                     <FormError error={error} />
                     <button type="submit" className={`${primarySm} mt-6 w-full`}>
                         <Pending pending={pending}>{__('Create scene')}</Pending>

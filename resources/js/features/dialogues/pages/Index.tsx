@@ -16,13 +16,13 @@ export default function Index({ project, dialogues }: DialoguesIndexProps) {
             title={`${__('Dialogues')} - ${project.title}`}
             actions={
                 <div className="flex gap-2">
-                    <Link href={`/projects/${project.id}/branching`} className="border border-zinc-700 px-4 py-2 text-sm hover:border-amber-500">
+                    <Link href={`/projects/${project.id}/branching`} className="border border-border-strong px-4 py-2 text-sm hover:border-primary">
                         {__('Branching editor')}
                     </Link>
-                    <Link href={`/projects/${project.id}`} className="border border-zinc-700 px-4 py-2 text-sm hover:border-amber-500">
+                    <Link href={`/projects/${project.id}`} className="border border-border-strong px-4 py-2 text-sm hover:border-primary">
                         {__('Dashboard')}
                     </Link>
-                    <Link href={`/projects/${project.id}/dialogues/create`} className="border border-amber-600 px-4 py-2 text-sm text-amber-100 hover:bg-amber-950">
+                    <Link href={`/projects/${project.id}/dialogues/create`} className="border border-primary px-4 py-2 text-sm text-foreground hover:bg-primary/10">
                         {__('New node')}
                     </Link>
                 </div>

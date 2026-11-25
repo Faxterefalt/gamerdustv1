@@ -39,28 +39,28 @@ export default function LinkPicker({
         <>
             {options.length > 6 && (
                 <label className="mb-4 flex items-center gap-2 rounded-md border border-border bg-background px-3 py-2.5">
-                    <Search size={14} className="shrink-0 text-[#9aae8e]" />
-                    <input aria-label={__('Filter')} value={query} onChange={(event) => setQuery(event.target.value)} placeholder={__('Filter…')} className="w-full min-w-0 bg-transparent text-xs outline-none" />
+                    <Search size={14} className="shrink-0 text-muted" />
+                    <input aria-label={__('Filter')} value={query} onChange={(event) => setQuery(event.target.value)} placeholder={__('Filter…')} className="w-full min-w-0 bg-transparent text-xs" />
                 </label>
             )}
             <div className="space-y-2">
                 {visible.map((option) => (
                     <label key={option.id} className="flex items-start gap-3 rounded-md border border-border p-3 text-xs leading-6">
-                        <input type="checkbox" checked={checked.includes(option.id)} onChange={(event) => onToggle(option.id, event.target.checked)} className="mt-1.5 accent-[#c2e88d]" />
+                        <input type="checkbox" checked={checked.includes(option.id)} onChange={(event) => onToggle(option.id, event.target.checked)} className="mt-1.5 accent-primary" />
                         <span className="min-w-0">
                             <span className="block break-words">{option.label}</span>
-                            {option.hint && <span className="block text-[10px] leading-5 text-[#e2c08a]">{option.hint}</span>}
+                            {option.hint && <span className="block text-xs leading-5 text-warning">{option.hint}</span>}
                         </span>
                     </label>
                 ))}
             </div>
-            {!options.length && <p className="text-xs leading-7 text-[#b0c39f]">{empty}</p>}
-            {options.length > 0 && !visible.length && <p className="text-xs leading-7 text-[#b0c39f]">{__('No matches.')}</p>}
+            {!options.length && <p className="text-xs leading-7 text-muted">{empty}</p>}
+            {options.length > 0 && !visible.length && <p className="text-xs leading-7 text-muted">{__('No matches.')}</p>}
             <button type="button" onClick={onDone} className={`${button} mt-6 w-full`}>
                 <Check size={14} />
                 {__('Done')}
             </button>
-            <p className="mt-3 text-[10px] leading-6 text-[#9ab18c]">{note}</p>
+            <p className="mt-3 text-xs leading-6 text-muted">{note}</p>
         </>
     );
 }

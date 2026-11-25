@@ -21,7 +21,7 @@ interface EvolutionProps {
 function Loading() {
     return (
         <p role="status" className="flex items-center gap-2 text-xs text-primary">
-            <LoaderCircle size={14} className="animate-spin" /> {__('Loading…')}
+            <LoaderCircle size={14} className="animate-spin motion-reduce:animate-none" /> {__('Loading…')}
         </p>
     );
 }
@@ -54,7 +54,7 @@ export default function Evolution({ project, emotionCatalog }: EvolutionProps) {
             {timeline && !analyzed && (
                 <div className={`${card} mb-6 flex flex-col items-center gap-4 px-6 py-12 text-center`}>
                     <Sparkles size={26} className="text-primary" />
-                    <p className="max-w-md text-xs leading-6 text-[#a6b99a]">{__('No scenes analyzed yet. Open a scene in the Script and press Analyze emotions.')}</p>
+                    <p className="max-w-md text-xs leading-6 text-muted">{__('No scenes analyzed yet. Open a scene in the Script and press Analyze emotions.')}</p>
                     <Link href={`/projects/${project.id}/script`} className={primarySm}>
                         {__('Go to the Script')}
                     </Link>

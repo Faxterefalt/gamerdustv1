@@ -28,7 +28,7 @@ export default function LoreEntryForm({ projectId, entry, method = 'post', submi
     };
 
     return (
-        <form onSubmit={submit} className="space-y-5 border border-zinc-800 bg-zinc-900 p-5">
+        <form onSubmit={submit} className="space-y-5 border border-border bg-surface p-5">
             <Field label={__('Title')} error={errors.title}>
                 <input value={data.title} onChange={(event) => setData('title', event.target.value)} className={inputClass} />
             </Field>
@@ -52,21 +52,21 @@ export default function LoreEntryForm({ projectId, entry, method = 'post', submi
             <Field label={__('Narrative function')} error={errors.narrative_function}>
                 <textarea value={data.narrative_function} onChange={(event) => setData('narrative_function', event.target.value)} rows={4} className={inputClass} />
             </Field>
-            <button type="submit" disabled={processing} className="border border-amber-600 px-4 py-2 text-sm text-amber-100 hover:bg-amber-950 disabled:opacity-50">
+            <button type="submit" disabled={processing} className="border border-primary px-4 py-2 text-sm text-foreground hover:bg-primary/10 disabled:opacity-50">
                 {submitLabel}
             </button>
         </form>
     );
 }
 
-const inputClass = 'w-full border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm text-zinc-100 outline-none focus:border-amber-500';
+const inputClass = 'w-full border border-border-strong bg-background px-3 py-2 text-sm text-foreground focus:border-primary';
 
 function Field({ label, error, children }: { label: string; error?: string; children: ReactNode }) {
     return (
         <label className="block">
-            <span className="mb-2 block text-sm font-medium text-zinc-200">{label}</span>
+            <span className="mb-2 block text-sm font-medium text-foreground">{label}</span>
             {children}
-            {error && <span className="mt-1 block text-sm text-rose-300">{error}</span>}
+            {error && <span className="mt-1 block text-sm text-danger">{error}</span>}
         </label>
     );
 }

@@ -83,7 +83,7 @@ export default function RefineDialog({ projectId, sceneId, block: initialBlock, 
     return (
         <Modal title={__('Refine with AI')} wide onClose={() => !pending && onClose()}>
             {choices && choices.length > 1 ? (
-                <label className="mb-2 block text-[10px] text-[#a2b697]">
+                <label className="mb-2 block text-xs text-muted">
                     {__('Block to refine')}
                     <select
                         value={block.id}
@@ -102,9 +102,9 @@ export default function RefineDialog({ projectId, sceneId, block: initialBlock, 
                     </select>
                 </label>
             ) : (
-                <p className="mb-2 text-[10px] text-[#a2b697]">{__('Block to refine: :kind', { kind: blockLabel })}</p>
+                <p className="mb-2 text-xs text-muted">{__('Block to refine: :kind', { kind: blockLabel })}</p>
             )}
-            <p className="mb-5 whitespace-pre-wrap rounded-md border border-border bg-background p-3 font-mono text-[11px] leading-6 text-[#c2cfb8]">{block.text}</p>
+            <p className="mb-5 whitespace-pre-wrap rounded-md border border-border bg-background p-3 font-mono text-xs leading-6 text-muted">{block.text}</p>
 
             <fieldset disabled={pending}>
                 <legend className="mb-2 text-xs">{__('What do you want to achieve?')}</legend>
@@ -115,7 +115,7 @@ export default function RefineDialog({ projectId, sceneId, block: initialBlock, 
                             type="button"
                             aria-pressed={goal === key}
                             onClick={() => setGoal(key)}
-                            className={`min-h-9 rounded-full border px-3 text-[11px] transition ${goal === key ? 'border-primary/50 bg-primary/10 text-primary' : 'border-border text-[#b4c4a8] hover:border-primary/30'}`}
+                            className={`min-h-9 rounded-full border px-3 text-xs transition ${goal === key ? 'border-primary/50 bg-primary/10 text-primary' : 'border-border text-muted hover:border-primary/30'}`}
                         >
                             {key === 'true_to_character' && character ? __("True to :character's personality", { character: character.name }) : __(label)}
                         </button>
@@ -160,17 +160,17 @@ export default function RefineDialog({ projectId, sceneId, block: initialBlock, 
                 <div className="mt-6 space-y-4">
                     <div className="grid gap-3 sm:grid-cols-2">
                         <div>
-                            <p className="mb-1.5 text-[10px] text-[#a2b697]">{__('Original')}</p>
-                            <p className="h-full whitespace-pre-wrap rounded-md border border-border p-3 font-mono text-[11px] leading-6 text-[#aebea3]">{block.text}</p>
+                            <p className="mb-1.5 text-xs text-muted">{__('Original')}</p>
+                            <p className="h-full whitespace-pre-wrap rounded-md border border-border p-3 font-mono text-xs leading-6 text-muted">{block.text}</p>
                         </div>
                         <div>
-                            <p className="mb-1.5 text-[10px] text-primary">{__('Proposal')}</p>
-                            <p className="h-full whitespace-pre-wrap rounded-md border border-primary/35 bg-primary/5 p-3 font-mono text-[11px] leading-6 text-[#dce6d5]">{result.proposal}</p>
+                            <p className="mb-1.5 text-xs text-primary">{__('Proposal')}</p>
+                            <p className="h-full whitespace-pre-wrap rounded-md border border-primary/35 bg-primary/5 p-3 font-mono text-xs leading-6 text-foreground">{result.proposal}</p>
                         </div>
                     </div>
 
                     {result.changes.length > 0 && (
-                        <ul className="list-disc space-y-1 pl-5 text-[11px] leading-5 text-[#c3d0b9]">
+                        <ul className="list-disc space-y-1 pl-5 text-xs leading-5 text-muted">
                             {result.changes.map((change, index) => (
                                 <li key={index}>{change}</li>
                             ))}
@@ -178,7 +178,7 @@ export default function RefineDialog({ projectId, sceneId, block: initialBlock, 
                     )}
 
                     <div className="flex flex-wrap items-center justify-between gap-3">
-                        <p className="flex items-center gap-2 text-[10px] text-[#a2b697]">
+                        <p className="flex items-center gap-2 text-xs text-muted">
                             {__('Resulting emotion')} <EmotionChip emotion={result.resulting_emotion} catalog={catalog} size="sm" />
                         </p>
                         {result.generation_id && <FeedbackButtons key={result.generation_id} projectId={projectId} target={{ ai_generation_id: result.generation_id }} />}
@@ -197,7 +197,7 @@ export default function RefineDialog({ projectId, sceneId, block: initialBlock, 
                             <Check size={14} /> {__('Apply')}
                         </button>
                     </div>
-                    <p className="text-[10px] text-[#93a886]">{__('Apply only changes your draft (you can undo it). Press Save to keep it.')}</p>
+                    <p className="text-xs text-subtle">{__('Apply only changes your draft (you can undo it). Press Save to keep it.')}</p>
                 </div>
             )}
         </Modal>

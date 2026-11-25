@@ -27,9 +27,9 @@ export default function Index({ project, counts }: ReportsProps) {
             <PageHeading title={__('Reports')} description={__('Your universe does not end in the editor. Take what you have built with you.')} />
 
             <section className={`${card} mb-6 p-6 sm:p-8`}>
-                <p className="font-mono text-[9px] tracking-wider text-primary">{__('WORLD DOCUMENT')}</p>
+                <p className="text-xs text-primary">{__('WORLD DOCUMENT')}</p>
                 <h2 className="mt-4 break-words font-display text-2xl">{project.title}</h2>
-                <p className="mt-3 text-xs text-[#a7ba9c]">
+                <p className="mt-3 text-xs text-muted">
                     {project.game_genre ? genreLabel(project.game_genre) : __('No genre')} / {languageLabel(project.language ?? 'es')}
                 </p>
                 <div className="mt-7 flex flex-wrap gap-7 border-t border-border pt-5">
@@ -37,7 +37,7 @@ export default function Index({ project, counts }: ReportsProps) {
                         const [value, ...words] = label.split(' ');
 
                         return (
-                            <p key={label} className="text-xs text-[#adbea2]">
+                            <p key={label} className="text-xs text-muted">
                                 <span className="mr-2 font-display text-xl text-foreground">{value}</span>
                                 {words.join(' ')}
                             </p>
@@ -50,7 +50,7 @@ export default function Index({ project, counts }: ReportsProps) {
                 <article className={`${card} flex flex-col items-start p-6 sm:p-8`}>
                     <FileText size={27} className="text-primary" strokeWidth={1.4} />
                     <h2 className="mt-6 font-display text-xl">{__('Bible and script in Markdown')}</h2>
-                    <p className="mb-7 mt-3 flex-1 text-xs leading-7 text-[#adbea1]">
+                    <p className="mb-7 mt-3 flex-1 text-xs leading-7 text-muted">
                         {__('The premise, characters, locations, mechanics and every scene in an editable text file.')}
                     </p>
                     <a href={`${base}/reports/markdown`} className={primarySm}>
@@ -60,7 +60,7 @@ export default function Index({ project, counts }: ReportsProps) {
                 <article className={`${card} flex flex-col items-start p-6 sm:p-8`}>
                     <FileDown size={27} className="text-primary" strokeWidth={1.4} />
                     <h2 className="mt-6 font-display text-xl">{__('Script as PDF')}</h2>
-                    <p className="mb-7 mt-3 flex-1 text-xs leading-7 text-[#adbea1]">
+                    <p className="mb-7 mt-3 flex-1 text-xs leading-7 text-muted">
                         {__('All your scenes in screenplay format: headings, actions, characters, dialogue and parentheticals. Opens the print view, where you can save it as PDF.')}
                     </p>
                     <a href={`${base}/script/print`} target="_blank" rel="noopener" className={primarySm}>
@@ -70,9 +70,9 @@ export default function Index({ project, counts }: ReportsProps) {
                 <article className={`${card} flex flex-col items-start p-6 sm:p-8`}>
                     <Network size={27} className="text-primary" strokeWidth={1.4} />
                     <h2 className="mt-6 font-display text-xl">{__('Interactive dialogue map')}</h2>
-                    <p className="mb-7 mt-3 flex-1 text-xs leading-7 text-[#adbea1]">
+                    <p className="mb-7 mt-3 flex-1 text-xs leading-7 text-muted">
                         {__('Every dialogue node and its choices in a standalone HTML file, like Twine: explore the decision map or play through the branches in any browser, without internet.')}
-                        <span className="mt-2 block text-[#9eb392]">
+                        <span className="mt-2 block text-muted">
                             {choice(':count node|:count nodes', counts.dialogues)}
                         </span>
                     </p>
@@ -83,7 +83,7 @@ export default function Index({ project, counts }: ReportsProps) {
                 <article className={`${card} flex flex-col items-start p-6 sm:p-8`}>
                     <ClipboardList size={27} className="text-primary" strokeWidth={1.4} />
                     <h2 className="mt-6 font-display text-xl">{__('Analysis report')}</h2>
-                    <p className="mb-7 mt-3 flex-1 text-xs leading-7 text-[#adbea1]">
+                    <p className="mb-7 mt-3 flex-1 text-xs leading-7 text-muted">
                         {__('The emotional reading of each scene in narrative language, red and amber alerts, inconsistencies, suggestions and coherence validations, with the script version each analysis read. Opens the print view.')}
                     </p>
                     <a href={`${base}/reports/analysis`} target="_blank" rel="noopener" className={primarySm}>
@@ -92,7 +92,7 @@ export default function Index({ project, counts }: ReportsProps) {
                 </article>
             </div>
 
-            <p className="mt-6 text-[11px] leading-6 text-[#9eb392]">{__('Files include the data saved on the server. Save your Script changes before exporting from Reports.')}</p>
+            <p className="mt-6 text-xs leading-6 text-muted">{__('Files include the data saved on the server. Save your Script changes before exporting from Reports.')}</p>
         </ProjectLayout>
     );
 }

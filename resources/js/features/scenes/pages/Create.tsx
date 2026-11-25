@@ -13,7 +13,7 @@ export default function Create({ project }: SceneCreateProps) {
         <ProjectLayout
             title={__('New scene')}
             actions={
-                <Link href={`/projects/${project.id}/scenes`} className="border border-zinc-700 px-4 py-2 text-sm hover:border-amber-500">
+                <Link href={`/projects/${project.id}/scenes`} className="border border-border-strong px-4 py-2 text-sm hover:border-primary">
                     {__('Back')}
                 </Link>
             }

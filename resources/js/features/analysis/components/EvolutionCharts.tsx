@@ -7,15 +7,17 @@ import { card } from '../../../shared/lib/styles';
 import type { EmotionCatalog, EmotionTimeline, LabelBand, TimelinePoint, TimelineScene } from '../emotion.types';
 import { emotionLabel } from '../labels';
 import { EmotionChip } from './EmotionBits';
+import { cssVar, token } from '../../../shared/lib/tokens';
 
-// Colores de interfaz del gráfico (no son datos: los colores de emoción llegan del servidor).
-const AXIS = '#a2b697';
-const GRID = '#2b3828';
-const STALE = '#6f7a6c';
-const RED = '#ff6b5e';
-const TONE_LINE = '#c5ec95';
-const TENSION_LINE = '#e9a25b';
-const CHARACTER_COLORS = ['#c5ec95', '#6cc4c8', '#f0a6c4', '#c592e8'];
+// Colores de interfaz del gráfico, desde los tokens de app.css (no son datos: los colores de emoción llegan del servidor).
+// Son funciones porque los atributos SVG necesitan el valor resuelto y el documento ya existe al pintar.
+const AXIS = () => token('muted');
+const GRID = () => token('border');
+const STALE = () => token('subtle');
+const RED = () => token('danger');
+const TONE_LINE = () => token('primary');
+const TENSION_LINE = () => token('ember');
+const CHARACTER_COLORS = () => [token('primary'), token('info'), token('kind-paths'), token('kind-cutscene')];
 const MAX_CHARACTERS = 4;
 
 /** Marcas del eje: el centro de cada banda, con su palabra (Tono, Tensión...). */
@@ -76,7 +78,7 @@ function StoryArc({ projectId, scenes, catalog }: { projectId: number; scenes: T
             return <g key={`tone-${index}`} />;
         }
 
-        const color = scene.stale ? STALE : (catalog.emotions[scene.emotion]?.color ?? TONE_LINE);
+        const color = scene.stale ? STALE() : (catalog.emotions[scene.emotion]?.color ?? TONE_LINE());
 
         return (
             <circle
@@ -85,7 +87,7 @@ function StoryArc({ projectId, scenes, catalog }: { projectId: number; scenes: T
                 cy={cy}
                 r={6}
                 fill={color}
-                stroke={scene.alert === 'red' ? RED : '#111812'}
+                stroke={scene.alert === 'red' ? RED() : token('background')}
                 strokeWidth={scene.alert === 'red' ? 3 : 1.5}
                 style={{ cursor: 'pointer' }}
             />
@@ -95,7 +97,7 @@ function StoryArc({ projectId, scenes, catalog }: { projectId: number; scenes: T
     return (
         <section className={`${card} p-5 sm:p-6`}>
             <h2 className="font-display text-lg">{__('Emotional arc of the story')}</h2>
-            <p className="mt-1 text-[11px] leading-5 text-[#a2b697]">{__('The tension line shows pacing: look for rises before the climax and breathers after.')}</p>
+            <p className="mt-1 text-xs leading-5 text-muted">{__('The tension line shows pacing: look for rises before the climax and breathers after.')}</p>
 
             <div className="mt-5 h-[320px] w-full">
                 <ResponsiveContainer width="100%" height="100%">
@@ -111,26 +113,26 @@ function StoryArc({ projectId, scenes, catalog }: { projectId: number; scenes: T
                         }}
                         style={{ cursor: 'pointer' }}
                     >
-                        <CartesianGrid stroke={GRID} vertical={false} />
+                        <CartesianGrid stroke={GRID()} vertical={false} />
                         {acts.map((band, index) => (
-                            <ReferenceArea key={`${band.act}-${band.from}`} yAxisId="tone" x1={band.from} x2={band.to} fill={TONE_LINE} fillOpacity={index % 2 ? 0.05 : 0.015} stroke="none" />
+                            <ReferenceArea key={`${band.act}-${band.from}`} yAxisId="tone" x1={band.from} x2={band.to} fill={TONE_LINE()} fillOpacity={index % 2 ? 0.05 : 0.015} stroke="none" />
                         ))}
-                        <XAxis dataKey="code" tick={{ fill: AXIS, fontSize: 10 }} stroke={GRID} />
-                        <YAxis yAxisId="tone" domain={[0, 1]} ticks={tone.ticks} tickFormatter={tone.format} tick={{ fill: AXIS, fontSize: 9 }} width={84} stroke={GRID} />
-                        <YAxis yAxisId="tension" orientation="right" domain={[0, 1]} ticks={tension.ticks} tickFormatter={tension.format} tick={{ fill: AXIS, fontSize: 9 }} width={52} stroke={GRID} />
+                        <XAxis dataKey="code" tick={{ fill: AXIS(), fontSize: 12 }} stroke={GRID()} />
+                        <YAxis yAxisId="tone" domain={[0, 1]} ticks={tone.ticks} tickFormatter={tone.format} tick={{ fill: AXIS(), fontSize: 12 }} width={84} stroke={GRID()} />
+                        <YAxis yAxisId="tension" orientation="right" domain={[0, 1]} ticks={tension.ticks} tickFormatter={tension.format} tick={{ fill: AXIS(), fontSize: 12 }} width={52} stroke={GRID()} />
                         <Tooltip content={({ active, payload }) => (active ? <ArcTooltip row={payload?.[0]?.payload as ArcRow | undefined} catalog={catalog} /> : null)} />
-                        <Legend wrapperStyle={{ fontSize: 11, color: AXIS }} />
-                        <Line yAxisId="tone" type="monotone" dataKey="tone" name={__('Tone')} stroke={TONE_LINE} strokeWidth={2} connectNulls={false} dot={toneDot} activeDot={false} isAnimationActive={false} />
+                        <Legend wrapperStyle={{ fontSize: 13, color: AXIS() }} />
+                        <Line yAxisId="tone" type="monotone" dataKey="tone" name={__('Tone')} stroke={TONE_LINE()} strokeWidth={2} connectNulls={false} dot={toneDot} activeDot={false} isAnimationActive={false} />
                         <Line
                             yAxisId="tension"
                             type="monotone"
                             dataKey="tension"
                             name={__('Tension')}
-                            stroke={TENSION_LINE}
+                            stroke={TENSION_LINE()}
                             strokeWidth={2}
                             strokeDasharray="6 4"
                             connectNulls={false}
-                            dot={{ r: 3, fill: TENSION_LINE, stroke: 'none' }}
+                            dot={{ r: 3, fill: TENSION_LINE(), stroke: 'none' }}
                             activeDot={false}
                             isAnimationActive={false}
                         />
@@ -144,16 +146,16 @@ function StoryArc({ projectId, scenes, catalog }: { projectId: number; scenes: T
                     <li key={scene.id}>
                         <Link
                             href={sceneUrl(projectId, scene.id)}
-                            className={`flex items-center gap-2 rounded-md border px-2.5 py-1.5 text-[10px] transition hover:border-primary/40 ${scene.alert === 'red' ? 'border-red-300/40' : 'border-border'} ${scene.stale ? 'opacity-60' : ''}`}
+                            className={`flex items-center gap-2 rounded-md border px-2.5 py-1.5 text-xs transition hover:border-primary/40 ${scene.alert === 'red' ? 'border-danger/40' : 'border-border'} ${scene.stale ? 'opacity-60' : ''}`}
                         >
-                            <span className="font-mono text-primary">{scene.code}</span>
-                            {scene.emotion ? <span>{emotionLabel(scene.emotion)}</span> : <span className="text-[#93a886]">{__('Not analyzed')}</span>}
-                            {scene.alert === 'red' && <AlertTriangle size={11} className="text-[#f3baa5]" aria-label={__('Tone jump with no visible cause')} />}
+                            <span className="text-primary">{scene.code}</span>
+                            {scene.emotion ? <span>{emotionLabel(scene.emotion)}</span> : <span className="text-subtle">{__('Not analyzed')}</span>}
+                            {scene.alert === 'red' && <AlertTriangle size={11} className="text-danger" aria-label={__('Tone jump with no visible cause')} />}
                         </Link>
                     </li>
                 ))}
             </ul>
-            <p className="mt-3 text-[10px] text-[#93a886]">{__('Gaps are scenes not analyzed yet; grey points are analyses older than the current text. Click a scene to open it in the Script.')}</p>
+            <p className="mt-3 text-xs text-subtle">{__('Gaps are scenes not analyzed yet; grey points are analyses older than the current text. Click a scene to open it in the Script.')}</p>
         </section>
     );
 }
@@ -167,7 +169,7 @@ function ArcTooltip({ row, catalog }: { row?: ArcRow; catalog: EmotionCatalog })
 
     return (
         <TooltipBox>
-            <p className="font-mono text-[9px] text-primary">
+            <p className="text-xs text-primary">
                 {scene.code}
                 {scene.act ? ` · ${scene.act}` : ''}
             </p>
@@ -175,14 +177,14 @@ function ArcTooltip({ row, catalog }: { row?: ArcRow; catalog: EmotionCatalog })
             {scene.emotion && scene.labels ? (
                 <>
                     <EmotionChip emotion={scene.emotion} catalog={catalog} size="sm" />
-                    <p className="text-[10px]">
+                    <p className="text-xs">
                         {__('Tone')}: {scene.labels.tone} · {__('Tension')}: {scene.labels.tension}
                     </p>
-                    {scene.stale && <p className="text-[10px] text-[#e7d6a4]">{__('The text changed after this analysis.')}</p>}
-                    {scene.alert === 'red' && <p className="text-[10px] text-[#f3baa5]">{__('Tone jump with no visible cause')}</p>}
+                    {scene.stale && <p className="text-xs text-warning">{__('The text changed after this analysis.')}</p>}
+                    {scene.alert === 'red' && <p className="text-xs text-danger">{__('Tone jump with no visible cause')}</p>}
                 </>
             ) : (
-                <p className="text-[10px] text-[#93a886]">{__('Not analyzed')}</p>
+                <p className="text-xs text-subtle">{__('Not analyzed')}</p>
             )}
         </TooltipBox>
     );
@@ -221,7 +223,7 @@ function CharacterEmotions({ projectId, timeline, catalog }: ChartsProps) {
     });
 
     const toggle = (id: number) => setSelected((list) => (list.includes(id) ? list.filter((item) => item !== id) : list.length < MAX_CHARACTERS ? [...list, id] : list));
-    const colorOf = (id: number) => CHARACTER_COLORS[selected.indexOf(id) % CHARACTER_COLORS.length];
+    const colorOf = (id: number) => CHARACTER_COLORS()[selected.indexOf(id) % CHARACTER_COLORS().length];
 
     const dotFor = (characterId: number, color: string) =>
         function CharacterDot({ cx, cy, payload, index }: DotItemDotProps) {
@@ -237,8 +239,8 @@ function CharacterEmotions({ projectId, timeline, catalog }: ChartsProps) {
 
             return (
                 <g key={`${characterId}-${index}`} opacity={point.stale ? 0.45 : 1}>
-                    {point.alert === 'red' && <circle cx={cx} cy={cy} r={radius + 4} fill="none" stroke={RED} strokeWidth={2} />}
-                    <circle cx={cx} cy={cy} r={radius} fill={author ? '#151d16' : color} stroke={color} strokeWidth={author ? 2.5 : 1} />
+                    {point.alert === 'red' && <circle cx={cx} cy={cy} r={radius + 4} fill="none" stroke={RED()} strokeWidth={2} />}
+                    <circle cx={cx} cy={cy} r={radius} fill={author ? token('surface') : color} stroke={color} strokeWidth={author ? 2.5 : 1} />
                 </g>
             );
         };
@@ -246,12 +248,12 @@ function CharacterEmotions({ projectId, timeline, catalog }: ChartsProps) {
     return (
         <section className={`${card} p-5 sm:p-6`}>
             <h2 className="font-display text-lg">{__('Character emotions')}</h2>
-            <p className="mt-1 text-[11px] leading-5 text-[#a2b697]">{__('From the state you set for each character to what the AI detected in each scene.')}</p>
+            <p className="mt-1 text-xs leading-5 text-muted">{__('From the state you set for each character to what the AI detected in each scene.')}</p>
 
             {characters.length ? (
                 <>
                     <fieldset className="mt-5">
-                        <legend className="mb-2 text-[10px] text-[#a2b697]">{__('Compare up to :count characters', { count: MAX_CHARACTERS })}</legend>
+                        <legend className="mb-2 text-xs text-muted">{__('Compare up to :count characters', { count: MAX_CHARACTERS })}</legend>
                         <div className="flex flex-wrap gap-2">
                             {characters.map((character) => {
                                 const on = selected.includes(character.id);
@@ -263,9 +265,9 @@ function CharacterEmotions({ projectId, timeline, catalog }: ChartsProps) {
                                         aria-pressed={on}
                                         disabled={!on && selected.length >= MAX_CHARACTERS}
                                         onClick={() => toggle(character.id)}
-                                        className={`flex min-h-9 items-center gap-2 rounded-full border px-3 text-[11px] transition disabled:opacity-35 ${on ? 'border-primary/40 bg-primary/10 text-foreground' : 'border-border text-[#a9ba9e] hover:border-primary/30'}`}
+                                        className={`flex min-h-9 items-center gap-2 rounded-full border px-3 text-xs transition disabled:opacity-35 ${on ? 'border-primary/40 bg-primary/10 text-foreground' : 'border-border text-muted hover:border-primary/30'}`}
                                     >
-                                        <span aria-hidden className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: on ? colorOf(character.id) : '#3a4835' }} />
+                                        <span aria-hidden className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: on ? colorOf(character.id) : cssVar('surface-3') }} />
                                         {character.name}
                                     </button>
                                 );
@@ -276,9 +278,9 @@ function CharacterEmotions({ projectId, timeline, catalog }: ChartsProps) {
                     <div className="mt-5 h-[320px] w-full">
                         <ResponsiveContainer width="100%" height="100%">
                             <LineChart data={rows} margin={{ top: 14, right: 12, bottom: 0, left: 4 }}>
-                                <CartesianGrid stroke={GRID} vertical={false} />
-                                <XAxis dataKey="label" tick={{ fill: AXIS, fontSize: 10 }} stroke={GRID} />
-                                <YAxis domain={[0, 1]} ticks={tone.ticks} tickFormatter={tone.format} tick={{ fill: AXIS, fontSize: 9 }} width={84} stroke={GRID} />
+                                <CartesianGrid stroke={GRID()} vertical={false} />
+                                <XAxis dataKey="label" tick={{ fill: AXIS(), fontSize: 12 }} stroke={GRID()} />
+                                <YAxis domain={[0, 1]} ticks={tone.ticks} tickFormatter={tone.format} tick={{ fill: AXIS(), fontSize: 12 }} width={84} stroke={GRID()} />
                                 <Tooltip content={({ active, payload }) => (active ? <CharacterTooltip row={payload?.[0]?.payload as CharacterRow | undefined} characters={shown} catalog={catalog} /> : null)} />
                                 {shown.map((character) => {
                                     const color = colorOf(character.id);
@@ -301,26 +303,26 @@ function CharacterEmotions({ projectId, timeline, catalog }: ChartsProps) {
                             </LineChart>
                         </ResponsiveContainer>
                     </div>
-                    <p className="mt-3 text-[10px] leading-5 text-[#93a886]">
+                    <p className="mt-3 text-xs leading-5 text-subtle">
                         {__('Vertical axis: tone. Point size: tension. Hollow point: set by you; filled point: detected by AI; red ring: abrupt change with no visible cause.')}
                     </p>
                 </>
             ) : (
-                <p className="mt-5 text-xs leading-6 text-[#a6b99a]">{__('Set the starting emotion of your characters in the Narrative Bible, or analyze scenes where they appear.')}</p>
+                <p className="mt-5 text-xs leading-6 text-muted">{__('Set the starting emotion of your characters in the Narrative Bible, or analyze scenes where they appear.')}</p>
             )}
 
             <div className="mt-6 border-t border-border pt-5">
-                <h3 className="text-[11px] font-medium text-[#dce6d5]">{__('Moments to review')}</h3>
+                <h3 className="text-xs font-medium text-foreground">{__('Moments to review')}</h3>
                 {reviews.length ? (
                     <ul className="mt-3 space-y-2">
                         {reviews.map((review, index) => (
                             <li key={index}>
-                                <Link href={sceneUrl(projectId, review.scene_id)} className="flex items-start gap-3 rounded-md border border-red-300/25 bg-red-400/5 p-3 text-[11px] leading-5 hover:border-red-300/45">
-                                    <AlertTriangle size={14} className="mt-0.5 shrink-0 text-[#f3baa5]" />
+                                <Link href={sceneUrl(projectId, review.scene_id)} className="flex items-start gap-3 rounded-md border border-danger/25 bg-danger/10 p-3 text-xs leading-5 hover:border-danger/45">
+                                    <AlertTriangle size={14} className="mt-0.5 shrink-0 text-danger" />
                                     <span className="min-w-0 flex-1">
-                                        <span className="font-mono text-[10px] text-primary">{review.code}</span> {review.title}
-                                        {review.name && <span className="text-[#f3baa5]"> · {review.name}</span>}
-                                        <span className="block text-[#c3d0b9]">{review.explanation || __('Abrupt emotional change with no visible cause in the scene')}</span>
+                                        <span className="text-xs text-primary">{review.code}</span> {review.title}
+                                        {review.name && <span className="text-danger"> · {review.name}</span>}
+                                        <span className="block text-muted">{review.explanation || __('Abrupt emotional change with no visible cause in the scene')}</span>
                                     </span>
                                     <ArrowUpRight size={14} className="shrink-0 text-primary" />
                                 </Link>
@@ -328,7 +330,7 @@ function CharacterEmotions({ projectId, timeline, catalog }: ChartsProps) {
                         ))}
                     </ul>
                 ) : (
-                    <p className="mt-2 text-[11px] text-[#93a886]">{__('No abrupt changes without a cause. Well done!')}</p>
+                    <p className="mt-2 text-xs text-subtle">{__('No abrupt changes without a cause. Well done!')}</p>
                 )}
             </div>
         </section>
@@ -344,22 +346,22 @@ function CharacterTooltip({ row, characters, catalog }: { row?: CharacterRow; ch
 
     return (
         <TooltipBox>
-            <p className="font-mono text-[9px] text-primary">{row.label}</p>
+            <p className="text-xs text-primary">{row.label}</p>
             <p className="text-xs font-medium">{row.title}</p>
-            {!entries.length && <p className="text-[10px] text-[#93a886]">{__('None of the selected characters appears here.')}</p>}
+            {!entries.length && <p className="text-xs text-subtle">{__('None of the selected characters appears here.')}</p>}
             {entries.map(({ character, point }) => (
                 <div key={character.id} className="border-t border-border pt-2">
-                    <p className="flex flex-wrap items-center gap-2 text-[11px] font-medium">
+                    <p className="flex flex-wrap items-center gap-2 text-xs font-medium">
                         {character.name} <EmotionChip emotion={point!.emotion} catalog={catalog} size="sm" />
-                        <span className="text-[9px] font-normal text-[#a2b697]">{point!.origin === 'author' ? __('Set by you') : __('Detected by AI')}</span>
+                        <span className="text-xs font-normal text-muted">{point!.origin === 'author' ? __('Set by you') : __('Detected by AI')}</span>
                     </p>
-                    <p className="mt-1 text-[10px]">
+                    <p className="mt-1 text-xs">
                         {__('Tone')}: {point!.labels.tone} · {__('Tension')}: {point!.labels.tension} · {__('Character control')}: {point!.labels.control}
                     </p>
-                    {point!.evidence && <p className="mt-1 font-mono text-[10px] italic text-[#b6c6aa]">“{point!.evidence}”</p>}
-                    {point!.explanation && <p className="mt-1 text-[10px] text-[#c3d0b9]">{point!.explanation}</p>}
-                    {point!.alert === 'red' && <p className="mt-1 text-[10px] text-[#f3baa5]">{__('Abrupt emotional change with no visible cause in the scene')}</p>}
-                    {point!.stale && <p className="mt-1 text-[10px] text-[#e7d6a4]">{__('The text changed after this analysis.')}</p>}
+                    {point!.evidence && <p className="mt-1 text-xs italic text-muted">“{point!.evidence}”</p>}
+                    {point!.explanation && <p className="mt-1 text-xs text-muted">{point!.explanation}</p>}
+                    {point!.alert === 'red' && <p className="mt-1 text-xs text-danger">{__('Abrupt emotional change with no visible cause in the scene')}</p>}
+                    {point!.stale && <p className="mt-1 text-xs text-warning">{__('The text changed after this analysis.')}</p>}
                 </div>
             ))}
         </TooltipBox>
@@ -367,5 +369,5 @@ function CharacterTooltip({ row, characters, catalog }: { row?: CharacterRow; ch
 }
 
 function TooltipBox({ children }: { children: ReactNode }) {
-    return <div className="max-w-[300px] space-y-1.5 rounded-lg border border-border bg-[#172018] p-3 text-foreground shadow-xl">{children}</div>;
+    return <div className="max-w-[300px] space-y-1.5 rounded-lg border border-border bg-surface p-3 text-foreground">{children}</div>;
 }

@@ -54,31 +54,31 @@ export default function VariablesDialog({ variables, error, onSave, onDelete, on
 
     return (
         <Modal title={__('Variables')} onClose={onClose} wide>
-            <p className="mb-5 text-xs leading-6 text-[#a9bb9d]">
+            <p className="mb-5 text-xs leading-6 text-muted">
                 {__('Variables store the state of a playthrough (trust, items, decisions). Options can require them and change them; try it with "Test run".')}
             </p>
 
             <ul className="space-y-2">
                 {variables.map((variable) => (
                     <li key={variable.id} className="flex items-center gap-3 rounded-md border border-border p-3 text-xs">
-                        <code className="font-mono text-sm text-primary">{variable.key}</code>
-                        <span className="text-[#a9bb9d]">{__(TYPE_LABEL[variable.type])}</span>
-                        <span className="font-mono">
+                        <code className="text-sm text-primary">{variable.key}</code>
+                        <span className="text-muted">{__(TYPE_LABEL[variable.type])}</span>
+                        <span className="">
                             {__('starts at')} {typeof variable.initial_value === 'boolean' ? __(variable.initial_value ? 'true' : 'false') : variable.initial_value}
                         </span>
-                        {variable.description && <span className="min-w-0 flex-1 truncate text-[#a9bb9d]">{variable.description}</span>}
+                        {variable.description && <span className="min-w-0 flex-1 truncate text-muted">{variable.description}</span>}
                         <span className="ml-auto flex gap-1">
-                            <button type="button" aria-label={__('Edit :key', { key: variable.key })} onClick={() => open(variable)} className="rounded p-1.5 hover:bg-white/5">
+                            <button type="button" aria-label={__('Edit :key', { key: variable.key })} onClick={() => open(variable)} className="rounded p-1.5 hover:bg-surface-2">
                                 <Pencil size={13} />
                             </button>
-                            <button type="button" aria-label={__('Delete :key', { key: variable.key })} onClick={() => void remove(variable)} className="rounded p-1.5 hover:bg-white/5 hover:text-rose-300">
+                            <button type="button" aria-label={__('Delete :key', { key: variable.key })} onClick={() => void remove(variable)} className="rounded p-1.5 hover:bg-surface-2 hover:text-danger">
                                 <Trash2 size={13} />
                             </button>
                         </span>
                     </li>
                 ))}
             </ul>
-            {!variables.length && editing === null && <p className="text-xs text-[#a9bb9d]">{__('There are no variables yet.')}</p>}
+            {!variables.length && editing === null && <p className="text-xs text-muted">{__('There are no variables yet.')}</p>}
 
             {editing === null ? (
                 <button type="button" onClick={() => open(null)} className={`${secondary} mt-4 w-full border-dashed`}>
@@ -95,9 +95,9 @@ export default function VariablesDialog({ variables, error, onSave, onDelete, on
                                 value={draft.key}
                                 onChange={(event) => setDraft({ ...draft, key: event.target.value })}
                                 placeholder={__('E.g.: trust')}
-                                className={`${field} font-mono`}
+                                className={`${field} `}
                             />
-                            {fieldError('key') && <span className="mt-1 block text-rose-300">{fieldError('key')}</span>}
+                            {fieldError('key') && <span className="mt-1 block text-danger">{fieldError('key')}</span>}
                         </label>
                         <label className="block text-xs">
                             {__('Type')}
@@ -115,13 +115,13 @@ export default function VariablesDialog({ variables, error, onSave, onDelete, on
                                     </option>
                                 ))}
                             </select>
-                            {fieldError('type') && <span className="mt-1 block text-rose-300">{fieldError('type')}</span>}
+                            {fieldError('type') && <span className="mt-1 block text-danger">{fieldError('type')}</span>}
                         </label>
                     </div>
                     <div className="text-xs">
                         <span className="mb-2 block">{__('Initial value')}</span>
                         <ValueInput variable={draft} value={draft.initial_value} onChange={(value) => setDraft({ ...draft, initial_value: value })} />
-                        {fieldError('initial_value') && <span className="mt-1 block text-rose-300">{fieldError('initial_value')}</span>}
+                        {fieldError('initial_value') && <span className="mt-1 block text-danger">{fieldError('initial_value')}</span>}
                     </div>
                     <label className="block text-xs">
                         {__('Description')}

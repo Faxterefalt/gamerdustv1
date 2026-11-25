@@ -4,11 +4,11 @@ import { __ } from '../../../shared/lib/i18n';
 import type { BlockKind, ScriptBlock } from '../script.types';
 
 const BLOCK_CLASSES: Record<BlockKind, string> = {
-    heading: 'mb-8 text-[16px] font-bold uppercase italic leading-7 sm:text-[18px]',
-    action: 'mb-8 text-[12px] leading-7 sm:text-[13px]',
-    character: 'mb-1 mt-7 text-center text-[12px] font-bold uppercase leading-6 sm:text-[13px]',
-    dialogue: 'mx-auto mb-5 w-[78%] text-[12px] leading-6 sm:w-[65%] sm:text-[13px]',
-    parenthetical: 'mx-auto mb-2 w-[65%] text-center text-[12px] italic leading-6',
+    heading: 'mb-8 text-base font-bold uppercase italic leading-7 sm:text-lg',
+    action: 'mb-8 text-xs leading-7 sm:text-xs',
+    character: 'mb-1 mt-7 text-center text-xs font-bold uppercase leading-6 sm:text-xs',
+    dialogue: 'mx-auto mb-5 w-[78%] text-xs leading-6 sm:w-[65%] sm:text-xs',
+    parenthetical: 'mx-auto mb-2 w-[65%] text-center text-xs italic leading-6',
 };
 
 // Claves de traducción de los marcadores de posición.
@@ -86,7 +86,7 @@ export default function BlockInput({ block, label, index, disabled, onChange, on
                     }
                 }}
                 placeholder={__(PLACEHOLDERS[block.kind])}
-                className={`block min-h-6 w-full resize-none overflow-hidden rounded-sm border-0 bg-transparent p-0 text-inherit outline-none placeholder:text-[#83907c] focus-visible:!outline-0 ${centered ? 'text-center' : 'text-left'}`}
+                className={`block min-h-6 w-full resize-none overflow-hidden rounded-sm border-0 bg-transparent p-0 text-inherit placeholder:text-subtle focus-visible:!outline-0 ${centered ? 'text-center' : 'text-left'}`}
             />
             <button
                 type="button"
@@ -94,7 +94,7 @@ export default function BlockInput({ block, label, index, disabled, onChange, on
                 aria-label={__('Delete block :number', { number: index + 1 })}
                 title={__('Delete block')}
                 onClick={onRemove}
-                className="absolute -right-6 top-1 rounded p-1 text-[#66755c] opacity-0 transition hover:bg-black/5 hover:text-[#a43e2b] focus:opacity-100 group-focus-within:opacity-100 group-hover:opacity-100 sm:-right-7"
+                className="absolute -right-6 top-1 rounded p-1 text-subtle opacity-0 transition hover:bg-background/5 hover:text-danger focus:opacity-100 group-focus-within:opacity-100 group-hover:opacity-100 sm:-right-7"
             >
                 <Trash2 size={12} />
             </button>

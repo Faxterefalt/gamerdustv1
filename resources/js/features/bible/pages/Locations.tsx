@@ -185,7 +185,7 @@ export default function Locations({ project, entries, selected, scenes, characte
                     footnote={entries.some((entry) => entry.parent_id) ? __('Indented places are inside another place.') : undefined}
                 />
 
-                <form className="min-w-0 overflow-hidden rounded-xl border border-border bg-[#161e17]" onSubmit={submit}>
+                <form className="min-w-0 overflow-hidden rounded-xl border border-border bg-surface" onSubmit={submit}>
                     <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border px-5 py-5 sm:px-7">
                         <div className="flex items-center gap-3">
                             <span className="flex h-9 w-9 items-center justify-center rounded-lg border border-primary/20 bg-primary/5 text-primary">
@@ -193,7 +193,7 @@ export default function Locations({ project, entries, selected, scenes, characte
                             </span>
                             <div>
                                 <h2 className="font-display text-lg">{active ? __('Place sheet: :name', { name: active.title }) : __('New place')}</h2>
-                                <p className="mt-0.5 text-[10px] text-[#9eb292]">{__('Describe it, give it a purpose and connect it to your story.')}</p>
+                                <p className="mt-0.5 text-xs text-muted">{__('Describe it, give it a purpose and connect it to your story.')}</p>
                             </div>
                         </div>
                         <EntryStatus dirty={dirty} saved={saved} />
@@ -274,8 +274,8 @@ export default function Locations({ project, entries, selected, scenes, characte
                             </label>
                         </div>
 
-                        <section className="rounded-lg border border-[#3a4a33] bg-background/40 p-4 sm:p-5">
-                            <h3 className="mb-5 flex items-center gap-2 text-xs font-medium text-[#dce6d5]">
+                        <section className="rounded-lg border border-border bg-background/40 p-4 sm:p-5">
+                            <h3 className="mb-5 flex items-center gap-2 text-xs font-medium text-foreground">
                                 <Link2 size={15} className="text-primary" /> {__('Narrative links')}
                             </h3>
                             <div className="space-y-5">

@@ -481,8 +481,8 @@ export default function Index({ project, scenes, characters, locations, comments
     const tree = (
         <div className="flex h-full flex-col">
             <div className="flex items-center justify-between gap-3 border-b border-border px-4 py-5">
-                <span className="font-mono text-[8px] tracking-[.17em] text-[#a1b594]">{__('STRUCTURE')}</span>
-                <span className="rounded bg-primary/10 px-1.5 py-0.5 font-mono text-[8px] text-primary">{String(allDocs.length).padStart(2, '0')}</span>
+                <span className="font-mono text-xs text-muted">{__('STRUCTURE')}</span>
+                <span className="rounded bg-primary/10 px-1.5 py-0.5 font-mono text-xs text-primary">{String(allDocs.length).padStart(2, '0')}</span>
             </div>
             <div className="min-h-0 flex-1 space-y-5 overflow-y-auto py-5">
                 {acts.map((act) => {
@@ -495,7 +495,7 @@ export default function Index({ project, scenes, characters, locations, comments
                                 disabled={pending}
                                 onClick={() => setCollapsedActs((previous) => (previous.includes(act) ? previous.filter((item) => item !== act) : [...previous, act]))}
                                 aria-expanded={!collapsed}
-                                className="flex w-full items-start justify-between gap-2 px-4 text-left text-[11px] font-medium leading-6 text-[#d1ddc7]"
+                                className="flex w-full items-start justify-between gap-2 px-4 text-left text-xs font-medium leading-6 text-foreground"
                             >
                                 <span>{actLabel(act)}</span>
                                 {collapsed ? <ChevronRight size={14} className="mt-1 shrink-0" /> : <ChevronDown size={14} className="mt-1 shrink-0" />}
@@ -515,12 +515,12 @@ export default function Index({ project, scenes, characters, locations, comments
                                                     onClick={() => selectScene(doc.scene.id)}
                                                     aria-current={selected ? 'true' : undefined}
                                                     className={`flex min-h-11 w-full items-start gap-2 rounded-md border-l-2 px-2.5 py-3 text-left transition ${
-                                                        selected ? 'border-primary bg-primary/10 text-primary' : 'border-transparent text-[#9daf92] hover:bg-white/[.03] hover:text-foreground'
+                                                        selected ? 'border-primary bg-primary/10 text-primary' : 'border-transparent text-muted hover:bg-surface hover:text-foreground'
                                                     }`}
                                                 >
                                                     <FileText size={13} className="mt-0.5 shrink-0" />
-                                                    <span className="min-w-0 text-[10px] leading-5">
-                                                        <span className="mr-1.5 font-mono text-[9px]">{codes.get(doc.scene.id)}</span>
+                                                    <span className="min-w-0 text-xs leading-5">
+                                                        <span className="mr-1.5 font-mono text-xs">{codes.get(doc.scene.id)}</span>
                                                         {doc.scene.title}
                                                     </span>
                                                     {isDirty(doc) && <span aria-label={__('Unsaved')} className="mt-2 h-1 w-1 shrink-0 rounded-full bg-primary" />}
@@ -532,7 +532,7 @@ export default function Index({ project, scenes, characters, locations, comments
                         </section>
                     );
                 })}
-                {!allDocs.length && <p className="px-4 text-[11px] leading-6 text-[#9faf92]">{__('A new story awaits its first scene.')}</p>}
+                {!allDocs.length && <p className="px-4 text-xs leading-6 text-muted">{__('A new story awaits its first scene.')}</p>}
             </div>
             <div className="border-t border-border p-4">
                 <button
@@ -542,11 +542,11 @@ export default function Index({ project, scenes, characters, locations, comments
                         setMobileTree(false);
                         setAdding(true);
                     }}
-                    className={`${secondary} w-full border-dashed !px-2 !text-[10px]`}
+                    className={`${secondary} w-full border-dashed !px-2 !text-xs`}
                 >
                     <Plus size={14} /> {__('Add scene')}
                 </button>
-                <p className="mt-4 text-[8px] leading-5 text-[#91a484]">{__('Scenes share characters and locations with your Narrative Bible.')}</p>
+                <p className="mt-4 text-xs leading-5 text-subtle">{__('Scenes share characters and locations with your Narrative Bible.')}</p>
             </div>
         </div>
     );
@@ -585,7 +585,7 @@ export default function Index({ project, scenes, characters, locations, comments
         <ProjectLayout bare>
             <Head title={`${__('Script')} - ${project.title}`} />
             <div
-                className="flex min-h-[calc(100dvh-139px)] flex-col bg-[#111812]"
+                className="flex min-h-[calc(100dvh-139px)] flex-col bg-background"
                 onKeyDown={(event) => {
                     const mod = event.ctrlKey || event.metaKey;
 
@@ -602,15 +602,15 @@ export default function Index({ project, scenes, characters, locations, comments
             >
                 <div className="flex flex-wrap items-center justify-between gap-4 px-5 pb-4 pt-6 sm:px-6">
                     <div>
-                        <p className="mb-2 font-mono text-[8px] tracking-[.18em] text-[#91a883]">{__('GIVE VOICE TO YOUR UNIVERSE')}</p>
-                        <h1 className="font-display text-[25px] font-medium tracking-[-.03em]">
+                        <p className="mb-2 font-mono text-xs text-subtle">{__('GIVE VOICE TO YOUR UNIVERSE')}</p>
+                        <h1 className="font-display text-2xl font-medium">
                             {__('Script editor')}
-                            <span className="ml-3 hidden align-middle font-mono text-[8px] tracking-wider text-[#90a081] sm:inline">/ {project.title}</span>
+                            <span className="ml-3 hidden align-middle font-mono text-xs text-subtle sm:inline">/ {project.title}</span>
                         </h1>
                     </div>
-                    <div role="status" className={`flex items-center gap-2 text-[10px] ${currentFailed ? 'text-rose-300' : 'text-[#9fb68f]'}`}>
+                    <div role="status" className={`flex items-center gap-2 text-xs ${currentFailed ? 'text-danger' : 'text-primary'}`}>
                         {pending ? (
-                            <LoaderCircle size={13} className="animate-spin" />
+                            <LoaderCircle size={13} className="animate-spin motion-reduce:animate-none" />
                         ) : currentFailed ? (
                             <CircleAlert size={14} />
                         ) : currentDirty ? (
@@ -632,7 +632,7 @@ export default function Index({ project, scenes, characters, locations, comments
                     </div>
                 </div>
 
-                <div role="toolbar" aria-label={__('Script tools')} className="flex flex-wrap items-center justify-between gap-x-3 gap-y-2 border-y border-border bg-[#182019] px-4 py-3 sm:px-6">
+                <div role="toolbar" aria-label={__('Script tools')} className="flex flex-wrap items-center justify-between gap-x-3 gap-y-2 border-y border-border bg-surface px-4 py-3 sm:px-6">
                     <div className="flex flex-wrap gap-1.5">
                         {TOOLS.map(({ kind, label, icon: Icon }) => (
                             <button
@@ -641,8 +641,8 @@ export default function Index({ project, scenes, characters, locations, comments
                                 disabled={!current || pending}
                                 title={__('Add :block block', { block: __(label).toLocaleLowerCase() })}
                                 onClick={() => insert(kind)}
-                                className={`inline-flex min-h-9 items-center gap-2 rounded-md border px-2.5 py-2 text-[10px] transition disabled:opacity-35 ${
-                                    focusedKind === kind ? 'border-primary/35 bg-primary/10 text-primary' : 'border-[#3a4835] text-[#c1cfb7] hover:border-primary/40 hover:bg-primary/5'
+                                className={`inline-flex min-h-9 items-center gap-2 rounded-md border px-2.5 py-2 text-xs transition disabled:opacity-35 ${
+                                    focusedKind === kind ? 'border-primary/35 bg-primary/10 text-primary' : 'border-border text-muted hover:border-primary/40 hover:bg-primary/5'
                                 }`}
                             >
                                 <Icon size={14} strokeWidth={1.6} />
@@ -676,7 +676,7 @@ export default function Index({ project, scenes, characters, locations, comments
                             type="button"
                             disabled={!current || pending}
                             title={__('The analysis uses the saved version of the scene.')}
-                            className={`${secondary} !min-h-9 !px-2.5 !text-[10px]`}
+                            className={`${secondary} !min-h-9 !px-2.5 !text-xs`}
                             onClick={() => {
                                 setEmotionOpen(true);
                                 setAnalyzeRequested(true);
@@ -688,28 +688,28 @@ export default function Index({ project, scenes, characters, locations, comments
                             type="button"
                             disabled={!canRefine || pending}
                             title={canRefine ? __('Propose an alternative for the selected block') : __('Select a block with text to refine it')}
-                            className={`${secondary} !min-h-9 !px-2.5 !text-[10px]`}
+                            className={`${secondary} !min-h-9 !px-2.5 !text-xs`}
                             onClick={() => focusedBlock && setRefining({ ...focusedBlock })}
                         >
                             <Wand2 size={14} /> {__('Refine with AI')}
                         </button>
-                        <button type="button" disabled={!current || pending} className={`${secondary} !min-h-9 !px-2.5 !text-[10px]`} onClick={openVersions}>
+                        <button type="button" disabled={!current || pending} className={`${secondary} !min-h-9 !px-2.5 !text-xs`} onClick={openVersions}>
                             <History size={14} /> {__('Versions')}
                         </button>
-                        <button type="button" disabled={!allDocs.length} className={`${secondary} !min-h-9 !px-2.5 !text-[10px]`} onClick={exportPdf}>
+                        <button type="button" disabled={!allDocs.length} className={`${secondary} !min-h-9 !px-2.5 !text-xs`} onClick={exportPdf}>
                             <FileDown size={14} /> {__('Export PDF')}
                         </button>
-                        <button type="button" disabled={!current || pending} onClick={() => save()} className={`${primarySm} !min-h-9 !px-3 !py-2 !text-[10px]`}>
+                        <button type="button" disabled={!current || pending} onClick={() => save()} className={`${primarySm} !min-h-9 !px-3 !py-2 !text-xs`}>
                             <Save size={13} /> {__('Save')}
                         </button>
                     </div>
                 </div>
 
-                <div className="flex items-center justify-between gap-3 border-b border-border bg-[#151e16] px-4 py-2.5 md:hidden">
-                    <button type="button" className="flex items-center gap-2 text-[10px] text-primary" onClick={() => setMobileTree(true)}>
+                <div className="flex items-center justify-between gap-3 border-b border-border bg-surface px-4 py-2.5 md:hidden">
+                    <button type="button" className="flex items-center gap-2 text-xs text-primary" onClick={() => setMobileTree(true)}>
                         <List size={14} /> {__('Scenes')} ({allDocs.length})
                     </button>
-                    <button type="button" className="flex items-center gap-2 text-[10px] text-[#bdcdb2]" onClick={() => setMobileContext(true)} disabled={!current}>
+                    <button type="button" className="flex items-center gap-2 text-xs text-muted" onClick={() => setMobileContext(true)} disabled={!current}>
                         <PanelRight size={14} /> {__('Context and comments')}
                     </button>
                 </div>
@@ -726,7 +726,7 @@ export default function Index({ project, scenes, characters, locations, comments
                                             scene: `${codes.get(offer.sceneId) ?? ''} · ${doc?.scene.title ?? ''}`,
                                             time: new Date(offer.draft.saved_at).toLocaleString(dateLocale),
                                         })}
-                                        {offer.conflict && <span className="block text-amber-200">{__('The scene was saved again after this draft: recovering it and saving will replace those changes.')}</span>}
+                                        {offer.conflict && <span className="block text-primary">{__('The scene was saved again after this draft: recovering it and saving will replace those changes.')}</span>}
                                     </span>
                                     <button type="button" className={`${primarySm} !min-h-8 !py-1.5`} onClick={() => recover(offer)}>
                                         {__('Recover draft')}
@@ -741,7 +741,7 @@ export default function Index({ project, scenes, characters, locations, comments
                 )}
 
                 {lockHolder && current && (
-                    <p role="status" className="flex items-center gap-2 border-b border-amber-700/40 bg-amber-950/40 px-5 py-2.5 text-xs text-amber-100">
+                    <p role="status" className="flex items-center gap-2 border-b border-primary/50 bg-primary/10 px-5 py-2.5 text-xs text-foreground">
                         <UserRound size={14} className="shrink-0" />
                         {__(':name is editing this scene right now. If you both save, whoever saves second will be warned about the conflict.', { name: lockHolder.name })}
                     </p>
@@ -760,14 +760,14 @@ export default function Index({ project, scenes, characters, locations, comments
                 )}
 
                 <div className="flex flex-1 items-stretch">
-                    <aside aria-label={__('Script structure')} className="hidden w-[190px] shrink-0 border-r border-border bg-[#131b14] md:block">
+                    <aside aria-label={__('Script structure')} className="hidden w-[190px] shrink-0 border-r border-border bg-surface md:block">
                         {tree}
                     </aside>
 
-                    <div className="flex min-w-0 flex-1 flex-col bg-[#1d261d]">
+                    <div className="flex min-w-0 flex-1 flex-col bg-surface-2">
                         {current ? (
                             <>
-                                <div className="flex min-h-11 flex-wrap items-center justify-between gap-2 border-b border-[#35412e] px-4 py-2 text-[9px] text-[#a0b28f]">
+                                <div className="flex min-h-11 flex-wrap items-center justify-between gap-2 border-b border-border px-4 py-2 text-xs text-muted">
                                     <span className="flex min-w-0 items-center gap-2">
                                         <FileText size={12} className="shrink-0" />
                                         <span className="truncate">
@@ -777,16 +777,16 @@ export default function Index({ project, scenes, characters, locations, comments
                                     <button type="button" onClick={() => setMobileContext(true)} className="hidden items-center gap-1.5 text-primary md:flex xl:hidden">
                                         <PanelRight size={13} /> {__('Context and comments')}
                                     </button>
-                                    <span className="ml-auto font-mono text-[8px] tracking-wider">
+                                    <span className="ml-auto font-mono text-xs">
                                         {__('SCRIPT')} / {languageLabel(project.language ?? 'es').toLocaleUpperCase(locale)}
                                     </span>
                                 </div>
                                 <div className="flex-1 px-3 py-5 sm:px-6 sm:py-7">
                                     <section
                                         aria-label={__('Script of :scene', { scene: current.scene.title })}
-                                        className="mx-auto min-h-[620px] w-full max-w-[740px] rounded-sm border border-[#d9dfcf] bg-[#eef0e7] px-8 pb-20 pt-10 font-mono text-[#26301f] shadow-[0_8px_35px_rgba(0,0,0,.15)] sm:px-10 sm:pt-12 xl:min-h-[720px] xl:px-12"
+                                        className="mx-auto min-h-[620px] w-full max-w-[740px] rounded-sm border border-border-strong bg-surface-3 px-8 pb-20 pt-10 font-mono text-primary-ink shadow-[0_8px_35px_rgba(0,0,0,.15)] sm:px-10 sm:pt-12 xl:min-h-[720px] xl:px-12"
                                     >
-                                        <div className="mb-8 flex items-center justify-between gap-3 border-b border-[#d4dbca] pb-4 font-mono text-[8px] tracking-[.12em] text-[#56644b]">
+                                        <div className="mb-8 flex items-center justify-between gap-3 border-b border-border-strong pb-4 font-mono text-xs text-subtle">
                                             <span>GAMERDUST / {codes.get(current.scene.id)}</span>
                                             <span>01</span>
                                         </div>
@@ -818,14 +818,14 @@ export default function Index({ project, scenes, characters, locations, comments
                                             />
                                         ))}
                                         {!current.snapshot.elements.length && (
-                                            <button type="button" onClick={() => insert('heading')} className="flex w-full flex-col items-center gap-4 py-16 text-center text-[#627358]">
+                                            <button type="button" onClick={() => insert('heading')} className="flex w-full flex-col items-center gap-4 py-16 text-center text-subtle">
                                                 <Type size={25} />
                                                 <span className="text-xs">{__('Add a heading to start this scene.')}</span>
                                             </button>
                                         )}
                                     </section>
                                 </div>
-                                <div className="flex flex-wrap items-center justify-between gap-3 border-t border-[#35412e] px-5 py-3 font-mono text-[8px] tracking-wider text-[#a7b99a]">
+                                <div className="flex flex-wrap items-center justify-between gap-3 border-t border-border px-5 py-3 font-mono text-xs text-muted">
                                     <span>{__(':words WORDS · :blocks BLOCKS', { words: wordCount, blocks: current.snapshot.elements.length })}</span>
                                     <span>{__('CTRL / ⌘ + S TO SAVE')}</span>
                                 </div>
@@ -834,7 +834,7 @@ export default function Index({ project, scenes, characters, locations, comments
                             <div className="flex min-h-[550px] flex-col items-center justify-center px-8 py-16 text-center">
                                 <BookOpen size={38} strokeWidth={1.2} className="text-primary" />
                                 <h2 className="mt-6 font-display text-2xl">{__('The first chapter is yours.')}</h2>
-                                <p className="mt-3 max-w-sm text-xs leading-7 text-[#a6b99a]">
+                                <p className="mt-3 max-w-sm text-xs leading-7 text-muted">
                                     {__('Create a scene to start writing. The characters and locations of your Narrative Bible will be one click away.')}
                                 </p>
                                 <button type="button" className={`${primarySm} mt-7`} onClick={() => setAdding(true)}>
@@ -844,7 +844,7 @@ export default function Index({ project, scenes, characters, locations, comments
                         )}
                     </div>
 
-                    <aside aria-label={__('Scene context')} className="hidden w-[248px] shrink-0 border-l border-border bg-[#151d16] xl:block">
+                    <aside aria-label={__('Scene context')} className="hidden w-[248px] shrink-0 border-l border-border bg-surface xl:block">
                         {context}
                     </aside>
                 </div>
@@ -951,14 +951,14 @@ export default function Index({ project, scenes, characters, locations, comments
                         if (!pending) setVersionOpen(false);
                     }}
                 >
-                    <p className="mb-5 text-xs leading-6 text-[#a2b697]">{__('Each save creates a revision. Restoring a version keeps a revision of the current state.')}</p>
+                    <p className="mb-5 text-xs leading-6 text-muted">{__('Each save creates a revision. Restoring a version keeps a revision of the current state.')}</p>
                     {pending && (
                         <p role="status" className="flex items-center gap-2 text-xs text-primary">
-                            <LoaderCircle size={14} className="animate-spin" /> {__('Loading…')}
+                            <LoaderCircle size={14} className="animate-spin motion-reduce:animate-none" /> {__('Loading…')}
                         </p>
                     )}
                     <FormError error={versionError} />
-                    {!pending && !versions.length && !versionError && <p className="text-xs text-[#a2b697]">{__('This scene has no revisions yet.')}</p>}
+                    {!pending && !versions.length && !versionError && <p className="text-xs text-muted">{__('This scene has no revisions yet.')}</p>}
                     {versions.length > 0 && (
                         <div className="grid gap-4 sm:grid-cols-[170px_1fr]">
                             <div className="max-h-72 space-y-2 overflow-y-auto">
@@ -968,10 +968,10 @@ export default function Index({ project, scenes, characters, locations, comments
                                         type="button"
                                         disabled={pending}
                                         onClick={() => setPreviewVersion(version.id)}
-                                        className={`w-full rounded-md border p-3 text-left ${previewVersion === version.id ? 'border-primary/35 bg-primary/5 text-primary' : 'border-border text-[#adbea1]'}`}
+                                        className={`w-full rounded-md border p-3 text-left ${previewVersion === version.id ? 'border-primary/35 bg-primary/5 text-primary' : 'border-border text-muted'}`}
                                     >
-                                        <span className="block text-[10px]">{index === 0 ? __('Most recent') : __('Revision :number', { number: versions.length - index })}</span>
-                                        <span className="mt-1 block text-[9px] leading-5">
+                                        <span className="block text-xs">{index === 0 ? __('Most recent') : __('Revision :number', { number: versions.length - index })}</span>
+                                        <span className="mt-1 block text-xs leading-5">
                                             {version.created_at && new Date(version.created_at).toLocaleString(dateLocale)}
                                             {version.author ? ` · ${version.author}` : ''}
                                         </span>
@@ -980,13 +980,13 @@ export default function Index({ project, scenes, characters, locations, comments
                             </div>
                             {selectedVersion && (
                                 <div>
-                                    <label className="mb-3 flex flex-wrap items-center gap-2 text-[10px] text-[#a9bb9d]">
+                                    <label className="mb-3 flex flex-wrap items-center gap-2 text-xs text-muted">
                                         <GitCompare size={13} className="text-primary" />
                                         {__('Compare with')}
                                         <select
                                             value={compareWith === null ? '' : String(compareWith)}
                                             onChange={(event) => setCompareWith(event.target.value === '' ? null : event.target.value === 'current' ? 'current' : Number(event.target.value))}
-                                            className="rounded border border-border bg-background px-2 py-1 text-[10px] text-foreground"
+                                            className="rounded border border-border bg-background px-2 py-1 text-xs text-foreground"
                                         >
                                             <option value="">{__('(no comparison: preview)')}</option>
                                             <option value="current">{__('Current draft')}</option>
@@ -1001,7 +1001,7 @@ export default function Index({ project, scenes, characters, locations, comments
                                     </label>
                                     {compareTarget ? (
                                         <>
-                                            <p className="mb-2 text-[9px] text-[#93a687]">
+                                            <p className="mb-2 text-xs text-subtle">
                                                 {__(':from → :to', {
                                                     from: versionLabel(selectedVersion.id),
                                                     to: compareWith === 'current' ? __('Current draft') : versionLabel(compareWith as number),
@@ -1013,7 +1013,7 @@ export default function Index({ project, scenes, characters, locations, comments
                                         <div className="max-h-72 overflow-y-auto rounded-md border border-border bg-background p-4">
                                             <h3 className="mb-3 text-xs text-primary">{selectedVersion.title}</h3>
                                             {selectedVersion.script.map((element, index) => (
-                                                <p key={index} className="mb-3 whitespace-pre-wrap break-words font-mono text-[10px] leading-6 text-[#c2cfb8]">
+                                                <p key={index} className="mb-3 whitespace-pre-wrap break-words font-mono text-xs leading-6 text-muted">
                                                     {element.text}
                                                 </p>
                                             ))}

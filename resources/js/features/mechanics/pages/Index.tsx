@@ -175,7 +175,7 @@ export default function Index({ project, mechanics, selected, scenes, characters
                         >
                             <Scale size={14} /> {__('Detect dissonances')}
                         </button>
-                        <span className="flex items-center gap-2 rounded-full border border-primary/15 bg-primary/5 px-3 py-1.5 font-mono text-[8px] tracking-wider text-primary">
+                        <span className="flex items-center gap-2 rounded-full border border-primary/15 bg-primary/5 px-3 py-1.5 text-xs text-primary">
                             <Settings2 size={12} /> {__('SYSTEMS WITH NARRATIVE')}
                         </span>
                     </span>
@@ -183,23 +183,23 @@ export default function Index({ project, mechanics, selected, scenes, characters
             />
 
             <div className="grid items-start gap-5 lg:grid-cols-[225px_minmax(0,1fr)] xl:grid-cols-[245px_minmax(0,1fr)]">
-                <aside aria-label={__('Mechanics catalog')} className="overflow-hidden rounded-xl border border-border bg-[#141c15] lg:sticky lg:top-[88px]">
+                <aside aria-label={__('Mechanics catalog')} className="overflow-hidden rounded-xl border border-border bg-surface lg:sticky lg:top-[88px]">
                     <div className="border-b border-border p-4">
                         <div className="flex items-center justify-between">
                             <h2 className="font-display text-base">{__('Catalog')}</h2>
-                            <span className="font-mono text-[10px] text-[#9cb38c]">{String(mechanics.length).padStart(2, '0')}</span>
+                            <span className="text-xs text-primary">{String(mechanics.length).padStart(2, '0')}</span>
                         </div>
                         <label className="mt-4 flex items-center gap-2 rounded-md border border-border bg-background px-3 py-2.5">
-                            <Search size={14} className="shrink-0 text-[#9aae8e]" />
+                            <Search size={14} className="shrink-0 text-muted" />
                             <input
                                 aria-label={__('Search mechanics')}
                                 value={query}
                                 onChange={(event) => setQuery(event.target.value)}
                                 placeholder={__('Search mechanics…')}
-                                className="w-full min-w-0 bg-transparent text-[11px] outline-none"
+                                className="w-full min-w-0 bg-transparent text-xs"
                             />
                         </label>
-                        <button type="button" disabled={form.processing} onClick={() => choose(null)} className={`${secondary} mt-3 w-full justify-between !text-[11px]`}>
+                        <button type="button" disabled={form.processing} onClick={() => choose(null)} className={`${secondary} mt-3 w-full justify-between !text-xs`}>
                             <span className="flex items-center gap-2">
                                 <Plus size={14} />
                                 {__('Add mechanic')}
@@ -219,24 +219,24 @@ export default function Index({ project, mechanics, selected, scenes, characters
                                     disabled={form.processing}
                                     onClick={() => choose(mechanic)}
                                     aria-pressed={isActive}
-                                    className={`flex w-full items-center gap-3 rounded-md border px-3 py-4 text-left transition ${isActive ? 'border-primary/25 bg-primary/10 text-primary' : 'border-transparent text-[#bfceb4] hover:border-border hover:bg-white/[.025]'}`}
+                                    className={`flex w-full items-center gap-3 rounded-md border px-3 py-4 text-left transition ${isActive ? 'border-primary/25 bg-primary/10 text-primary' : 'border-transparent text-muted hover:border-border hover:bg-surface'}`}
                                 >
                                     <Icon size={21} strokeWidth={1.5} className="shrink-0" />
                                     <span className="min-w-0 flex-1">
                                         <span className="block break-words text-xs font-medium">{mechanic.title}</span>
-                                        <span className="mt-1.5 block text-[9px] text-[#99ad8c]">{choice(':count linked scene|:count linked scenes', mechanic.scene_ids.length)}</span>
+                                        <span className="mt-1.5 block text-xs text-muted">{choice(':count linked scene|:count linked scenes', mechanic.scene_ids.length)}</span>
                                     </span>
                                     <ChevronRight size={13} className="shrink-0" />
                                 </button>
                             );
                         })}
                         {!filtered.length && (
-                            <p className="px-3 py-8 text-center text-xs leading-6 text-[#9fb394]">{query ? __('No matches.') : __('Add the first mechanic of your universe.')}</p>
+                            <p className="px-3 py-8 text-center text-xs leading-6 text-muted">{query ? __('No matches.') : __('Add the first mechanic of your universe.')}</p>
                         )}
                     </div>
                 </aside>
 
-                <form className="min-w-0 overflow-hidden rounded-xl border border-border bg-[#161e17]" onSubmit={submit}>
+                <form className="min-w-0 overflow-hidden rounded-xl border border-border bg-surface" onSubmit={submit}>
                     <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border px-5 py-5 sm:px-7">
                         <div className="flex items-center gap-3">
                             <span className="flex h-9 w-9 items-center justify-center rounded-lg border border-primary/20 bg-primary/5 text-primary">
@@ -244,10 +244,10 @@ export default function Index({ project, mechanics, selected, scenes, characters
                             </span>
                             <div>
                                 <h2 className="font-display text-lg">{active ? __('Edit mechanic') : __('New mechanic')}</h2>
-                                <p className="mt-0.5 text-[10px] text-[#9eb292]">{__('Design the experience, connect its meaning.')}</p>
+                                <p className="mt-0.5 text-xs text-muted">{__('Design the experience, connect its meaning.')}</p>
                             </div>
                         </div>
-                        <span role="status" className="flex items-center gap-1.5 text-[10px] text-primary">
+                        <span role="status" className="flex items-center gap-1.5 text-xs text-primary">
                             {dirty ? (
                                 __('Unsaved changes')
                             ) : saved ? (
@@ -306,7 +306,7 @@ export default function Index({ project, mechanics, selected, scenes, characters
                                     placeholder={['Crouch', 'Hide', 'Press against a wall', 'Distract guards'].map((line) => __(line)).join('\n')}
                                     className={`${field} resize-y !text-xs leading-7`}
                                 />
-                                <span className="mt-2 block text-[9px] text-[#98ae8a]">{__('One action per line.')}</span>
+                                <span className="mt-2 block text-xs text-muted">{__('One action per line.')}</span>
                             </label>
                             <label className="block text-xs">
                                 {__('Restrictions')}
@@ -321,35 +321,35 @@ export default function Index({ project, mechanics, selected, scenes, characters
                             </label>
                         </div>
 
-                        <section className="rounded-lg border border-[#3a4a33] bg-background/40 p-4 sm:p-5">
-                            <h3 className="mb-5 flex items-center gap-2 text-xs font-medium text-[#dce6d5]">
+                        <section className="rounded-lg border border-border bg-background/40 p-4 sm:p-5">
+                            <h3 className="mb-5 flex items-center gap-2 text-xs font-medium text-foreground">
                                 <Link2 size={15} className="text-primary" /> {__('Narrative links')}
                             </h3>
                             <div className="space-y-5">
                                 {(['scenes', 'characters'] as const).map((kind) => (
                                     <div key={kind} className="grid items-start gap-3 sm:grid-cols-[85px_minmax(0,1fr)]">
-                                        <h4 className="pt-2 text-[11px] text-[#b9cbb0]">{kind === 'scenes' ? __('Scenes') : __('Characters')}</h4>
+                                        <h4 className="pt-2 text-xs text-muted">{kind === 'scenes' ? __('Scenes') : __('Characters')}</h4>
                                         <div className="flex min-w-0 flex-wrap gap-2">
                                             {linked(kind).map(({ id, label }) => {
                                                 const text = label ?? __('Reference unavailable');
 
                                                 return (
-                                                    <span key={id} className="inline-flex max-w-full items-center gap-2 rounded-md border border-primary/20 bg-primary/[.07] px-2.5 py-2 text-[10px] text-[#c5d9b7]">
+                                                    <span key={id} className="inline-flex max-w-full items-center gap-2 rounded-md border border-primary/20 bg-primary/[.07] px-2.5 py-2 text-xs text-muted">
                                                         <span className="min-w-0 break-words">{text}</span>
-                                                        <button type="button" aria-label={__('Unlink :name', { name: text })} onClick={() => toggleLink(kind, id, false)} className="shrink-0 text-[#9cb78b] hover:text-primary">
+                                                        <button type="button" aria-label={__('Unlink :name', { name: text })} onClick={() => toggleLink(kind, id, false)} className="shrink-0 text-primary hover:text-primary">
                                                             <X size={12} />
                                                         </button>
                                                     </span>
                                                 );
                                             })}
-                                            <button type="button" onClick={() => setPicker(kind)} className={`${secondary} !min-h-8 border-dashed !px-2.5 !py-1.5 !text-[10px]`}>
+                                            <button type="button" onClick={() => setPicker(kind)} className={`${secondary} !min-h-8 border-dashed !px-2.5 !py-1.5 !text-xs`}>
                                                 <Plus size={12} /> {kind === 'scenes' ? __('Link scene') : __('Link character')}
                                             </button>
                                         </div>
                                     </div>
                                 ))}
                                 <label className="grid items-center gap-3 sm:grid-cols-[85px_minmax(0,1fr)]">
-                                    <span className="text-[11px] text-[#b9cbb0]">{__('Conflict')}</span>
+                                    <span className="text-xs text-muted">{__('Conflict')}</span>
                                     <input
                                         aria-label={__('Narrative conflict')}
                                         maxLength={500}
@@ -360,7 +360,7 @@ export default function Index({ project, mechanics, selected, scenes, characters
                                     />
                                 </label>
                                 {!form.data.conflict && project.central_conflict && (
-                                    <button type="button" className="text-[10px] text-primary sm:ml-[97px]" onClick={() => update('conflict', project.central_conflict ?? '')}>
+                                    <button type="button" className="text-xs text-primary sm:ml-[97px]" onClick={() => update('conflict', project.central_conflict ?? '')}>
                                         {__('Use the project conflict')} <ArrowRight size={11} className="ml-1 inline" />
                                     </button>
                                 )}
@@ -368,7 +368,7 @@ export default function Index({ project, mechanics, selected, scenes, characters
                         </section>
 
                         <details className="rounded-lg border border-border px-4 py-3">
-                            <summary className="cursor-pointer text-[11px] text-[#aabd9e]">{__('More mechanic details')}</summary>
+                            <summary className="cursor-pointer text-xs text-muted">{__('More mechanic details')}</summary>
                             <div className="mt-5 space-y-4">
                                 <label className="block text-xs">
                                     {__('Type')}
@@ -394,12 +394,12 @@ export default function Index({ project, mechanics, selected, scenes, characters
                         <FormError error={firstError} />
 
                         <div className="flex flex-wrap items-center justify-between gap-4 border-t border-border pt-5">
-                            <p className="flex items-center gap-2 text-[9px] text-[#99b18c]">
+                            <p className="flex items-center gap-2 text-xs text-muted">
                                 <ShieldCheck size={13} /> {__('Your links are saved with the mechanic.')}
                             </p>
                             <div className="flex flex-wrap gap-3">
                                 {active && (
-                                    <button type="button" onClick={destroy} className={`${secondary} hover:!border-rose-300/40 hover:!text-rose-300`}>
+                                    <button type="button" onClick={destroy} className={`${secondary} hover:!border-danger/40 hover:!text-danger`}>
                                         <Trash2 size={14} />
                                         {__('Delete')}
                                     </button>
@@ -432,7 +432,7 @@ export default function Index({ project, mechanics, selected, scenes, characters
                                         update('icon', value);
                                         setPicker(null);
                                     }}
-                                    className={`flex flex-col items-center gap-3 rounded-lg border p-5 text-xs ${form.data.icon === value ? 'border-primary/40 bg-primary/10 text-primary' : 'border-border text-[#baccae] hover:border-primary/30'}`}
+                                    className={`flex flex-col items-center gap-3 rounded-lg border p-5 text-xs ${form.data.icon === value ? 'border-primary/40 bg-primary/10 text-primary' : 'border-border text-muted hover:border-primary/30'}`}
                                 >
                                     <Icon size={25} strokeWidth={1.5} />
                                     {__(label)}

@@ -3,6 +3,7 @@ import '../css/app.css';
 import { createInertiaApp } from '@inertiajs/react';
 import { createRoot } from 'react-dom/client';
 import { resolvePage } from './app/resolve-page';
+import { token } from './shared/lib/tokens';
 
 const appName = import.meta.env.VITE_APP_NAME || 'Gamerdust';
 
@@ -13,6 +14,6 @@ createInertiaApp({
         createRoot(el).render(<App {...props} />);
     },
     progress: {
-        color: '#f59e0b',
+        color: token('primary'),
     },
 });

@@ -1,25 +1,38 @@
+/*
+ * Clases reutilizables sobre los tokens de app.css (nada de hex aquí). Los controles miden 40 px y suben a 44 px
+ * en pantallas táctiles (pointer-coarse). El foco lo pinta la regla global :focus-visible de app.css.
+ */
+
+/** Acción principal (landing, auth, formularios). */
 export const button =
-    'inline-flex items-center justify-center gap-3 rounded-md bg-primary px-5 py-3 text-sm font-semibold text-[#172012] transition hover:bg-[#d3f3aa] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary';
+    'inline-flex min-h-11 items-center justify-center gap-2 rounded-md bg-primary px-5 text-sm font-bold text-primary-ink transition-colors hover:bg-primary-hover active:translate-y-px disabled:cursor-not-allowed disabled:opacity-50';
 
+/** Campo de texto, select o textarea. Borde a 3,8:1 (WCAG 1.4.11) y 16 px para que iOS no haga zoom. */
 export const field =
-    'mt-2 w-full rounded-md border border-border bg-background px-4 py-3 text-sm text-foreground outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/10';
+    'mt-2 min-h-10 w-full rounded-md border border-border-strong bg-background px-3 py-2 text-base text-foreground transition-colors hover:border-muted focus:border-primary disabled:cursor-not-allowed disabled:opacity-50 pointer-coarse:min-h-11';
 
+/** Acción secundaria con borde. */
 export const secondary =
-    'inline-flex min-h-10 items-center justify-center gap-2 rounded-md border border-border bg-white/[.02] px-3 py-2 text-xs text-[#becbb6] transition hover:border-primary/40 hover:bg-primary/5 focus-visible:outline-2 focus-visible:outline-primary disabled:cursor-not-allowed disabled:opacity-35';
+    'inline-flex min-h-10 items-center justify-center gap-2 rounded-md border border-border bg-surface px-3 text-sm text-foreground transition-colors hover:border-primary/50 hover:bg-surface-2 active:translate-y-px disabled:cursor-not-allowed disabled:opacity-50 pointer-coarse:min-h-11';
 
 /** Botón principal compacto (estudio de proyecto). */
 export const primarySm =
-    'inline-flex min-h-10 items-center justify-center gap-2 rounded-md bg-primary px-4 py-2.5 text-xs font-semibold text-[#172012] transition hover:bg-[#d3f3aa] disabled:cursor-wait disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary';
+    'inline-flex min-h-10 items-center justify-center gap-2 rounded-md bg-primary px-4 text-sm font-bold text-primary-ink transition-colors hover:bg-primary-hover active:translate-y-px disabled:cursor-wait disabled:opacity-50 pointer-coarse:min-h-11';
 
-export const card = 'rounded-xl border border-border bg-[#161d17]';
+/** Botón de solo icono (siempre con aria-label). */
+export const iconButton =
+    'inline-flex size-10 shrink-0 items-center justify-center rounded-md text-muted transition-colors hover:bg-surface-2 hover:text-foreground active:translate-y-px disabled:cursor-not-allowed disabled:opacity-50 pointer-coarse:size-11';
+
+/** Panel: superficie con borde fino (un solo nivel; nunca un panel dentro de otro). */
+export const card = 'rounded-lg border border-border bg-surface';
+
+/** Texto de ayuda bajo un campo. */
+export const hint = 'mt-1 text-xs text-subtle';
+
+/** Acento pixelado: logotipo, titulares de 1 a 3 palabras, cifras tipo HUD y códigos de escena. Nunca en párrafos ni formularios. */
+export const pixel = 'font-pixel';
+
+/** Palabra pixelada dentro de un titular (la firma de la marca). */
+export const pixelAccent = 'font-pixel text-primary';
 
 export const genres = ['Aventura', 'Fantasía oscura', 'Ciencia ficción', 'Misterio', 'Terror', 'Otro'];
-
-const images = {
-    forest: 'https://images.unsplash.com/photo-1483982258113-b72862e6cff6?auto=format&fit=crop&w=1600&q=85',
-    mountain: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1000&q=85',
-    desert: 'https://images.unsplash.com/photo-1509316785289-025f5b846b35?auto=format&fit=crop&w=1000&q=85',
-};
-
-export const imageForGenre = (genre?: string | null) =>
-    genre === 'Ciencia ficción' ? images.desert : genre === 'Aventura' ? images.mountain : images.forest;

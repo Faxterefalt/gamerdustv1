@@ -28,9 +28,9 @@ const STATUS_LABEL: Record<SaveStatus, string> = {
 };
 
 const NOTICE_TONE = {
-    info: 'border-zinc-700 bg-zinc-900 text-zinc-200',
-    warning: 'border-amber-700 bg-amber-950/50 text-amber-100',
-    error: 'border-rose-700 bg-rose-950/60 text-rose-100',
+    info: 'border-border-strong bg-surface text-foreground',
+    warning: 'border-primary/50 bg-primary/10 text-foreground',
+    error: 'border-danger/50 bg-danger/10 text-danger',
 } as const;
 
 export default function Index({ project, graph: initialGraph, selectedNodeId, emotionCatalog }: BranchingIndexProps) {
@@ -117,21 +117,21 @@ export default function Index({ project, graph: initialGraph, selectedNodeId, em
                 <div className="flex flex-wrap items-center gap-2">
                     <span
                         role="status"
-                        className={`flex items-center gap-1.5 text-xs ${status === 'error' ? 'text-rose-300' : status === 'saved' ? 'text-emerald-300' : 'text-zinc-400'}`}
+                        className={`flex items-center gap-1.5 text-xs ${status === 'error' ? 'text-danger' : status === 'saved' ? 'text-success' : 'text-muted'}`}
                     >
-                        {status === 'saving' && <Loader2 size={13} className="animate-spin" />}
+                        {status === 'saving' && <Loader2 size={13} className="animate-spin motion-reduce:animate-none" />}
                         {status === 'saved' && <CheckCircle2 size={13} />}
                         {status === 'error' && <CircleAlert size={13} />}
                         {__(STATUS_LABEL[status])}
                     </span>
-                    <button type="button" onClick={() => void flush()} className="flex items-center gap-1.5 border border-amber-600 px-3 py-2 text-sm text-amber-100 hover:bg-amber-950">
+                    <button type="button" onClick={() => void flush()} className="flex items-center gap-1.5 border border-primary px-3 py-2 text-sm text-foreground hover:bg-primary/10">
                         <Save size={14} /> {__('Save')}
                     </button>
                     <button
                         type="button"
                         onClick={() => void playtest(null)}
                         disabled={!graph.nodes.length}
-                        className="flex items-center gap-1.5 border border-zinc-700 px-3 py-2 text-sm hover:border-amber-500 disabled:opacity-40"
+                        className="flex items-center gap-1.5 border border-border-strong px-3 py-2 text-sm hover:border-primary disabled:opacity-40"
                     >
                         <Play size={14} /> {__('Test run')}
                     </button>
@@ -140,17 +140,17 @@ export default function Index({ project, graph: initialGraph, selectedNodeId, em
                         onClick={() => setReviewing(true)}
                         disabled={!graph.edges.length}
                         title={__('The AI looks for decisions that may not fit together. It only suggests.')}
-                        className="flex items-center gap-1.5 border border-zinc-700 px-3 py-2 text-sm hover:border-amber-500 disabled:opacity-40"
+                        className="flex items-center gap-1.5 border border-border-strong px-3 py-2 text-sm hover:border-primary disabled:opacity-40"
                     >
                         <ScanSearch size={14} /> {__('Review consequences')}
                     </button>
-                    <button type="button" onClick={() => setShowVariables(true)} className="flex items-center gap-1.5 border border-zinc-700 px-3 py-2 text-sm hover:border-amber-500">
+                    <button type="button" onClick={() => setShowVariables(true)} className="flex items-center gap-1.5 border border-border-strong px-3 py-2 text-sm hover:border-primary">
                         <Variable size={14} /> {__('Variables')} ({graph.variables.length})
                     </button>
-                    <Link href={`/projects/${project.id}`} className="border border-zinc-700 px-3 py-2 text-sm hover:border-amber-500">
+                    <Link href={`/projects/${project.id}`} className="border border-border-strong px-3 py-2 text-sm hover:border-primary">
                         {__('Dashboard')}
                     </Link>
-                    <Link href={`/projects/${project.id}/dialogues`} className="border border-zinc-700 px-3 py-2 text-sm hover:border-amber-500">
+                    <Link href={`/projects/${project.id}/dialogues`} className="border border-border-strong px-3 py-2 text-sm hover:border-primary">
                         {__('Dialogue list')}
                     </Link>
                 </div>
@@ -171,9 +171,9 @@ export default function Index({ project, graph: initialGraph, selectedNodeId, em
                 </div>
             )}
 
-            {editor.error && !selected && <div className="mb-3 border border-rose-700 bg-rose-950/60 px-3 py-2 text-xs text-rose-100">{editor.error.message}</div>}
+            {editor.error && !selected && <div className="mb-3 border border-danger/50 bg-danger/10 px-3 py-2 text-xs text-danger">{editor.error.message}</div>}
 
-            <div className="flex h-[calc(100vh-230px)] min-h-[520px] border border-zinc-800">
+            <div className="flex h-[calc(100vh-230px)] min-h-[520px] border border-border">
                 <div className="min-w-0 flex-1">
                     <BranchingCanvas
                         graph={graph}

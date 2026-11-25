@@ -14,16 +14,16 @@ export default function AuthShell({ title, description, children }: AuthShellPro
     const { flash } = usePage<PageProps>().props;
 
     return (
-        <main className="min-h-screen bg-zinc-950 px-4 py-10 text-zinc-100">
+        <main className="min-h-screen bg-background px-4 py-10 text-foreground">
             <Head title={title} />
-            <section className="mx-auto max-w-md border border-zinc-800 bg-zinc-900 p-6">
+            <section className="mx-auto max-w-md border border-border bg-surface p-6">
                 <div className="flex items-center justify-between gap-4">
-                    <h1 className="text-2xl font-semibold text-white">{title}</h1>
+                    <h1 className="text-2xl font-semibold text-foreground">{title}</h1>
                     <LocaleSwitcher />
                 </div>
-                <p className="mt-2 text-sm text-zinc-400">{description}</p>
+                <p className="mt-2 text-sm text-muted">{description}</p>
                 {flash?.success && (
-                    <p role="status" className="mt-5 border border-emerald-700 bg-emerald-950/60 px-3 py-2 text-sm text-emerald-100">
+                    <p role="status" className="mt-5 border border-success/50 bg-success/10 px-3 py-2 text-sm text-success">
                         {flash.success}
                     </p>
                 )}
@@ -33,16 +33,16 @@ export default function AuthShell({ title, description, children }: AuthShellPro
     );
 }
 
-export const authInput = 'w-full border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm text-zinc-100 outline-none focus:border-amber-500';
+export const authInput = 'w-full border border-border-strong bg-background px-3 py-2 text-sm text-foreground focus:border-primary';
 
-export const authButton = 'w-full border border-amber-600 px-4 py-2 text-sm font-medium text-amber-100 hover:bg-amber-950 disabled:opacity-50';
+export const authButton = 'w-full border border-primary px-4 py-2 text-sm font-medium text-foreground hover:bg-primary/10 disabled:opacity-50';
 
 export function AuthField({ label, error, children }: { label: string; error?: string; children: ReactNode }) {
     return (
         <label className="block">
-            <span className="mb-2 block text-sm font-medium text-zinc-200">{label}</span>
+            <span className="mb-2 block text-sm font-medium text-foreground">{label}</span>
             {children}
-            {error && <span className="mt-1 block text-sm text-rose-300">{error}</span>}
+            {error && <span className="mt-1 block text-sm text-danger">{error}</span>}
         </label>
     );
 }

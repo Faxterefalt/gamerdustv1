@@ -37,10 +37,10 @@ export default function Edit() {
             <Head title={__('Account')} />
 
             <div className="grid gap-6 lg:grid-cols-2">
-                <section className="border border-zinc-800 bg-zinc-900 p-5">
+                <section className="border border-border bg-surface p-5">
                     <div>
-                        <h2 className="text-lg font-semibold text-white">{__('Profile')}</h2>
-                        <p className="mt-1 text-sm text-zinc-400">{__('Update your display name and login email.')}</p>
+                        <h2 className="text-lg font-semibold text-foreground">{__('Profile')}</h2>
+                        <p className="mt-1 text-sm text-muted">{__('Update your display name and login email.')}</p>
                     </div>
 
                     <form onSubmit={submitProfile} className="mt-5 space-y-4">
@@ -54,17 +54,17 @@ export default function Edit() {
                         <button
                             type="submit"
                             disabled={profileForm.processing}
-                            className="border border-amber-600 px-4 py-2 text-sm font-medium text-amber-100 hover:bg-amber-950 disabled:opacity-50"
+                            className="border border-primary px-4 py-2 text-sm font-medium text-foreground hover:bg-primary/10 disabled:opacity-50"
                         >
                             {__('Save profile')}
                         </button>
                     </form>
                 </section>
 
-                <section className="border border-zinc-800 bg-zinc-900 p-5">
+                <section className="border border-border bg-surface p-5">
                     <div>
-                        <h2 className="text-lg font-semibold text-white">{__('Password')}</h2>
-                        <p className="mt-1 text-sm text-zinc-400">{__('Confirm your current password before saving a new one.')}</p>
+                        <h2 className="text-lg font-semibold text-foreground">{__('Password')}</h2>
+                        <p className="mt-1 text-sm text-muted">{__('Confirm your current password before saving a new one.')}</p>
                     </div>
 
                     <form onSubmit={submitPassword} className="mt-5 space-y-4">
@@ -91,7 +91,7 @@ export default function Edit() {
                         <button
                             type="submit"
                             disabled={passwordForm.processing}
-                            className="border border-amber-600 px-4 py-2 text-sm font-medium text-amber-100 hover:bg-amber-950 disabled:opacity-50"
+                            className="border border-primary px-4 py-2 text-sm font-medium text-foreground hover:bg-primary/10 disabled:opacity-50"
                         >
                             {__('Change password')}
                         </button>
@@ -102,14 +102,14 @@ export default function Edit() {
     );
 }
 
-const inputClass = 'w-full border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm text-zinc-100 outline-none focus:border-amber-500';
+const inputClass = 'w-full border border-border-strong bg-background px-3 py-2 text-sm text-foreground focus:border-primary';
 
 function Field({ label, error, children }: { label: string; error?: string; children: ReactNode }) {
     return (
         <label className="block">
-            <span className="mb-2 block text-sm font-medium text-zinc-200">{label}</span>
+            <span className="mb-2 block text-sm font-medium text-foreground">{label}</span>
             {children}
-            {error && <span className="mt-1 block text-sm text-rose-300">{error}</span>}
+            {error && <span className="mt-1 block text-sm text-danger">{error}</span>}
         </label>
     );
 }

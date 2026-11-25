@@ -50,7 +50,7 @@ export default function CharacterDraftDialog({ projectId, onDraft, onClose }: Ch
 
     return (
         <Modal title={__('Character draft with AI')} onClose={() => !pending && onClose()}>
-            <p className="mb-4 text-xs leading-6 text-[#a6b99a]">
+            <p className="mb-4 text-xs leading-6 text-muted">
                 {__('Describe your idea in a sentence. The AI proposes a draft consistent with your Bible; nothing is saved until you press Save sheet.')}
             </p>
             <label className="block text-xs">

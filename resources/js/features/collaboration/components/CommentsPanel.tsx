@@ -51,8 +51,8 @@ export default function CommentsPanel({ projectId, comments, sceneId, compact = 
             <div className={compact ? 'space-y-5' : 'space-y-4'}>
                 {!visible.length && (
                     <div className="rounded-lg border border-dashed border-border px-5 py-8 text-center">
-                        <MessageSquare size={22} className="mx-auto text-[#90a680]" />
-                        <p className="mt-3 text-xs leading-6 text-[#a5b69a]">
+                        <MessageSquare size={22} className="mx-auto text-subtle" />
+                        <p className="mt-3 text-xs leading-6 text-muted">
                             {__('The conversation starts here.')}
                             <br />
                             {sceneId === undefined ? __('Share an idea about the project.') : __('Share an idea about this scene.')}
@@ -67,29 +67,29 @@ export default function CommentsPanel({ projectId, comments, sceneId, compact = 
                             </span>
                             <div className="min-w-0 flex-1">
                                 <h3 className="break-words text-xs font-medium">{comment.author}</h3>
-                                <p className="mt-1 text-[9px] text-[#97a98b]">
+                                <p className="mt-1 text-xs text-subtle">
                                     {comment.created_at &&
                                         new Date(comment.created_at).toLocaleDateString(locale === 'en' ? 'en-US' : 'es-ES', { day: 'numeric', month: 'short', year: 'numeric' })}
                                     {sceneId === undefined && comment.scene_title ? ` · ${comment.scene_title}` : ''}
                                 </p>
                             </div>
                             {access.can_update && (comment.user_id === userId || access.can_manage) && (
-                                <button type="button" onClick={() => destroy(comment)} aria-label={__('Delete comment')} className="rounded p-1 text-[#7f9174] hover:text-rose-300">
+                                <button type="button" onClick={() => destroy(comment)} aria-label={__('Delete comment')} className="rounded p-1 text-subtle hover:text-danger">
                                     <Trash2 size={12} />
                                 </button>
                             )}
                         </div>
-                        <p className="mt-3 whitespace-pre-wrap break-words text-xs leading-7 text-[#bac9af]">{comment.text}</p>
+                        <p className="mt-3 whitespace-pre-wrap break-words text-xs leading-7 text-muted">{comment.text}</p>
                     </article>
                 ))}
             </div>
 
             {!access.can_update ? (
-                <p className="mt-6 border-t border-border pt-5 text-[11px] text-[#9eb392]">{__('You have read-only access: you cannot comment on this project.')}</p>
+                <p className="mt-6 border-t border-border pt-5 text-xs text-muted">{__('You have read-only access: you cannot comment on this project.')}</p>
             ) : (
             <form className="mt-6 border-t border-border pt-5" onSubmit={submit}>
                 <fieldset disabled={form.processing}>
-                    <label className="block text-[11px] text-[#b7c6ab]">
+                    <label className="block text-xs text-muted">
                         {__('Comment')}
                         <textarea
                             required

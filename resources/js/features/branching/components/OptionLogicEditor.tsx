@@ -20,7 +20,7 @@ const EFFECT_OPS: Record<BranchingVariable['type'], EffectOp[]> = { bool: ['set'
 
 const EFFECT_LABEL: Record<EffectOp, string> = { set: '=', add: '+', sub: '−' };
 
-const select = 'nodrag nowheel border border-zinc-700 bg-zinc-950 px-1.5 py-1 text-xs text-white outline-none focus:border-amber-500';
+const select = 'nodrag nowheel border border-border-strong bg-background px-1.5 py-1 text-xs text-foreground focus:border-primary';
 
 /** Valor por defecto al elegir una variable: no altera nada hasta que el autor lo cambie. */
 function defaults(variable: BranchingVariable): { op: ConditionOp; effect: EffectOp; value: VariableValue } {
@@ -38,9 +38,9 @@ export default function OptionLogicEditor({ option, variables, onChange, onOpenV
 
     if (!variables.length) {
         return (
-            <p className="text-xs text-zinc-500">
+            <p className="text-xs text-subtle">
                 {__('Create variables to add conditions and effects.')}{' '}
-                <button type="button" onClick={onOpenVariables} className="text-amber-300 underline hover:text-amber-100">
+                <button type="button" onClick={onOpenVariables} className="text-primary underline hover:text-foreground">
                     {__('Variables')}
                 </button>
             </p>
@@ -51,7 +51,7 @@ export default function OptionLogicEditor({ option, variables, onChange, onOpenV
     const setEffects = (next: OptionEffect[]) => onChange({ effects: next });
 
     return (
-        <div className="space-y-2 text-xs text-zinc-400">
+        <div className="space-y-2 text-xs text-muted">
             <div>
                 <span className="mb-1 block">{__('Available if')}</span>
                 <div className="flex flex-wrap items-center gap-1.5">
@@ -83,7 +83,7 @@ export default function OptionLogicEditor({ option, variables, onChange, onOpenV
                             <ValueInput variable={byKey.get(condition.var)!} value={condition.value} onChange={(value) => setCondition({ ...condition, value })} />
                         </>
                     )}
-                    {condition && !byKey.get(condition.var) && <span className="text-rose-300">{__('Unknown variable: :var', { var: condition.var })}</span>}
+                    {condition && !byKey.get(condition.var) && <span className="text-danger">{__('Unknown variable: :var', { var: condition.var })}</span>}
                 </div>
             </div>
 
@@ -128,7 +128,7 @@ export default function OptionLogicEditor({ option, variables, onChange, onOpenV
                                     type="button"
                                     aria-label={__('Remove effect')}
                                     onClick={() => setEffects(effects.filter((_, position) => position !== index))}
-                                    className="p-1 text-zinc-500 hover:text-rose-300"
+                                    className="p-1 text-subtle hover:text-danger"
                                 >
                                     <X size={12} />
                                 </button>
@@ -141,7 +141,7 @@ export default function OptionLogicEditor({ option, variables, onChange, onOpenV
                             const first = variables[0];
                             setEffects([...effects, { var: first.key, op: defaults(first).effect, value: defaults(first).value }]);
                         }}
-                        className="flex items-center gap-1 border border-zinc-700 px-2 py-0.5 hover:border-amber-500"
+                        className="flex items-center gap-1 border border-border-strong px-2 py-0.5 hover:border-primary"
                     >
                         <Plus size={11} /> {__('Effect')}
                     </button>

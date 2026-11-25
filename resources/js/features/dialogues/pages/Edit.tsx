@@ -20,7 +20,7 @@ export default function Edit({ project, dialogue, scenes, characters, dialogues 
         <ProjectLayout
             title={__('Edit :name', { name: dialogue.node_key })}
             actions={
-                <Link href={`/projects/${project.id}/dialogues`} className="border border-zinc-700 px-4 py-2 text-sm hover:border-amber-500">
+                <Link href={`/projects/${project.id}/dialogues`} className="border border-border-strong px-4 py-2 text-sm hover:border-primary">
                     {__('Back')}
                 </Link>
             }

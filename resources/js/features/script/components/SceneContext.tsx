@@ -30,7 +30,7 @@ export default function SceneContext({ projectId, sceneId, characters, locations
     const location = locations.find((item) => item.id === locationId);
     const commentCount = comments.filter((comment) => comment.scene_id === sceneId).length;
     const base = `/projects/${projectId}`;
-    const quickLink = `${secondary} w-full justify-start !min-h-9 !text-[10px]`;
+    const quickLink = `${secondary} w-full justify-start !min-h-9 !text-xs`;
 
     return (
         <div>
@@ -49,12 +49,12 @@ export default function SceneContext({ projectId, sceneId, characters, locations
                         aria-selected={tab === key}
                         aria-controls={`${uid}-${key}-panel`}
                         onClick={() => setTab(key)}
-                        className={`relative flex-1 px-2 py-4 text-[11px] transition ${
-                            tab === key ? 'text-primary after:absolute after:inset-x-5 after:bottom-0 after:h-0.5 after:bg-primary' : 'text-[#97a98b] hover:text-foreground'
+                        className={`relative flex-1 px-2 py-4 text-xs transition ${
+                            tab === key ? 'text-primary after:absolute after:inset-x-5 after:bottom-0 after:h-0.5 after:bg-primary' : 'text-subtle hover:text-foreground'
                         }`}
                     >
                         {label}
-                        {key === 'comments' && commentCount > 0 && <span className="ml-1 text-[9px]">{commentCount}</span>}
+                        {key === 'comments' && commentCount > 0 && <span className="ml-1 text-xs">{commentCount}</span>}
                     </button>
                 ))}
             </div>
@@ -64,8 +64,8 @@ export default function SceneContext({ projectId, sceneId, characters, locations
                     <h2 className="mb-4 text-xs font-semibold">{__('Characters')}</h2>
                     <div className="flex flex-wrap gap-2">
                         {selectedCharacters.map((character) => (
-                            <span key={character.id} className="inline-flex items-center gap-2 rounded border border-border bg-white/[.02] px-2.5 py-2 text-[11px] text-[#cfdbc5]">
-                                <UserRound size={13} className="text-[#a1b590]" />
+                            <span key={character.id} className="inline-flex items-center gap-2 rounded border border-border bg-surface px-2.5 py-2 text-xs text-muted">
+                                <UserRound size={13} className="text-muted" />
                                 {character.name}
                                 <button
                                     type="button"
@@ -77,19 +77,19 @@ export default function SceneContext({ projectId, sceneId, characters, locations
                                             locationId,
                                         )
                                     }
-                                    className="text-[#8da180] hover:text-primary"
+                                    className="text-subtle hover:text-primary"
                                 >
                                     <X size={12} />
                                 </button>
                             </span>
                         ))}
                     </div>
-                    {!selectedCharacters.length && <p className="mb-3 text-[10px] leading-6 text-[#98ac8b]">{__('No linked characters.')}</p>}
+                    {!selectedCharacters.length && <p className="mb-3 text-xs leading-6 text-subtle">{__('No linked characters.')}</p>}
                     <button
                         type="button"
                         disabled={disabled}
                         aria-expanded={picker === 'characters'}
-                        className={`${secondary} mt-3 w-full !min-h-9 border-dashed !px-2 !text-[10px]`}
+                        className={`${secondary} mt-3 w-full !min-h-9 border-dashed !px-2 !text-xs`}
                         onClick={() => setPicker(picker === 'characters' ? null : 'characters')}
                     >
                         <Plus size={13} /> {__('Link character')}
@@ -101,7 +101,7 @@ export default function SceneContext({ projectId, sceneId, characters, locations
                                     <input
                                         type="checkbox"
                                         disabled={disabled}
-                                        className="accent-[#c2e88d]"
+                                        className="accent-primary"
                                         checked={characterIds.includes(character.id)}
                                         onChange={(event) =>
                                             onChange(event.target.checked ? [...characterIds, character.id] : characterIds.filter((id) => id !== character.id), locationId)
@@ -111,14 +111,14 @@ export default function SceneContext({ projectId, sceneId, characters, locations
                                 </label>
                             ))}
                             {!characters.length && (
-                                <p className="text-[10px] leading-6 text-[#a6ba98]">
+                                <p className="text-xs leading-6 text-muted">
                                     {__('Create a character first in the Narrative Bible.')}{' '}
                                     <Link href={`${base}/characters/create`} className="text-primary underline">
                                         {__('Create character')}
                                     </Link>
                                 </p>
                             )}
-                            <button type="button" onClick={() => setPicker(null)} className="mt-2 flex items-center gap-1.5 text-[10px] text-primary">
+                            <button type="button" onClick={() => setPicker(null)} className="mt-2 flex items-center gap-1.5 text-xs text-primary">
                                 <Check size={12} /> {__('Done')}
                             </button>
                         </div>
@@ -128,27 +128,27 @@ export default function SceneContext({ projectId, sceneId, characters, locations
                 <section className="border-b border-border py-6">
                     <h2 className="mb-4 text-xs font-semibold">{__('Locations')}</h2>
                     {location ? (
-                        <span className="flex items-center gap-2 text-[11px] text-[#c9d8bf]">
-                            <MapPin size={15} className="shrink-0 text-[#9fb58f]" />
+                        <span className="flex items-center gap-2 text-xs text-muted">
+                            <MapPin size={15} className="shrink-0 text-muted" />
                             <span className="min-w-0 break-words">{location.title}</span>
                             <button
                                 type="button"
                                 disabled={disabled}
                                 aria-label={__('Unlink location')}
-                                className="ml-auto shrink-0 text-[#8da180] hover:text-primary"
+                                className="ml-auto shrink-0 text-subtle hover:text-primary"
                                 onClick={() => onChange(characterIds, null)}
                             >
                                 <X size={13} />
                             </button>
                         </span>
                     ) : (
-                        <p className="text-[10px] leading-6 text-[#98ac8b]">{__('No linked location.')}</p>
+                        <p className="text-xs leading-6 text-subtle">{__('No linked location.')}</p>
                     )}
                     <button
                         type="button"
                         disabled={disabled}
                         aria-expanded={picker === 'locations'}
-                        className={`${secondary} mt-3 w-full !min-h-9 border-dashed !px-2 !text-[10px]`}
+                        className={`${secondary} mt-3 w-full !min-h-9 border-dashed !px-2 !text-xs`}
                         onClick={() => setPicker(picker === 'locations' ? null : 'locations')}
                     >
                         <Plus size={13} /> {__('Link location')}
@@ -156,27 +156,27 @@ export default function SceneContext({ projectId, sceneId, characters, locations
                     {picker === 'locations' && (
                         <div className="mt-3 rounded-md border border-primary/20 bg-background p-3">
                             {locations.map((item) => (
-                                <label key={item.id} className="flex items-center gap-2 py-2 text-[11px]">
+                                <label key={item.id} className="flex items-center gap-2 py-2 text-xs">
                                     <input
                                         type="radio"
                                         name={`${uid}-location`}
                                         checked={locationId === item.id}
                                         disabled={disabled}
                                         onChange={() => onChange(characterIds, item.id)}
-                                        className="accent-[#c2e88d]"
+                                        className="accent-primary"
                                     />
                                     {item.title}
                                 </label>
                             ))}
                             {!locations.length && (
-                                <p className="text-[10px] leading-6 text-[#a6ba98]">
+                                <p className="text-xs leading-6 text-muted">
                                     {__('Create a location first in the Narrative Bible.')}{' '}
                                     <Link href={`${base}/lore/create?type=location`} className="text-primary underline">
                                         {__('Create location')}
                                     </Link>
                                 </p>
                             )}
-                            <button type="button" onClick={() => setPicker(null)} className="mt-2 flex items-center gap-1.5 text-[10px] text-primary">
+                            <button type="button" onClick={() => setPicker(null)} className="mt-2 flex items-center gap-1.5 text-xs text-primary">
                                 <Check size={12} /> {__('Done')}
                             </button>
                         </div>
@@ -200,7 +200,7 @@ export default function SceneContext({ projectId, sceneId, characters, locations
                         </Link>
                     </div>
                 </section>
-                <p className="mt-7 border-t border-border pt-4 text-[9px] leading-5 text-[#98ac8b]">{__('References are saved together with the script when you press Save.')}</p>
+                <p className="mt-7 border-t border-border pt-4 text-xs leading-5 text-subtle">{__('References are saved together with the script when you press Save.')}</p>
             </div>
 
             <div role="tabpanel" id={`${uid}-comments-panel`} aria-labelledby={`${uid}-comments-tab`} hidden={tab !== 'comments'} className="p-5">

@@ -40,13 +40,13 @@ export default function ResetPassword({ token, email }: ResetPasswordProps) {
                         className={authInput}
                     />
                 </AuthField>
-                {errors.token && <p className="text-sm text-rose-300">{errors.token}</p>}
+                {errors.token && <p className="text-sm text-danger">{errors.token}</p>}
                 <button type="submit" disabled={processing} className={authButton}>
                     {__('Reset password')}
                 </button>
             </form>
-            <div className="mt-5 text-sm text-zinc-400">
-                <Link href="/forgot-password" className="text-amber-200 hover:text-amber-100">
+            <div className="mt-5 text-sm text-muted">
+                <Link href="/forgot-password" className="text-primary hover:text-foreground">
                     {__('Request a new link')}
                 </Link>
             </div>

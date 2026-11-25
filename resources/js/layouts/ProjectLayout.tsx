@@ -36,14 +36,14 @@ export default function ProjectLayout({ title, actions, fullWidth = false, bare 
         <>
             {(title || actions) && (
                 <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                    {title && <h1 className="text-2xl font-semibold text-white">{title}</h1>}
+                    {title && <h1 className="text-2xl font-semibold text-foreground">{title}</h1>}
                     {actions}
                 </div>
             )}
 
             {props.flash.success && <div className="mb-5 rounded-md border border-primary/30 bg-primary/5 px-4 py-3 text-sm text-primary">{props.flash.success}</div>}
 
-            {props.flash.error && <div className="mb-5 rounded-md border border-rose-700 bg-rose-950/60 px-4 py-3 text-sm text-rose-100">{props.flash.error}</div>}
+            {props.flash.error && <div className="mb-5 rounded-md border border-danger/50 bg-danger/10 px-4 py-3 text-sm text-danger">{props.flash.error}</div>}
 
             {children}
         </>
@@ -112,20 +112,20 @@ function WorkspaceShell({ project, url, children }: PropsWithChildren<{ project:
                 <ProjectSidebar project={project} url={url} expanded={expanded} open={mobileOpen} onClose={close} />
                 <main id="studio-content" className="min-w-0 flex-1">
                     <div className="flex h-[50px] items-center justify-between gap-4 border-b border-border px-5 sm:px-7">
-                        <nav aria-label={__('Project breadcrumb')} className="flex min-w-0 items-center gap-2 text-[10px] sm:gap-3 sm:text-[11px]">
-                            <Link href="/projects" className="hidden shrink-0 text-[#91a086] hover:text-primary sm:inline">
+                        <nav aria-label={__('Project breadcrumb')} className="flex min-w-0 items-center gap-2 text-xs sm:gap-3 sm:text-xs">
+                            <Link href="/projects" className="hidden shrink-0 text-subtle hover:text-primary sm:inline">
                                 {__('My projects')}
                             </Link>
-                            <ChevronRight size={11} className="hidden shrink-0 text-[#6f7e65] sm:block" />
-                            <Link href={`/projects/${project.id}`} className="truncate text-[#afbea5] hover:text-primary">
+                            <ChevronRight size={11} className="hidden shrink-0 text-subtle sm:block" />
+                            <Link href={`/projects/${project.id}`} className="truncate text-muted hover:text-primary">
                                 {project.title}
                             </Link>
-                            <ChevronRight size={11} className="shrink-0 text-[#6f7e65]" />
+                            <ChevronRight size={11} className="shrink-0 text-subtle" />
                             <span aria-current="page" className="shrink-0 text-primary">
                                 {section ? __(section.label) : __('Project')}
                             </span>
                         </nav>
-                        <span className="hidden shrink-0 items-center gap-2 font-mono text-[8px] tracking-wider text-[#94a589] md:flex">
+                        <span className="hidden shrink-0 items-center gap-2 text-xs text-subtle md:flex">
                             {access.is_owner ? (
                                 <>
                                     <Lock size={12} /> {__('PRIVATE PROJECT')}
@@ -139,7 +139,7 @@ function WorkspaceShell({ project, url, children }: PropsWithChildren<{ project:
                     </div>
                     {/* Lector (HU 5): puede ver y exportar; el servidor rechaza cualquier cambio con 403. */}
                     {!access.can_update && (
-                        <p role="status" className="flex items-center gap-2 border-b border-amber-700/40 bg-amber-950/40 px-5 py-2 text-[11px] text-amber-100 sm:px-7">
+                        <p role="status" className="flex items-center gap-2 border-b border-primary/50 bg-primary/10 px-5 py-2 text-xs text-foreground sm:px-7">
                             <Eye size={13} className="shrink-0" /> {__('Read-only access: you can view and export this project, but your changes will not be saved.')}
                         </p>
                     )}

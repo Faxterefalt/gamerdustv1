@@ -1,5 +1,6 @@
 import { BaseEdge, EdgeLabelRenderer, getBezierPath, type Edge, type EdgeProps } from '@xyflow/react';
 import { memo } from 'react';
+import { cssVar } from '../../../shared/lib/tokens';
 
 export type OptionEdgeData = { label: string; managed: boolean; index: number; count: number };
 export type OptionEdgeType = Edge<OptionEdgeData, 'option'>;
@@ -32,7 +33,8 @@ function OptionEdge({ id, source, target, sourceX, sourceY, targetX, targetY, so
         labelY += spread;
     }
 
-    const color = selected ? '#f59e0b' : data?.managed ? '#d946ef' : '#a1a1aa';
+    // Seleccionada: acento; administrada por {{Referencia}}: brasa; manual: gris (discontinua).
+    const color = selected ? cssVar('primary') : data?.managed ? cssVar('ember') : cssVar('subtle');
     const label = data?.label ?? '';
 
     return (
@@ -43,7 +45,7 @@ function OptionEdge({ id, source, target, sourceX, sourceY, targetX, targetY, so
                     <div
                         style={{ transform: `translate(-50%, -50%) translate(${labelX}px, ${labelY}px)` }}
                         title={label}
-                        className="nodrag nopan pointer-events-auto absolute max-w-[150px] truncate border border-zinc-700 bg-zinc-950/95 px-1.5 py-0.5 text-[10px] text-zinc-200"
+                        className="nodrag nopan pointer-events-auto absolute max-w-[150px] truncate border border-border-strong bg-background/95 px-1.5 py-0.5 text-xs text-foreground"
                     >
                         {label}
                     </div>

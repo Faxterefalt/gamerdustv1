@@ -211,7 +211,7 @@ export default function Index({ project, entries, selected, startNew, scenes, em
                     empty={__('Add the first character of your world.')}
                 />
 
-                <form className="min-w-0 overflow-hidden rounded-xl border border-border bg-[#161e17]" onSubmit={submit}>
+                <form className="min-w-0 overflow-hidden rounded-xl border border-border bg-surface" onSubmit={submit}>
                     <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border px-5 py-5 sm:px-7">
                         <div className="flex items-center gap-3">
                             <span className="flex h-9 w-9 items-center justify-center rounded-lg border border-primary/20 bg-primary/5 text-primary">
@@ -219,19 +219,19 @@ export default function Index({ project, entries, selected, startNew, scenes, em
                             </span>
                             <div>
                                 <h2 className="font-display text-lg">{active ? __('Character sheet: :name', { name: active.name }) : __('New character')}</h2>
-                                <p className="mt-0.5 text-[10px] text-[#9eb292]">{__('Give them a face, a goal and a voice.')}</p>
+                                <p className="mt-0.5 text-xs text-muted">{__('Give them a face, a goal and a voice.')}</p>
                             </div>
                         </div>
                         <EntryStatus dirty={dirty} saved={saved} />
                     </div>
 
                     {aiDraft && !active && (
-                        <div role="status" className="flex flex-wrap items-center justify-between gap-3 border-b border-primary/20 bg-primary/5 px-5 py-3 text-[11px] leading-5 sm:px-7">
-                            <span className="flex items-start gap-2 text-[#d3dfca]">
+                        <div role="status" className="flex flex-wrap items-center justify-between gap-3 border-b border-primary/20 bg-primary/5 px-5 py-3 text-xs leading-5 sm:px-7">
+                            <span className="flex items-start gap-2 text-foreground">
                                 <Wand2 size={14} className="mt-0.5 shrink-0 text-primary" />
                                 <span>
                                     {__('AI draft: review it and press Save sheet. Nothing is saved until you do.')}
-                                    {aiDraft.duplicate && <span className="block text-[#f1d79a]">{__('A character with this name already exists: change it before saving.')}</span>}
+                                    {aiDraft.duplicate && <span className="block text-warning">{__('A character with this name already exists: change it before saving.')}</span>}
                                 </span>
                             </span>
                             {aiDraft.generationId && <FeedbackButtons key={aiDraft.generationId} projectId={project.id} target={{ ai_generation_id: aiDraft.generationId }} />}
@@ -296,8 +296,8 @@ export default function Index({ project, entries, selected, startNew, scenes, em
                             }}
                         />
 
-                        <section className="rounded-lg border border-[#3a4a33] bg-background/40 p-4 sm:p-5">
-                            <h3 className="mb-5 flex items-center gap-2 text-xs font-medium text-[#dce6d5]">
+                        <section className="rounded-lg border border-border bg-background/40 p-4 sm:p-5">
+                            <h3 className="mb-5 flex items-center gap-2 text-xs font-medium text-foreground">
                                 <Link2 size={15} className="text-primary" /> {__('Narrative links')}
                             </h3>
                             <LinkRow
@@ -310,9 +310,9 @@ export default function Index({ project, entries, selected, startNew, scenes, em
                             />
                             {active && (
                                 <div className="mt-5 border-t border-border pt-4">
-                                    <p className="mb-2 flex items-center gap-2 text-[11px] text-[#c9d6bf]">
+                                    <p className="mb-2 flex items-center gap-2 text-xs text-muted">
                                         <GitBranch size={13} className="text-primary" /> {__('Branching dialogues')}
-                                        <span className="font-mono text-[10px] text-[#9faf93]">{String(active.dialogue_nodes.length).padStart(2, '0')}</span>
+                                        <span className="text-xs text-muted">{String(active.dialogue_nodes.length).padStart(2, '0')}</span>
                                     </p>
                                     {active.dialogue_nodes.length ? (
                                         <ul className="flex flex-wrap gap-1.5">
@@ -321,7 +321,7 @@ export default function Index({ project, entries, selected, startNew, scenes, em
                                                     <Link
                                                         href={`/projects/${project.id}/branching?node=${node.id}`}
                                                         title={__(DIALOGUE_TYPE_STYLE[node.dialogue_type as DialogueType]?.label ?? node.dialogue_type)}
-                                                        className="inline-flex items-center gap-1 rounded border border-border px-2 py-1 text-[10px] text-[#c4d1ba] hover:border-primary/40 hover:text-primary"
+                                                        className="inline-flex items-center gap-1 rounded border border-border px-2 py-1 text-xs text-muted hover:border-primary/40 hover:text-primary"
                                                     >
                                                         {node.title}
                                                     </Link>
@@ -329,14 +329,14 @@ export default function Index({ project, entries, selected, startNew, scenes, em
                                             ))}
                                         </ul>
                                     ) : (
-                                        <p className="text-[10px] leading-5 text-[#9faf93]">{__('This character does not speak in any dialogue node yet. Assign them in the branching editor.')}</p>
+                                        <p className="text-xs leading-5 text-muted">{__('This character does not speak in any dialogue node yet. Assign them in the branching editor.')}</p>
                                     )}
                                 </div>
                             )}
                         </section>
 
                         <details className="rounded-lg border border-border px-4 py-3">
-                            <summary className="cursor-pointer text-[11px] text-[#aabd9e]">{__('More character details')}</summary>
+                            <summary className="cursor-pointer text-xs text-muted">{__('More character details')}</summary>
                             <div className="mt-5 grid gap-5 sm:grid-cols-2">
                                 <label className="block text-xs">
                                     {__('Archetype')}

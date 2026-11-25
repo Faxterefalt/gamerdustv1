@@ -180,7 +180,7 @@ export default function Rules({ project, entries, selected, scenes, characters, 
                     footnote={entries.length ? __('The padlock marks unbreakable rules.') : undefined}
                 />
 
-                <form className="min-w-0 overflow-hidden rounded-xl border border-border bg-[#161e17]" onSubmit={submit}>
+                <form className="min-w-0 overflow-hidden rounded-xl border border-border bg-surface" onSubmit={submit}>
                     <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border px-5 py-5 sm:px-7">
                         <div className="flex items-center gap-3">
                             <span className="flex h-9 w-9 items-center justify-center rounded-lg border border-primary/20 bg-primary/5 text-primary">
@@ -188,7 +188,7 @@ export default function Rules({ project, entries, selected, scenes, characters, 
                             </span>
                             <div>
                                 <h2 className="font-display text-lg">{active ? __('Rule sheet: :name', { name: active.title }) : __('New rule')}</h2>
-                                <p className="mt-0.5 text-[10px] text-[#9eb292]">{__('A clear rule makes the world believable and the conflicts sharper.')}</p>
+                                <p className="mt-0.5 text-xs text-muted">{__('A clear rule makes the world believable and the conflicts sharper.')}</p>
                             </div>
                         </div>
                         <EntryStatus dirty={dirty} saved={saved} />
@@ -225,7 +225,7 @@ export default function Rules({ project, entries, selected, scenes, characters, 
 
                         <label className="block text-xs">
                             {__('Statement of the rule')} <span className="text-primary">*</span>
-                            <span className="ml-2 text-[9px] text-[#98ae8a]">{__('One sentence that can be checked.')}</span>
+                            <span className="ml-2 text-xs text-muted">{__('One sentence that can be checked.')}</span>
                             <textarea
                                 required
                                 rows={2}
@@ -243,14 +243,14 @@ export default function Rules({ project, entries, selected, scenes, characters, 
                                 {RIGIDITIES.map(({ value, label, hint }) => (
                                     <label
                                         key={value}
-                                        className={`cursor-pointer rounded-md border p-3 transition has-focus-visible:outline-2 has-focus-visible:outline-primary ${form.data.rigidity === value ? 'border-primary/40 bg-primary/10 text-primary' : 'border-border text-[#bfceb4] hover:border-primary/30'}`}
+                                        className={`cursor-pointer rounded-md border p-3 transition has-focus-visible:outline-2 has-focus-visible:outline-primary ${form.data.rigidity === value ? 'border-primary/40 bg-primary/10 text-primary' : 'border-border text-muted hover:border-primary/30'}`}
                                     >
                                         <input type="radio" name="rigidity" value={value} checked={form.data.rigidity === value} onChange={() => update('rigidity', value)} className="sr-only" />
                                         <span className="flex items-center gap-2 text-xs font-medium">
                                             {value === 'unbreakable' && <Lock size={12} />}
                                             {__(label)}
                                         </span>
-                                        <span className="mt-1.5 block text-[10px] leading-5 text-[#a2b597]">{__(hint)}</span>
+                                        <span className="mt-1.5 block text-xs leading-5 text-muted">{__(hint)}</span>
                                     </label>
                                 ))}
                             </div>
@@ -290,8 +290,8 @@ export default function Rules({ project, entries, selected, scenes, characters, 
                             </label>
                         </div>
 
-                        <section className="rounded-lg border border-[#3a4a33] bg-background/40 p-4 sm:p-5">
-                            <h3 className="mb-5 flex items-center gap-2 text-xs font-medium text-[#dce6d5]">
+                        <section className="rounded-lg border border-border bg-background/40 p-4 sm:p-5">
+                            <h3 className="mb-5 flex items-center gap-2 text-xs font-medium text-foreground">
                                 <Link2 size={15} className="text-primary" /> {__('Narrative links')}
                             </h3>
                             <div className="space-y-5">
@@ -321,7 +321,7 @@ export default function Rules({ project, entries, selected, scenes, characters, 
                                             aria-label={__('Relation of :name with the rule', { name })}
                                             value={form.data.characters.find((link) => link.id === id)?.role ?? ''}
                                             onChange={(event) => setRole(id, (event.target.value || null) as CharacterRole | null)}
-                                            className="rounded border border-primary/20 bg-background px-1 py-0.5 text-[10px] text-[#c5d9b7] outline-none focus:border-primary"
+                                            className="rounded border border-primary/20 bg-background px-1 py-0.5 text-xs text-muted focus:border-primary"
                                         >
                                             <option value="">—</option>
                                             {CHARACTER_ROLES.map(({ value, label }) => (
@@ -343,11 +343,11 @@ export default function Rules({ project, entries, selected, scenes, characters, 
                         </section>
 
                         {warnings.length > 0 && (
-                            <div className="rounded-lg border border-dashed border-[#e2c08a]/40 bg-[#e2c08a]/5 p-4">
-                                <p className="flex items-center gap-2 text-xs font-medium text-[#ecd2a4]">
+                            <div className="rounded-lg border border-dashed border-warning/40 bg-warning/5 p-4">
+                                <p className="flex items-center gap-2 text-xs font-medium text-warning">
                                     <AlertTriangle size={14} /> {choice('Possible inconsistency|Possible inconsistencies', warnings.length)}
                                 </p>
-                                <ul className="mt-2 list-disc space-y-1 pl-6 text-[11px] leading-6 text-[#e0cfae]">
+                                <ul className="mt-2 list-disc space-y-1 pl-6 text-xs leading-6 text-muted">
                                     {warnings.map((warning) => (
                                         <li key={warning}>{warning}</li>
                                     ))}
@@ -356,7 +356,7 @@ export default function Rules({ project, entries, selected, scenes, characters, 
                         )}
 
                         <details className="rounded-lg border border-border px-4 py-3" open={Boolean(form.data.description) && !form.data.statement}>
-                            <summary className="cursor-pointer text-[11px] text-[#aabd9e]">{__('Additional notes')}</summary>
+                            <summary className="cursor-pointer text-xs text-muted">{__('Additional notes')}</summary>
                             <textarea
                                 aria-label={__('Additional notes')}
                                 rows={3}

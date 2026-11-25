@@ -31,11 +31,11 @@ export default function Modal({ title, children, onClose, wide = false }: { titl
             onClick={(event) => {
                 if (event.target === event.currentTarget) onClose();
             }}
-            className={`fixed inset-0 m-auto max-h-[85dvh] w-[calc(100%-32px)] overflow-y-auto rounded-xl border border-border bg-[#172018] p-0 text-foreground shadow-2xl backdrop:bg-black/75 backdrop:backdrop-blur-sm ${wide ? 'max-w-2xl' : 'max-w-md'}`}
+            className={`fixed inset-0 m-auto max-h-[85dvh] w-[calc(100%-32px)] overflow-y-auto rounded-xl border border-border bg-surface p-0 text-foreground backdrop:bg-scrim ${wide ? 'max-w-2xl' : 'max-w-md'}`}
         >
-            <div className="sticky top-0 z-10 flex items-center justify-between gap-4 border-b border-border bg-[#172018] px-6 py-5">
+            <div className="sticky top-0 z-10 flex items-center justify-between gap-4 border-b border-border bg-surface px-6 py-5">
                 <h2 className="font-display text-lg">{title}</h2>
-                <button type="button" onClick={onClose} aria-label={__('Close window')} className="rounded p-2 text-[#aebea3] hover:bg-white/5">
+                <button type="button" onClick={onClose} aria-label={__('Close window')} className="rounded p-2 text-muted hover:bg-surface-2">
                     <X size={18} />
                 </button>
             </div>
@@ -46,7 +46,7 @@ export default function Modal({ title, children, onClose, wide = false }: { titl
 
 export function FormError({ error }: { error?: string | null }) {
     return error ? (
-        <p role="alert" className="mt-4 rounded-md border border-red-300/20 bg-red-300/5 p-3 text-xs leading-6 text-[#f3baa5]">
+        <p role="alert" className="mt-4 rounded-md border border-danger/20 bg-danger/10 p-3 text-xs leading-6 text-danger">
             {error}
         </p>
     ) : null;
@@ -55,7 +55,7 @@ export function FormError({ error }: { error?: string | null }) {
 export function Pending({ pending, children }: { pending: boolean; children: ReactNode }) {
     return (
         <>
-            {pending && <LoaderCircle size={14} className="animate-spin" />}
+            {pending && <LoaderCircle size={14} className="animate-spin motion-reduce:animate-none" />}
             {children}
         </>
     );
@@ -65,9 +65,9 @@ export function PageHeading({ eyebrow, title, description, action }: { eyebrow?:
     return (
         <div className="mb-8 flex flex-wrap items-end justify-between gap-5">
             <div>
-                <p className="font-mono text-[9px] tracking-[.16em] text-[#97a78a]">{eyebrow ?? __('THE STUDIO / YOUR STORY')}</p>
-                <h1 className="mt-3 font-display text-[30px] font-medium tracking-[-.035em] sm:text-[34px]">{title}</h1>
-                <p className="mt-2 max-w-2xl text-xs leading-6 text-[#9eae94]">{description}</p>
+                <p className="text-xs text-subtle">{eyebrow ?? __('THE STUDIO / YOUR STORY')}</p>
+                <h1 className="mt-3 font-display text-2xl font-medium sm:text-3xl">{title}</h1>
+                <p className="mt-2 max-w-2xl text-xs leading-6 text-muted">{description}</p>
             </div>
             {action}
         </div>

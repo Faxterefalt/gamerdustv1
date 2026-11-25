@@ -24,7 +24,7 @@ const KIND_LABEL: Record<ConsequenceReview['findings'][number]['kind'], string> 
     unused_effect: 'Effect no condition uses',
 };
 
-const SEVERITY_CLASS = { low: 'border-teal-800 text-teal-200', medium: 'border-amber-800 text-amber-200', high: 'border-rose-800 text-rose-200' } as const;
+const SEVERITY_CLASS = { low: 'border-success/50 text-success', medium: 'border-primary/50 text-primary', high: 'border-danger/50 text-danger' } as const;
 
 /**
  * "Revisar consecuencias" (HU 50): la IA solo se llama al pulsar el botón y nunca modifica el grafo.
@@ -51,7 +51,7 @@ export default function ConsequenceReviewDialog({ projectId, beforeReview, onGoT
 
     return (
         <Modal title={__('Review consequences')} wide onClose={() => !pending && onClose()}>
-            <p className="mb-4 text-xs leading-6 text-[#a9bb9d]">
+            <p className="mb-4 text-xs leading-6 text-muted">
                 {__('The AI reads the saved graph (options, conditions, effects and variables) with the Narrative Bible and points out decisions that may not fit together. It only suggests: nothing is changed.')}
             </p>
 
@@ -64,24 +64,24 @@ export default function ConsequenceReviewDialog({ projectId, beforeReview, onGoT
 
             {result && (
                 <div className="mt-5 space-y-3">
-                    {result.summary && <p className="text-xs leading-6 text-[#d3dfca]">{result.summary}</p>}
-                    {result.truncated && <p className="text-[10px] text-amber-200">{__('The graph is large: only the first nodes were reviewed.')}</p>}
-                    {!result.findings.length && <p className="text-xs text-[#a9bb9d]">{__('No incompatibilities were found.')}</p>}
+                    {result.summary && <p className="text-xs leading-6 text-foreground">{result.summary}</p>}
+                    {result.truncated && <p className="text-xs text-primary">{__('The graph is large: only the first nodes were reviewed.')}</p>}
+                    {!result.findings.length && <p className="text-xs text-muted">{__('No incompatibilities were found.')}</p>}
                     <ul className="space-y-2">
                         {result.findings.map((finding, index) => (
-                            <li key={index} className={`rounded-md border p-3 text-xs leading-6 ${finding.review ? 'border-sky-800/60 bg-sky-950/20' : 'border-border'}`}>
+                            <li key={index} className={`rounded-md border p-3 text-xs leading-6 ${finding.review ? 'border-info/50 bg-info/10' : 'border-border'}`}>
                                 <div className="flex flex-wrap items-center gap-2">
-                                    <span className={`rounded border px-1.5 text-[10px] ${finding.review ? 'border-sky-800 text-sky-200' : SEVERITY_CLASS[finding.severity]}`}>
+                                    <span className={`rounded border px-1.5 text-xs ${finding.review ? 'border-info/50 text-info' : SEVERITY_CLASS[finding.severity]}`}>
                                         {finding.review ? __('Review') : severityLabel(finding.severity)}
                                     </span>
-                                    <span className="text-[10px] uppercase tracking-wide text-[#a9bb9d]">{__(KIND_LABEL[finding.kind])}</span>
+                                    <span className="text-xs text-muted">{__(KIND_LABEL[finding.kind])}</span>
                                 </div>
-                                <p className="mt-1.5 text-[#dce6d5]">{finding.explanation}</p>
-                                {finding.evidence && <p className="mt-1 border-l-2 border-primary/40 pl-2 font-mono text-[10px] italic text-[#b6c6aa]">{finding.evidence}</p>}
+                                <p className="mt-1.5 text-foreground">{finding.explanation}</p>
+                                {finding.evidence && <p className="mt-1 border-l-2 border-primary/40 pl-2 text-xs italic text-muted">{finding.evidence}</p>}
                                 <button
                                     type="button"
                                     onClick={() => onGoToNode(finding.node_id)}
-                                    className="mt-2 inline-flex items-center gap-1 text-[11px] text-primary hover:underline"
+                                    className="mt-2 inline-flex items-center gap-1 text-xs text-primary hover:underline"
                                 >
                                     {__('Option ":option" in :node', { option: finding.option_label, node: finding.node_title })} <ArrowUpRight size={12} />
                                 </button>
@@ -89,7 +89,7 @@ export default function ConsequenceReviewDialog({ projectId, beforeReview, onGoT
                         ))}
                     </ul>
                     {result.generation_id && (
-                        <div className="flex items-center justify-end gap-2 text-[10px] text-[#a9bb9d]">
+                        <div className="flex items-center justify-end gap-2 text-xs text-muted">
                             {__('Was this review useful?')}
                             <FeedbackButtons key={result.generation_id} projectId={projectId} target={{ ai_generation_id: result.generation_id }} />
                         </div>

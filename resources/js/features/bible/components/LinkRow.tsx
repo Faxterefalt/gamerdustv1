@@ -33,24 +33,24 @@ export default function LinkRow({
     return (
         <div className="grid items-start gap-3 sm:grid-cols-[150px_minmax(0,1fr)]">
             <div className="pt-2">
-                <h4 className="text-[11px] text-[#b9cbb0]">{label}</h4>
-                {note && <p className="mt-1 text-[9px] leading-4 text-[#98ae8a]">{note}</p>}
+                <h4 className="text-xs text-muted">{label}</h4>
+                {note && <p className="mt-1 text-xs leading-4 text-muted">{note}</p>}
             </div>
             <div className="flex min-w-0 flex-wrap gap-2">
                 {items.map(({ id, label: chip }) => {
                     const text = chip ?? __('Reference unavailable');
 
                     return (
-                        <span key={id} className="inline-flex max-w-full items-center gap-2 rounded-md border border-primary/20 bg-primary/[.07] px-2.5 py-2 text-[10px] text-[#c5d9b7]">
+                        <span key={id} className="inline-flex max-w-full items-center gap-2 rounded-md border border-primary/20 bg-primary/[.07] px-2.5 py-2 text-xs text-muted">
                             <span className="min-w-0 break-words">{text}</span>
                             {extra?.(id, text)}
-                            <button type="button" aria-label={__('Unlink :name', { name: text })} onClick={() => onRemove(id)} className="shrink-0 text-[#9cb78b] hover:text-primary">
+                            <button type="button" aria-label={__('Unlink :name', { name: text })} onClick={() => onRemove(id)} className="shrink-0 text-primary hover:text-primary">
                                 <X size={12} />
                             </button>
                         </span>
                     );
                 })}
-                <button type="button" onClick={onAdd} className={`${secondary} !min-h-8 border-dashed !px-2.5 !py-1.5 !text-[10px]`}>
+                <button type="button" onClick={onAdd} className={`${secondary} !min-h-8 border-dashed !px-2.5 !py-1.5 !text-xs`}>
                     <Plus size={12} /> {addLabel}
                 </button>
             </div>

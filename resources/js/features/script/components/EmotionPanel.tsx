@@ -137,31 +137,31 @@ export default function EmotionPanel({ projectId, sceneId, sceneCode, dirty, cat
         <aside
             role="dialog"
             aria-label={__('Emotional analysis of :scene', { scene: sceneCode })}
-            className="fixed inset-y-0 right-0 z-40 flex w-full max-w-[400px] flex-col border-l border-border bg-[#151d16] text-foreground shadow-[0_0_45px_rgba(0,0,0,.45)]"
+            className="fixed inset-y-0 right-0 z-40 flex w-full max-w-[400px] flex-col border-l border-border bg-surface text-foreground shadow-[0_0_45px_rgba(0,0,0,.45)]"
         >
             <div className="flex items-start justify-between gap-3 border-b border-border px-5 py-4">
                 <div>
-                    <p className="font-mono text-[8px] tracking-[.17em] text-[#9fb592]">{__('EMOTIONAL ANALYSIS')} · {sceneCode}</p>
+                    <p className="font-mono text-xs text-muted">{__('EMOTIONAL ANALYSIS')} · {sceneCode}</p>
                     <h2 className="mt-1 flex items-center gap-2 font-display text-lg">
                         <HeartPulse size={17} className="text-primary" /> {__('How this scene feels')}
                     </h2>
                 </div>
-                <button type="button" onClick={onClose} aria-label={__('Close panel')} className="rounded p-2 text-[#aebea3] hover:bg-white/5">
+                <button type="button" onClick={onClose} aria-label={__('Close panel')} className="rounded p-2 text-muted hover:bg-surface-2">
                     <X size={17} />
                 </button>
             </div>
 
             <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border px-5 py-3">
-                <label className="flex cursor-pointer items-center gap-2 text-[10px] text-[#a9bb9d]">
-                    <input type="checkbox" checked={technical} onChange={toggleTechnical} className="accent-[#c5ec95]" />
+                <label className="flex cursor-pointer items-center gap-2 text-xs text-muted">
+                    <input type="checkbox" checked={technical} onChange={toggleTechnical} className="accent-primary" />
                     {__('Technical mode')}
                 </label>
                 {analysis ? (
-                    <button type="button" disabled={busy} onClick={() => analyze(true)} className={`${secondary} !min-h-9 !text-[10px]`}>
+                    <button type="button" disabled={busy} onClick={() => analyze(true)} className={`${secondary} !min-h-9 !text-xs`}>
                         <RefreshCw size={13} /> {__('Reanalyze')}
                     </button>
                 ) : (
-                    <button type="button" disabled={busy} onClick={() => analyze(false)} className={`${primarySm} !min-h-9 !py-2 !text-[10px]`}>
+                    <button type="button" disabled={busy} onClick={() => analyze(false)} className={`${primarySm} !min-h-9 !py-2 !text-xs`}>
                         <Sparkles size={13} /> {__('Analyze emotions')}
                     </button>
                 )}
@@ -170,18 +170,18 @@ export default function EmotionPanel({ projectId, sceneId, sceneCode, dirty, cat
             <div className="min-h-0 flex-1 space-y-5 overflow-y-auto px-5 py-5">
                 {busy && (
                     <p role="status" className="flex items-center gap-2 text-xs text-primary">
-                        <LoaderCircle size={14} className="animate-spin" /> {status === 'analyzing' ? __('Reading the scene…') : __('Loading…')}
+                        <LoaderCircle size={14} className="animate-spin motion-reduce:animate-none" /> {status === 'analyzing' ? __('Reading the scene…') : __('Loading…')}
                     </p>
                 )}
                 {warning && (
-                    <p role="alert" className="rounded-md border border-amber-300/30 bg-amber-300/10 p-3 text-[11px] leading-5 text-[#f1d79a]">
+                    <p role="alert" className="rounded-md border border-primary/30 bg-primary/10 p-3 text-xs leading-5 text-warning">
                         {warning}
                     </p>
                 )}
                 <FormError error={error} />
 
                 {!busy && !analysis && !error && (
-                    <p className="text-xs leading-6 text-[#a6b99a]">
+                    <p className="text-xs leading-6 text-muted">
                         {__('No analysis yet for this scene. Press Analyze emotions: the AI reads the saved version with its characters, location and world rules.')}
                     </p>
                 )}
@@ -189,7 +189,7 @@ export default function EmotionPanel({ projectId, sceneId, sceneCode, dirty, cat
                 {analysis && <AnalysisView projectId={projectId} analysis={analysis} catalog={catalog} technical={technical} dateLocale={dateLocale} onUseSuggestion={onUseSuggestion} />}
             </div>
 
-            <p className="border-t border-border px-5 py-3 text-[9px] leading-5 text-[#93a886]">{__('The AI only suggests: it never changes your script.')}</p>
+            <p className="border-t border-border px-5 py-3 text-xs leading-5 text-subtle">{__('The AI only suggests: it never changes your script.')}</p>
         </aside>
     );
 }
@@ -213,27 +213,27 @@ function AnalysisView({
 
     return (
         <>
-            <div className="space-y-2 text-[10px] leading-5 text-[#a2b697]">
+            <div className="space-y-2 text-xs leading-5 text-muted">
                 {analysis.created_at && <p>{__('Last analysis: :time', { time: new Date(analysis.created_at).toLocaleString(dateLocale) })}</p>}
                 {analysis.stale && <Note>{__('The scene or its Bible sheets changed after this analysis. Reanalyze to update it.')}</Note>}
                 {analysis.degraded && <Note>{__('AI is busy; showing a basic keyword analysis.')}</Note>}
                 {analysis.source === 'keywords' && !analysis.degraded && <Note>{__('Basic keyword analysis: the AI connection is not configured.')}</Note>}
                 {analysis.truncated && <Note>{__('The scene is long: only its first part was analyzed.')}</Note>}
-                {technical && analysis.model && <p className="font-mono text-[9px]">{analysis.model}</p>}
+                {technical && analysis.model && <p className="font-mono text-xs">{analysis.model}</p>}
             </div>
 
             <section className="space-y-3 rounded-lg border border-border bg-background/40 p-4">
                 <EmotionChip emotion={scene.emotion} catalog={catalog} />
                 <NarrativeLine labels={scene.labels} vad={scene.vad} technical={technical} />
-                {scene.summary && <p className="text-xs leading-6 text-[#d3dfca]">{scene.summary}</p>}
+                {scene.summary && <p className="text-xs leading-6 text-foreground">{scene.summary}</p>}
                 <Evidence text={scene.evidence} />
-                {scene.change.alert && <p className="text-[10px] text-[#a2b697]">{previousLine(scene.change, true)}</p>}
+                {scene.change.alert && <p className="text-xs text-muted">{previousLine(scene.change, true)}</p>}
                 <ChangeAlert change={scene.change} />
             </section>
 
             {analysis.characters.length > 0 && (
                 <section>
-                    <h3 className="mb-3 text-[11px] font-medium text-[#dce6d5]">{__('Characters')}</h3>
+                    <h3 className="mb-3 text-xs font-medium text-foreground">{__('Characters')}</h3>
                     <div className="space-y-3">
                         {analysis.characters.map((character) => (
                             <CharacterCard key={character.character_id} character={character} catalog={catalog} technical={technical} />
@@ -244,11 +244,11 @@ function AnalysisView({
 
             {analysis.inconsistencies.length > 0 && (
                 <section>
-                    <h3 className="mb-3 text-[11px] font-medium text-[#dce6d5]">{__('Inconsistencies with the lore')}</h3>
+                    <h3 className="mb-3 text-xs font-medium text-foreground">{__('Inconsistencies with the lore')}</h3>
                     <ul className="space-y-3">
                         {analysis.inconsistencies.map((item, index) => (
-                            <li key={index} className="rounded-lg border border-border p-3 text-[11px] leading-5">
-                                <p className="flex flex-wrap items-center gap-2 text-[10px] text-[#a2b697]">
+                            <li key={index} className="rounded-lg border border-border p-3 text-xs leading-5">
+                                <p className="flex flex-wrap items-center gap-2 text-xs text-muted">
                                     <span className="rounded border border-border px-1.5 py-0.5">{__('Severity: :level', { level: severityLabel(item.severity) })}</span>
                                     {item.url ? (
                                         <Link href={item.url} className="text-primary underline">
@@ -258,7 +258,7 @@ function AnalysisView({
                                         <span>{item.contradicts}</span>
                                     )}
                                 </p>
-                                <p className="mt-2 text-[#d3dfca]">{item.explanation}</p>
+                                <p className="mt-2 text-foreground">{item.explanation}</p>
                                 <Evidence text={item.fragment} />
                             </li>
                         ))}
@@ -268,20 +268,20 @@ function AnalysisView({
 
             {analysis.suggestions.length > 0 && (
                 <section>
-                    <h3 className="mb-3 text-[11px] font-medium text-[#dce6d5]">{__('Suggestions')}</h3>
+                    <h3 className="mb-3 text-xs font-medium text-foreground">{__('Suggestions')}</h3>
                     <ul className="space-y-3">
                         {analysis.suggestions.map((suggestion, index) => (
-                            <li key={index} className="rounded-lg border border-dashed border-border p-3 text-[11px] leading-5">
-                                <span className="font-mono text-[8px] tracking-wider text-primary">{suggestionKindLabel(suggestion.kind).toLocaleUpperCase()}</span>
-                                <p className="mt-1 text-[#d3dfca]">{suggestion.text}</p>
-                                {suggestion.why && <p className="mt-1 text-[10px] text-[#a2b697]">{suggestion.why}</p>}
+                            <li key={index} className="rounded-lg border border-dashed border-border p-3 text-xs leading-5">
+                                <span className="font-mono text-xs text-primary">{suggestionKindLabel(suggestion.kind).toLocaleUpperCase()}</span>
+                                <p className="mt-1 text-foreground">{suggestion.text}</p>
+                                {suggestion.why && <p className="mt-1 text-xs text-muted">{suggestion.why}</p>}
                                 <div className="mt-2 flex items-center justify-end gap-3">
                                     {onUseSuggestion && (
                                         <button
                                             type="button"
                                             onClick={() => onUseSuggestion(suggestion.why ? `${suggestion.text} (${suggestion.why})` : suggestion.text)}
                                             title={__('Open Refine with AI using this suggestion as the instruction')}
-                                            className="inline-flex items-center gap-1 text-[10px] text-primary hover:underline"
+                                            className="inline-flex items-center gap-1 text-xs text-primary hover:underline"
                                         >
                                             <Wand2 size={12} /> {__('Use as a base')}
                                         </button>
@@ -314,9 +314,9 @@ function CharacterCard({ character, catalog, technical }: { character: Character
             </div>
             <NarrativeLine labels={character.labels} vad={character.vad} technical={technical} withControl />
             <Evidence text={character.evidence} />
-            <p className="text-[10px] text-[#a2b697]">{previousLine(character.change, false)}</p>
+            <p className="text-xs text-muted">{previousLine(character.change, false)}</p>
             {character.out_of_character && (
-                <div className="rounded-md border border-red-300/30 bg-red-400/10 p-2.5 text-[10px] leading-5 text-[#f3baa5]">
+                <div className="rounded-md border border-danger/30 bg-danger/10 p-2.5 text-xs leading-5 text-danger">
                     <strong className="font-medium">{__('Out of character')}</strong>
                     {character.out_of_character_reason && <span className="mt-0.5 block">{character.out_of_character_reason}</span>}
                 </div>
@@ -342,5 +342,5 @@ function previousLine(change: EmotionChange, scene: boolean): string {
 }
 
 function Note({ children }: { children: string }) {
-    return <p className="rounded-md border border-amber-300/25 bg-amber-300/5 p-2.5 text-[#e7d6a4]">{children}</p>;
+    return <p className="rounded-md border border-primary/25 bg-primary/10 p-2.5 text-warning">{children}</p>;
 }

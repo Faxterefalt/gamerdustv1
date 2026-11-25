@@ -33,7 +33,7 @@ interface DissonanceDialogProps {
     onClose: () => void;
 }
 
-const SEVERITY_CLASS = { low: 'border-teal-800 text-teal-200', medium: 'border-amber-800 text-amber-200', high: 'border-rose-800 text-rose-200' } as const;
+const SEVERITY_CLASS = { low: 'border-success/50 text-success', medium: 'border-primary/50 text-primary', high: 'border-danger/50 text-danger' } as const;
 
 // Claves de traducción del tipo de elemento contrastado.
 const ELEMENT_LABEL = { scene: 'Scene', character: 'Character', rule: 'World rule' } as const;
@@ -62,10 +62,10 @@ export default function DissonanceDialog({ projectId, dirty, onSelectMechanic, o
 
     return (
         <Modal title={__('Detect dissonances')} wide onClose={() => !pending && onClose()}>
-            <p className="mb-4 text-xs leading-6 text-[#a9bb9d]">
+            <p className="mb-4 text-xs leading-6 text-muted">
                 {__('The AI compares what each mechanic lets the player do with the scenes, characters and world rules linked to it, and points out where they clash. It only suggests: nothing is changed.')}
             </p>
-            {dirty && <p className="mb-3 text-[10px] text-amber-200">{__('You have unsaved changes: the review uses the saved mechanics.')}</p>}
+            {dirty && <p className="mb-3 text-xs text-primary">{__('You have unsaved changes: the review uses the saved mechanics.')}</p>}
 
             <button type="button" disabled={pending} onClick={() => void review()} className={`${primarySm} w-full`}>
                 <Pending pending={pending}>
@@ -76,33 +76,33 @@ export default function DissonanceDialog({ projectId, dirty, onSelectMechanic, o
 
             {result && (
                 <div className="mt-5 space-y-3">
-                    {result.summary && <p className="text-xs leading-6 text-[#d3dfca]">{result.summary}</p>}
-                    {result.reviewed.length > 0 && !result.findings.length && <p className="text-xs text-[#a9bb9d]">{__('No dissonances were found in the reviewed mechanics.')}</p>}
+                    {result.summary && <p className="text-xs leading-6 text-foreground">{result.summary}</p>}
+                    {result.reviewed.length > 0 && !result.findings.length && <p className="text-xs text-muted">{__('No dissonances were found in the reviewed mechanics.')}</p>}
                     <ul className="space-y-2">
                         {result.findings.map((finding, index) => (
                             <li key={index} className="rounded-md border border-border p-3 text-xs leading-6">
                                 <div className="flex flex-wrap items-center gap-2">
-                                    <span className={`rounded border px-1.5 text-[10px] ${SEVERITY_CLASS[finding.severity]}`}>{severityLabel(finding.severity)}</span>
+                                    <span className={`rounded border px-1.5 text-xs ${SEVERITY_CLASS[finding.severity]}`}>{severityLabel(finding.severity)}</span>
                                     <button type="button" onClick={() => onSelectMechanic(finding.mechanic_id)} className="font-medium text-primary hover:underline">
                                         {finding.mechanic_title}
                                     </button>
                                     {finding.element && (
                                         <>
-                                            <span className="text-[#a9bb9d]">↔</span>
-                                            <Link href={finding.element.url} className="inline-flex items-center gap-1 text-[#cfe0c4] hover:underline">
+                                            <span className="text-muted">↔</span>
+                                            <Link href={finding.element.url} className="inline-flex items-center gap-1 text-foreground hover:underline">
                                                 {__(ELEMENT_LABEL[finding.element.type])}: {finding.element.label} <ArrowUpRight size={11} />
                                             </Link>
                                         </>
                                     )}
                                 </div>
-                                <p className="mt-1.5 text-[#dce6d5]">{finding.conflict}</p>
-                                {finding.evidence && <p className="mt-1 border-l-2 border-primary/40 pl-2 font-mono text-[10px] italic text-[#b6c6aa]">{finding.evidence}</p>}
+                                <p className="mt-1.5 text-foreground">{finding.conflict}</p>
+                                {finding.evidence && <p className="mt-1 border-l-2 border-primary/40 pl-2 text-xs italic text-muted">{finding.evidence}</p>}
                             </li>
                         ))}
                     </ul>
                     {result.insufficient.length > 0 && (
-                        <div className="rounded-md border border-dashed border-border p-3 text-[11px] leading-6 text-[#b4c4a8]">
-                            <p className="font-medium text-[#dce6d5]">{__('Insufficient context')}</p>
+                        <div className="rounded-md border border-dashed border-border p-3 text-xs leading-6 text-muted">
+                            <p className="font-medium text-foreground">{__('Insufficient context')}</p>
                             <p>{__('These mechanics have no linked scenes or characters, so they could not be compared with the story:')}</p>
                             <p className="mt-1 flex flex-wrap gap-1.5">
                                 {result.insufficient.map((mechanic) => (
@@ -114,7 +114,7 @@ export default function DissonanceDialog({ projectId, dirty, onSelectMechanic, o
                         </div>
                     )}
                     {result.generation_id && (
-                        <div className="flex items-center justify-end gap-2 text-[10px] text-[#a9bb9d]">
+                        <div className="flex items-center justify-end gap-2 text-xs text-muted">
                             {__('Was this review useful?')}
                             <FeedbackButtons key={result.generation_id} projectId={projectId} target={{ ai_generation_id: result.generation_id }} />
                         </div>

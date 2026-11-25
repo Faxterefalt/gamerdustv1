@@ -12,9 +12,9 @@ const labels: Record<string, string> = {
 };
 
 const classes: Record<string, string> = {
-    low: 'border-emerald-700 bg-emerald-950/60 text-emerald-200',
-    medium: 'border-amber-700 bg-amber-950/60 text-amber-200',
-    high: 'border-rose-700 bg-rose-950/60 text-rose-200',
+    low: 'border-success/50 bg-success/10 text-success',
+    medium: 'border-primary/50 bg-primary/10 text-primary',
+    high: 'border-danger/50 bg-danger/10 text-danger',
 };
 
 export default function CostEstimationBadge({ level }: CostEstimationBadgeProps) {

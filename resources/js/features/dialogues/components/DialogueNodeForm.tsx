@@ -56,7 +56,7 @@ export default function DialogueNodeForm({ projectId, dialogue, scenes, characte
     };
 
     return (
-        <form onSubmit={submit} className="space-y-5 border border-zinc-800 bg-zinc-900 p-5">
+        <form onSubmit={submit} className="space-y-5 border border-border bg-surface p-5">
             <div className="grid gap-4 md:grid-cols-3">
                 <Field label={__('Node key')} error={errors.node_key}>
                     <input value={data.node_key} onChange={(event) => setData('node_key', event.target.value)} className={inputClass} />
@@ -107,20 +107,20 @@ export default function DialogueNodeForm({ projectId, dialogue, scenes, characte
 
             <section className="space-y-3">
                 <div className="flex items-center justify-between gap-4">
-                    <h2 className="font-semibold text-white">{__('Player options')}</h2>
+                    <h2 className="font-semibold text-foreground">{__('Player options')}</h2>
                     <button
                         type="button"
                         onClick={() => setData('options', [...data.options, { player_option: '', next_dialogue_node_id: '', consequence: '', required_condition: '' }])}
-                        className="border border-zinc-700 px-3 py-2 text-sm hover:border-amber-500"
+                        className="border border-border-strong px-3 py-2 text-sm hover:border-primary"
                     >
                         {__('Add option')}
                     </button>
                 </div>
 
                 {data.options.map((option, index) => (
-                    <div key={index} className="space-y-3 border border-zinc-800 bg-zinc-950 p-3">
+                    <div key={index} className="space-y-3 border border-border bg-background p-3">
                         <div className="flex justify-end">
-                            <button type="button" onClick={() => removeOption(index)} className="text-sm text-rose-300 hover:text-rose-100">
+                            <button type="button" onClick={() => removeOption(index)} className="text-sm text-danger hover:text-danger">
                                 {__('Remove')}
                             </button>
                         </div>
@@ -153,7 +153,7 @@ export default function DialogueNodeForm({ projectId, dialogue, scenes, characte
                 ))}
             </section>
 
-            <button type="submit" disabled={processing} className="border border-amber-600 px-4 py-2 text-sm text-amber-100 hover:bg-amber-950 disabled:opacity-50">
+            <button type="submit" disabled={processing} className="border border-primary px-4 py-2 text-sm text-foreground hover:bg-primary/10 disabled:opacity-50">
                 {submitLabel}
             </button>
         </form>
@@ -169,14 +169,14 @@ function normalizeOptions(options: DialogueOption[]): DialogueOptionForm[] {
     }));
 }
 
-const inputClass = 'w-full border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm text-zinc-100 outline-none focus:border-amber-500';
+const inputClass = 'w-full border border-border-strong bg-background px-3 py-2 text-sm text-foreground focus:border-primary';
 
 function Field({ label, error, children }: { label: string; error?: string; children: ReactNode }) {
     return (
         <label className="block">
-            <span className="mb-2 block text-sm font-medium text-zinc-200">{label}</span>
+            <span className="mb-2 block text-sm font-medium text-foreground">{label}</span>
             {children}
-            {error && <span className="mt-1 block text-sm text-rose-300">{error}</span>}
+            {error && <span className="mt-1 block text-sm text-danger">{error}</span>}
         </label>
     );
 }

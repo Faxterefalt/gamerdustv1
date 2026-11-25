@@ -15,34 +15,34 @@ export default function DialogueNodeCard({ dialogue }: DialogueNodeCardProps) {
     };
 
     return (
-        <article className="border border-zinc-800 bg-zinc-900 p-4">
+        <article className="border border-border bg-surface p-4">
             <div className="flex items-start justify-between gap-4">
                 <div>
-                    <h3 className="font-semibold text-white">{dialogue.title || dialogue.node_key}</h3>
-                    <p className="text-sm text-zinc-400">
+                    <h3 className="font-semibold text-foreground">{dialogue.title || dialogue.node_key}</h3>
+                    <p className="text-sm text-muted">
                         {dialogue.character?.name ?? __('No character')} {dialogue.scene ? `- ${dialogue.scene.title}` : ''}
                     </p>
                 </div>
-                <span className="border border-fuchsia-800 bg-fuchsia-950/40 px-2 py-1 text-xs text-fuchsia-200">{dialogueTypeLabel(dialogue.dialogue_type)}</span>
+                <span className="border border-ember/50 bg-ember/10 px-2 py-1 text-xs text-ember">{dialogueTypeLabel(dialogue.dialogue_type)}</span>
             </div>
-            <p className="mt-3 whitespace-pre-wrap text-sm text-zinc-300">{dialogue.text}</p>
+            <p className="mt-3 whitespace-pre-wrap text-sm text-muted">{dialogue.text}</p>
             {dialogue.options && dialogue.options.length > 0 && (
-                <div className="mt-3 space-y-2 text-sm text-zinc-300">
+                <div className="mt-3 space-y-2 text-sm text-muted">
                     {dialogue.options.map((option, index) => (
-                        <div key={`${dialogue.id}-${index}`} className="border-l border-zinc-700 pl-3">
+                        <div key={`${dialogue.id}-${index}`} className="border-l border-border-strong pl-3">
                             {option.player_option}
                         </div>
                     ))}
                 </div>
             )}
             <div className="mt-4 flex gap-2">
-                <Link href={`/projects/${dialogue.project_id}/branching?node=${dialogue.id}`} className="border border-fuchsia-800 px-3 py-2 text-sm text-fuchsia-200 hover:bg-fuchsia-950">
+                <Link href={`/projects/${dialogue.project_id}/branching?node=${dialogue.id}`} className="border border-ember/50 px-3 py-2 text-sm text-ember hover:bg-ember/10">
                     {__('View on map')}
                 </Link>
-                <Link href={`/projects/${dialogue.project_id}/dialogues/${dialogue.id}/edit`} className="border border-zinc-700 px-3 py-2 text-sm hover:border-amber-500">
+                <Link href={`/projects/${dialogue.project_id}/dialogues/${dialogue.id}/edit`} className="border border-border-strong px-3 py-2 text-sm hover:border-primary">
                     {__('Edit')}
                 </Link>
-                <button type="button" onClick={destroy} className="border border-rose-800 px-3 py-2 text-sm text-rose-200 hover:bg-rose-950">
+                <button type="button" onClick={destroy} className="border border-danger/50 px-3 py-2 text-sm text-danger hover:bg-danger/10">
                     {__('Delete')}
                 </button>
             </div>

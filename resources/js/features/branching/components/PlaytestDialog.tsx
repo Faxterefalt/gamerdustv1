@@ -33,24 +33,24 @@ export default function PlaytestDialog({ projectId, startNodeId, onClose }: Play
                 event.preventDefault();
                 onClose();
             }}
-            className="fixed inset-0 m-auto h-[92dvh] w-[calc(100%-32px)] max-w-6xl overflow-hidden rounded-xl border border-zinc-700 bg-zinc-950 p-0 text-zinc-100 shadow-2xl backdrop:bg-black/75"
+            className="fixed inset-0 m-auto h-[92dvh] w-[calc(100%-32px)] max-w-6xl overflow-hidden rounded-xl border border-border-strong bg-background p-0 text-foreground backdrop:bg-scrim"
         >
             <div className="flex h-full flex-col">
-                <div className="flex items-center justify-between gap-3 border-b border-zinc-800 px-4 py-2.5">
-                    <p className="text-xs text-zinc-400">{__('Test run of the saved graph. Choices and variables are not saved.')}</p>
+                <div className="flex items-center justify-between gap-3 border-b border-border px-4 py-2.5">
+                    <p className="text-xs text-muted">{__('Test run of the saved graph. Choices and variables are not saved.')}</p>
                     <div className="flex items-center gap-1">
-                        <button type="button" onClick={() => setRun((value) => value + 1)} className="flex items-center gap-1.5 rounded px-2 py-1.5 text-xs hover:bg-white/5">
+                        <button type="button" onClick={() => setRun((value) => value + 1)} className="flex items-center gap-1.5 rounded px-2 py-1.5 text-xs hover:bg-surface-2">
                             <RotateCcw size={13} /> {__('Reload')}
                         </button>
-                        <a href={url} target="_blank" rel="noopener" className="flex items-center gap-1.5 rounded px-2 py-1.5 text-xs hover:bg-white/5">
+                        <a href={url} target="_blank" rel="noopener" className="flex items-center gap-1.5 rounded px-2 py-1.5 text-xs hover:bg-surface-2">
                             <ExternalLink size={13} /> {__('Open in a new tab')}
                         </a>
-                        <button type="button" onClick={onClose} aria-label={__('Close window')} className="rounded p-1.5 hover:bg-white/5">
+                        <button type="button" onClick={onClose} aria-label={__('Close window')} className="rounded p-1.5 hover:bg-surface-2">
                             <X size={16} />
                         </button>
                     </div>
                 </div>
-                <iframe key={run} src={url} title={__('Test run')} className="min-h-0 flex-1 border-0 bg-[#101411]" />
+                <iframe key={run} src={url} title={__('Test run')} className="min-h-0 flex-1 border-0 bg-background" />
             </div>
         </dialog>
     );

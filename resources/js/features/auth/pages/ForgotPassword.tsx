@@ -21,8 +21,8 @@ export default function ForgotPassword() {
                     {__('Send reset link')}
                 </button>
             </form>
-            <div className="mt-5 text-sm text-zinc-400">
-                <Link href="/login" className="text-amber-200 hover:text-amber-100">
+            <div className="mt-5 text-sm text-muted">
+                <Link href="/login" className="text-primary hover:text-foreground">
                     {__('Back to log in')}
                 </Link>
             </div>

@@ -13,7 +13,7 @@ export default function Create({ project }: LoreCreateProps) {
         <ProjectLayout
             title={__('New lore entry')}
             actions={
-                <Link href={`/projects/${project.id}/lore`} className="border border-zinc-700 px-4 py-2 text-sm hover:border-amber-500">
+                <Link href={`/projects/${project.id}/lore`} className="border border-border-strong px-4 py-2 text-sm hover:border-primary">
                     {__('Back')}
                 </Link>
             }

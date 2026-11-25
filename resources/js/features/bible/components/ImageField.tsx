@@ -53,7 +53,7 @@ export default function ImageField({
     return (
         <div>
             <div className="flex aspect-[4/5] items-center justify-center overflow-hidden rounded-lg border border-border bg-background">
-                {src ? <img src={src} alt={alt} className="h-full w-full object-cover" /> : <ImagePlus size={30} strokeWidth={1.25} className="text-[#6f8566]" aria-hidden="true" />}
+                {src ? <img src={src} alt={alt} className="h-full w-full object-cover" /> : <ImagePlus size={30} strokeWidth={1.25} className="text-subtle" aria-hidden="true" />}
             </div>
             <label className={`${secondary} mt-3 w-full cursor-pointer has-focus-visible:outline-2 has-focus-visible:outline-primary`}>
                 <Upload size={14} />
@@ -61,11 +61,11 @@ export default function ImageField({
                 <input type="file" accept="image/jpeg,image/png,image/webp" onChange={pick} className="sr-only" />
             </label>
             {src && (
-                <button type="button" onClick={onRemove} className="mt-2 w-full text-[10px] text-[#a9ba9e] hover:text-rose-300">
+                <button type="button" onClick={onRemove} className="mt-2 w-full text-xs text-muted hover:text-danger">
                     {__('Remove image')}
                 </button>
             )}
-            <p className="mt-2 text-[9px] leading-5 text-[#98ae8a]">{__('Concept art or reference. JPG, PNG or WebP up to 5 MB.')}</p>
+            <p className="mt-2 text-xs leading-5 text-muted">{__('Concept art or reference. JPG, PNG or WebP up to 5 MB.')}</p>
         </div>
     );
 }

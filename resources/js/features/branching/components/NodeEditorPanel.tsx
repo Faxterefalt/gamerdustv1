@@ -36,14 +36,14 @@ interface NodeEditorPanelProps {
     emotionCatalog: EmotionCatalog;
 }
 
-const inputClass = 'nodrag nowheel w-full border border-zinc-700 bg-zinc-950 px-2 py-1.5 text-sm text-white outline-none focus:border-amber-500';
+const inputClass = 'nodrag nowheel w-full border border-border-strong bg-background px-2 py-1.5 text-sm text-foreground focus:border-primary';
 
 function Field({ label, error, children }: { label: string; error?: string; children: ReactNode }) {
     return (
-        <label className="block space-y-1 text-xs text-zinc-400">
+        <label className="block space-y-1 text-xs text-muted">
             <span>{label}</span>
             {children}
-            {error && <span className="block text-rose-300">{error}</span>}
+            {error && <span className="block text-danger">{error}</span>}
         </label>
     );
 }
@@ -79,56 +79,56 @@ export default function NodeEditorPanel({
     const incoming = graph.edges.filter((edge) => edge.target === node.id && edge.source !== node.id);
 
     return (
-        <aside className="flex h-full w-full flex-col overflow-y-auto border-l border-zinc-800 bg-zinc-900 text-zinc-200">
-            <div className="sticky top-0 z-10 flex items-start justify-between gap-2 border-b border-zinc-800 bg-zinc-900 p-4">
+        <aside className="flex h-full w-full flex-col overflow-y-auto border-l border-border bg-surface text-foreground">
+            <div className="sticky top-0 z-10 flex items-start justify-between gap-2 border-b border-border bg-surface p-4">
                 <div className="min-w-0">
-                    <p className="flex items-center gap-1.5 text-xs text-zinc-500">
+                    <p className="flex items-center gap-1.5 text-xs text-subtle">
                         {node.is_start && (
-                            <span className="flex items-center gap-1 text-amber-400" title={node.start_marked ? undefined : __('No node is marked as start: the oldest one is used.')}>
+                            <span className="flex items-center gap-1 text-primary" title={node.start_marked ? undefined : __('No node is marked as start: the oldest one is used.')}>
                                 <Flag size={12} /> {__('Start')}
                             </span>
                         )}
-                        {node.is_ending && <span className="text-emerald-400">{__('Ending')}</span>}
+                        {node.is_ending && <span className="text-success">{__('Ending')}</span>}
                         <code className="truncate">{node.node_key}</code>
                     </p>
-                    <h2 className="truncate font-semibold text-white">{node.display_title}</h2>
+                    <h2 className="truncate font-semibold text-foreground">{node.display_title}</h2>
                 </div>
-                <button type="button" onClick={onClose} aria-label={__('Close panel')} className="p-1 text-zinc-400 hover:text-white">
+                <button type="button" onClick={onClose} aria-label={__('Close panel')} className="p-1 text-muted hover:text-foreground">
                     <X size={16} />
                 </button>
             </div>
 
             <div className="space-y-4 p-4">
                 {lockHolder && (
-                    <p role="status" className="flex items-start gap-2 border border-amber-700/60 bg-amber-950/40 p-2 text-xs text-amber-100">
+                    <p role="status" className="flex items-start gap-2 border border-primary/50 bg-primary/10 p-2 text-xs text-foreground">
                         <UserRound size={14} className="mt-0.5 shrink-0" />
                         {__(':name is editing this node right now. Changes are saved automatically: the last one to write wins.', { name: lockHolder.name })}
                     </p>
                 )}
                 {error && !error.optionId && (error.nodeId === node.id || error.nodeId === undefined) && (
-                    <p className="border border-rose-800 bg-rose-950/50 p-2 text-xs text-rose-200">{error.message}</p>
+                    <p className="border border-danger/50 bg-danger/10 p-2 text-xs text-danger">{error.message}</p>
                 )}
 
                 {warnings.length > 0 && (
                     <ul className="space-y-1 text-xs">
                         {warnings.map((warning, index) => (
-                            <li key={`${warning.code}-${index}`} className={warning.severity === 'error' ? 'text-rose-300' : warning.severity === 'warning' ? 'text-amber-300' : 'text-zinc-500'}>
+                            <li key={`${warning.code}-${index}`} className={warning.severity === 'error' ? 'text-danger' : warning.severity === 'warning' ? 'text-primary' : 'text-subtle'}>
                                 • {warning.message}
                             </li>
                         ))}
                     </ul>
                 )}
 
-                <div className="flex flex-wrap gap-x-5 gap-y-2 text-xs text-zinc-300">
+                <div className="flex flex-wrap gap-x-5 gap-y-2 text-xs text-muted">
                     <label className="flex items-center gap-2" title={__('Only one node can be the start. Without a marked start, the oldest node is used.')}>
-                        <input type="checkbox" className="nodrag accent-amber-500" checked={node.start_marked} onChange={(event) => onEdit({ is_start: event.target.checked }, true)} />
+                        <input type="checkbox" className="nodrag accent-primary" checked={node.start_marked} onChange={(event) => onEdit({ is_start: event.target.checked }, true)} />
                         {__('Start node')}
                     </label>
                     <label className="flex items-center gap-2" title={__('An ending does not warn about missing outgoing options.')}>
-                        <input type="checkbox" className="nodrag accent-amber-500" checked={node.is_ending} onChange={(event) => onEdit({ is_ending: event.target.checked }, true)} />
+                        <input type="checkbox" className="nodrag accent-primary" checked={node.is_ending} onChange={(event) => onEdit({ is_ending: event.target.checked }, true)} />
                         {__('Ending')}
                     </label>
-                    <button type="button" onClick={onPlayFromHere} className="ml-auto flex items-center gap-1 text-amber-300 hover:text-amber-100">
+                    <button type="button" onClick={onPlayFromHere} className="ml-auto flex items-center gap-1 text-primary hover:text-foreground">
                         <Play size={12} /> {__('Play from here')}
                     </button>
                 </div>
@@ -180,33 +180,33 @@ export default function NodeEditorPanel({
                     <textarea className={`${inputClass} resize-y`} rows={2} value={node.trigger_condition ?? ''} onChange={(event) => onEdit({ trigger_condition: event.target.value })} />
                 </Field>
 
-                <section className="space-y-2 border-t border-zinc-800 pt-4">
+                <section className="space-y-2 border-t border-border pt-4">
                     <div className="flex items-center justify-between">
-                        <h3 className="flex items-center gap-1.5 text-sm font-semibold text-white">
+                        <h3 className="flex items-center gap-1.5 text-sm font-semibold text-foreground">
                             <BookOpen size={14} /> {__('Narrative Bible')} ({node.lore_entry_ids.length})
                         </h3>
-                        <button type="button" onClick={() => setLinking(true)} className="flex items-center gap-1 border border-zinc-700 px-2 py-1 text-xs hover:border-amber-500">
+                        <button type="button" onClick={() => setLinking(true)} className="flex items-center gap-1 border border-border-strong px-2 py-1 text-xs hover:border-primary">
                             <Plus size={12} /> {__('Link')}
                         </button>
                     </div>
-                    {nodeError('lore_entry_ids') && <p className="text-xs text-rose-300">{nodeError('lore_entry_ids')}</p>}
+                    {nodeError('lore_entry_ids') && <p className="text-xs text-danger">{nodeError('lore_entry_ids')}</p>}
                     <div className="flex flex-wrap gap-1.5">
                         {node.lore_entry_ids.map((id) => (
-                            <span key={id} className="flex items-center gap-1 border border-zinc-700 px-1.5 py-0.5 text-xs text-zinc-300">
+                            <span key={id} className="flex items-center gap-1 border border-border-strong px-1.5 py-0.5 text-xs text-muted">
                                 {loreTitles.get(id) ?? `#${id}`}
-                                <button type="button" aria-label={__('Unlink :name', { name: loreTitles.get(id) ?? id })} onClick={() => toggleLore(id, false)} className="text-zinc-500 hover:text-rose-300">
+                                <button type="button" aria-label={__('Unlink :name', { name: loreTitles.get(id) ?? id })} onClick={() => toggleLore(id, false)} className="text-subtle hover:text-danger">
                                     <X size={11} />
                                 </button>
                             </span>
                         ))}
-                        {!node.lore_entry_ids.length && <p className="text-xs text-zinc-500">{__('Link the places, rules or lore this passage depends on.')}</p>}
+                        {!node.lore_entry_ids.length && <p className="text-xs text-subtle">{__('Link the places, rules or lore this passage depends on.')}</p>}
                     </div>
                 </section>
 
-                <section className="space-y-3 border-t border-zinc-800 pt-4">
+                <section className="space-y-3 border-t border-border pt-4">
                     <div className="flex items-center justify-between">
-                        <h3 className="text-sm font-semibold text-white">{__('Options')} ({node.options.length})</h3>
-                        <button type="button" onClick={onCreateOption} className="flex items-center gap-1 border border-zinc-700 px-2 py-1 text-xs hover:border-amber-500">
+                        <h3 className="text-sm font-semibold text-foreground">{__('Options')} ({node.options.length})</h3>
+                        <button type="button" onClick={onCreateOption} className="flex items-center gap-1 border border-border-strong px-2 py-1 text-xs hover:border-primary">
                             <Plus size={12} /> {__('Option')}
                         </button>
                     </div>
@@ -215,11 +215,11 @@ export default function NodeEditorPanel({
                         const option = displayOption(raw);
 
                         return (
-                            <div key={option.id} className="space-y-2 border border-zinc-800 bg-zinc-950 p-3">
+                            <div key={option.id} className="space-y-2 border border-border bg-background p-3">
                                 <div className="flex items-start justify-between gap-2">
                                     {option.managed ? (
-                                        <p className="min-w-0 flex-1 text-sm text-white">
-                                            <span className="mr-1.5 border border-fuchsia-800 px-1 text-[10px] text-fuchsia-200" title={__('Managed by a {{ }} reference in the text')}>
+                                        <p className="min-w-0 flex-1 text-sm text-foreground">
+                                            <span className="mr-1.5 border border-ember/50 px-1 text-xs text-ember" title={__('Managed by a {{ }} reference in the text')}>
                                                 {'{{ }}'}
                                             </span>
                                             {option.player_option}
@@ -232,16 +232,16 @@ export default function NodeEditorPanel({
                                         onClick={() => onDeleteOption(option.id)}
                                         disabled={option.managed}
                                         title={option.managed ? __('Remove the reference from the text to delete it') : __('Delete option')}
-                                        className="p-1 text-zinc-400 hover:text-rose-300 disabled:opacity-30"
+                                        className="p-1 text-muted hover:text-danger disabled:opacity-30"
                                     >
                                         <Trash2 size={14} />
                                     </button>
                                 </div>
-                                {optionError(option, 'player_option') && <p className="text-xs text-rose-300">{optionError(option, 'player_option')}</p>}
+                                {optionError(option, 'player_option') && <p className="text-xs text-danger">{optionError(option, 'player_option')}</p>}
 
                                 <Field label={__('Target')} error={optionError(option, 'next_dialogue_node_id')}>
                                     {option.managed ? (
-                                        <p className="text-sm text-zinc-300">{option.next_dialogue_node_id ? titles.get(option.next_dialogue_node_id) : __('No target (it will be recreated when the text is saved)')}</p>
+                                        <p className="text-sm text-muted">{option.next_dialogue_node_id ? titles.get(option.next_dialogue_node_id) : __('No target (it will be recreated when the text is saved)')}</p>
                                     ) : (
                                         <select
                                             className={inputClass}
@@ -257,7 +257,7 @@ export default function NodeEditorPanel({
                                         </select>
                                     )}
                                 </Field>
-                                {option.next_dialogue_node_id === null && <p className="text-xs text-rose-300">{__('Option without target.')}</p>}
+                                {option.next_dialogue_node_id === null && <p className="text-xs text-danger">{__('Option without target.')}</p>}
 
                                 <OptionLogicEditor
                                     option={option}
@@ -268,12 +268,12 @@ export default function NodeEditorPanel({
                                 {Object.entries(error?.optionId === option.id ? error.fields : {})
                                     .filter(([name]) => name.startsWith('condition') || name.startsWith('effects'))
                                     .map(([name, messages]) => (
-                                        <p key={name} className="text-xs text-rose-300">
+                                        <p key={name} className="text-xs text-danger">
                                             {messages[0]}
                                         </p>
                                     ))}
 
-                                <details className="text-xs text-zinc-400">
+                                <details className="text-xs text-muted">
                                     <summary className="cursor-pointer">{__('Author notes')}</summary>
                                     <div className="mt-2 space-y-2">
                                         <Field label={__('Consequence')} error={optionError(option, 'consequence')}>
@@ -287,12 +287,12 @@ export default function NodeEditorPanel({
                             </div>
                         );
                     })}
-                    {node.options.length === 0 && <p className="text-xs text-zinc-500">{__('No options. Write {{Name}} in the text or create a manual option.')}</p>}
+                    {node.options.length === 0 && <p className="text-xs text-subtle">{__('No options. Write {{Name}} in the text or create a manual option.')}</p>}
                 </section>
 
                 {incoming.length > 0 && (
-                    <section className="space-y-1 border-t border-zinc-800 pt-4 text-xs text-zinc-400">
-                        <h3 className="text-sm font-semibold text-white">{__('Incoming')} ({incoming.length})</h3>
+                    <section className="space-y-1 border-t border-border pt-4 text-xs text-muted">
+                        <h3 className="text-sm font-semibold text-foreground">{__('Incoming')} ({incoming.length})</h3>
                         {incoming.map((edge) => (
                             <p key={edge.id}>
                                 {titles.get(edge.source)} → "{edge.label}"
@@ -303,11 +303,11 @@ export default function NodeEditorPanel({
 
                 <NodeAnalysisSection projectId={projectId} nodeId={node.id} catalog={emotionCatalog} beforeAnalyze={onFlush} />
 
-                <div className="flex items-center justify-between border-t border-zinc-800 pt-4">
-                    <Link href={`/projects/${projectId}/dialogues/${node.id}/edit`} className="text-xs text-zinc-400 underline hover:text-white">
+                <div className="flex items-center justify-between border-t border-border pt-4">
+                    <Link href={`/projects/${projectId}/dialogues/${node.id}/edit`} className="text-xs text-muted underline hover:text-foreground">
                         {__('Open in form')}
                     </Link>
-                    <button type="button" onClick={onDelete} className="flex items-center gap-1.5 border border-rose-800 px-3 py-1.5 text-xs text-rose-200 hover:bg-rose-950">
+                    <button type="button" onClick={onDelete} className="flex items-center gap-1.5 border border-danger/50 px-3 py-1.5 text-xs text-danger hover:bg-danger/10">
                         <Trash2 size={13} /> {__('Delete node')}
                     </button>
                 </div>

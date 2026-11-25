@@ -15,7 +15,7 @@ export default function Edit({ project, loreEntry }: LoreEditProps) {
         <ProjectLayout
             title={__('Edit :name', { name: loreEntry.title })}
             actions={
-                <Link href={`/projects/${project.id}/lore`} className="border border-zinc-700 px-4 py-2 text-sm hover:border-amber-500">
+                <Link href={`/projects/${project.id}/lore`} className="border border-border-strong px-4 py-2 text-sm hover:border-primary">
                     {__('Back')}
                 </Link>
             }

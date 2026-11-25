@@ -38,17 +38,17 @@ export default function Index({ project, scenes }: ScenesIndexProps) {
             />
 
             <div className="mb-7 flex flex-wrap items-center justify-between gap-4 border-b border-border pb-5">
-                <p className="flex items-center gap-2 text-xs text-[#a7b89c]">
+                <p className="flex items-center gap-2 text-xs text-muted">
                     <GitBranch size={15} className="text-primary" /> {choice(':count scene|:count scenes', scenes.total)}
                 </p>
                 <label className="flex items-center gap-2 rounded-md border border-border px-3">
-                    <Search size={14} className="text-[#9aad8e]" />
+                    <Search size={14} className="text-muted" />
                     <input
                         aria-label={__('Search scenes')}
                         value={query}
                         onChange={(event) => setQuery(event.target.value)}
                         placeholder={__('Search scene…')}
-                        className="w-40 bg-transparent py-2.5 text-xs outline-none"
+                        className="w-40 bg-transparent py-2.5 text-xs"
                     />
                 </label>
             </div>
@@ -72,7 +72,7 @@ export default function Index({ project, scenes }: ScenesIndexProps) {
                 <div className={`${card} px-6 py-16 text-center`}>
                     <GitBranch size={30} className="mx-auto text-primary" />
                     <h2 className="mt-5 font-display text-xl">{query ? __('We could not find that scene.') : __('Your first scene starts here.')}</h2>
-                    <p className="mt-3 text-xs leading-6 text-[#a2b497]">{query ? __('Try another name or act.') : __('Add a scene and bring it to life from the Script editor.')}</p>
+                    <p className="mt-3 text-xs leading-6 text-muted">{query ? __('Try another name or act.') : __('Add a scene and bring it to life from the Script editor.')}</p>
                 </div>
             )}
         </ProjectLayout>

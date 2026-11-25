@@ -20,7 +20,7 @@ export function CreateIn({ text, href, section }: { text: string; href: string; 
 /** Estado de la ficha en la cabecera del formulario. */
 export function EntryStatus({ dirty, saved }: { dirty: boolean; saved: boolean }) {
     return (
-        <span role="status" className="flex items-center gap-1.5 text-[10px] text-primary">
+        <span role="status" className="flex items-center gap-1.5 text-xs text-primary">
             {dirty ? (
                 __('Unsaved changes')
             ) : saved ? (
@@ -52,12 +52,12 @@ export function EntryFooter({
 }) {
     return (
         <div className="flex flex-wrap items-center justify-between gap-4 border-t border-border pt-5">
-            <p className="flex items-center gap-2 text-[9px] text-[#99b18c]">
+            <p className="flex items-center gap-2 text-xs text-muted">
                 <ShieldCheck size={13} /> {note}
             </p>
             <div className="flex flex-wrap gap-3">
                 {canDelete && (
-                    <button type="button" onClick={onDelete} className={`${secondary} hover:!border-rose-300/40 hover:!text-rose-300`}>
+                    <button type="button" onClick={onDelete} className={`${secondary} hover:!border-danger/40 hover:!text-danger`}>
                         <Trash2 size={14} />
                         {__('Delete')}
                     </button>

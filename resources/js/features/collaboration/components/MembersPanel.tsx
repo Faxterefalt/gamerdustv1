@@ -54,7 +54,7 @@ export default function MembersPanel({ projectId, members, roles }: MembersPanel
             <h2 className="flex items-center gap-2 font-display text-lg">
                 <Users size={18} className="text-primary" /> {__('Team')}
             </h2>
-            <p className="mt-2 text-[11px] leading-6 text-[#a9ba9d]">{__('Invite people who already have a Gamerdust account. Each role decides what they can do.')}</p>
+            <p className="mt-2 text-xs leading-6 text-muted">{__('Invite people who already have a Gamerdust account. Each role decides what they can do.')}</p>
 
             <ul className="mt-5 space-y-3">
                 {members.map((member) => {
@@ -63,14 +63,14 @@ export default function MembersPanel({ projectId, members, roles }: MembersPanel
                     return (
                         <li key={member.id ?? 'owner'} className="rounded-lg border border-border bg-background/30 p-3">
                             <div className="flex items-start gap-3">
-                                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary/10 text-[10px] text-primary">
+                                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary/10 text-xs text-primary">
                                     {(member.name ?? '?').slice(0, 2).toUpperCase()}
                                 </span>
                                 <div className="min-w-0 flex-1">
                                     <p className="break-words text-xs font-medium">
-                                        {member.name} {self && <span className="text-[10px] text-[#9eb392]">({__('you')})</span>}
+                                        {member.name} {self && <span className="text-xs text-muted">({__('you')})</span>}
                                     </p>
-                                    <p className="break-all text-[10px] text-[#97a98b]">{member.email}</p>
+                                    <p className="break-all text-xs text-subtle">{member.email}</p>
                                 </div>
                                 {member.id !== null && (access.can_manage || self) && (
                                     <button
@@ -78,7 +78,7 @@ export default function MembersPanel({ projectId, members, roles }: MembersPanel
                                         onClick={() => remove(member)}
                                         aria-label={self ? __('Leave project') : __('Remove :name', { name: member.name ?? '' })}
                                         title={self ? __('Leave project') : __('Remove from the project')}
-                                        className="rounded p-1 text-[#7f9174] hover:text-rose-300"
+                                        className="rounded p-1 text-subtle hover:text-danger"
                                     >
                                         {self ? <LogOut size={13} /> : <Trash2 size={13} />}
                                     </button>
@@ -86,9 +86,9 @@ export default function MembersPanel({ projectId, members, roles }: MembersPanel
                             </div>
                             <div className="mt-2">
                                 {member.role === 'owner' || !access.can_manage ? (
-                                    <span className="rounded bg-primary/10 px-2 py-0.5 font-mono text-[9px] uppercase tracking-wider text-primary">{__(ROLE_LABELS[member.role])}</span>
+                                    <span className="rounded bg-primary/10 px-2 py-0.5 text-xs text-primary">{__(ROLE_LABELS[member.role])}</span>
                                 ) : (
-                                    <label className="block text-[10px] text-[#a9ba9d]">
+                                    <label className="block text-xs text-muted">
                                         <span className="sr-only">{__('Role of :name', { name: member.name ?? '' })}</span>
                                         <select
                                             value={member.role}
@@ -112,7 +112,7 @@ export default function MembersPanel({ projectId, members, roles }: MembersPanel
             {access.can_manage && (
                 <form onSubmit={invite} className="mt-6 border-t border-border pt-5">
                     <fieldset disabled={form.processing} className="space-y-3">
-                        <label className="block text-[11px] text-[#b7c6ab]">
+                        <label className="block text-xs text-muted">
                             {__('Email')}
                             <input
                                 type="email"
@@ -124,7 +124,7 @@ export default function MembersPanel({ projectId, members, roles }: MembersPanel
                             />
                         </label>
                         <FormError error={form.errors.email} />
-                        <label className="block text-[11px] text-[#b7c6ab]">
+                        <label className="block text-xs text-muted">
                             {__('Role')}
                             <select value={form.data.role} onChange={(event) => form.setData('role', event.target.value as MemberRole)} className={`${field} !text-xs`}>
                                 {roles.map((role) => (
@@ -134,7 +134,7 @@ export default function MembersPanel({ projectId, members, roles }: MembersPanel
                                 ))}
                             </select>
                         </label>
-                        <p className="text-[10px] text-[#9eb392]">{__(ROLE_HELP[form.data.role])}</p>
+                        <p className="text-xs text-muted">{__(ROLE_HELP[form.data.role])}</p>
                         <FormError error={form.errors.role} />
                         <button type="submit" className={`${primarySm} w-full`}>
                             <Pending pending={form.processing}>

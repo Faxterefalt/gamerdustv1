@@ -17,7 +17,7 @@ export default function Header({ onToggleSidebar, sidebarExpanded }: HeaderProps
     const [open, setOpen] = useState(false);
     const user = props.auth?.user;
     const workspace = onToggleSidebar !== undefined;
-    const active = (path: string) => (url === path || (path !== '/' && url.startsWith(path)) ? 'text-white' : 'hover:text-white');
+    const active = (path: string) => (url === path || (path !== '/' && url.startsWith(path)) ? 'text-foreground' : 'hover:text-foreground');
 
     return (
         <header className={`z-30 border-b border-border ${workspace ? 'sticky top-0 bg-background' : 'relative'}`}>
@@ -30,32 +30,32 @@ export default function Header({ onToggleSidebar, sidebarExpanded }: HeaderProps
                             aria-label={__('Toggle project menu')}
                             aria-expanded={sidebarExpanded}
                             aria-controls="desktop-project-sidebar mobile-project-sidebar"
-                            className="flex h-10 w-10 items-center justify-center rounded-md border border-border text-[#c6d1bf] transition hover:border-primary/50 hover:text-primary"
+                            className="flex h-10 w-10 items-center justify-center rounded-md border border-border text-muted transition hover:border-primary/50 hover:text-primary"
                         >
                             <Menu size={19} />
                         </button>
                     )}
                     <Brand />
                 </div>
-                <nav className="hidden items-center gap-9 text-[13px] text-[#afb5ac] md:flex">
+                <nav className="hidden items-center gap-9 text-xs text-muted md:flex">
                     <Link className={active('/')} href="/">
                         {__('Home')}
                     </Link>
-                    <a href="/#herramientas" className="hover:text-white">
+                    <a href="/#herramientas" className="hover:text-foreground">
                         {__('The GAMERDUST universe')}
                     </a>
                     <Link className={active('/projects')} href="/projects">
                         {__('My projects')}
                     </Link>
                 </nav>
-                <div className="hidden items-center gap-6 text-[13px] sm:flex">
+                <div className="hidden items-center gap-6 text-xs sm:flex">
                     <LocaleSwitcher />
                     {user ? (
                         <>
-                            <Link href="/account" className="text-[#afb5ac] hover:text-white">
+                            <Link href="/account" className="text-muted hover:text-foreground">
                                 {user.name}
                             </Link>
-                            <button type="button" onClick={() => router.post('/logout')} className="text-[#afb5ac] hover:text-white">
+                            <button type="button" onClick={() => router.post('/logout')} className="text-muted hover:text-foreground">
                                 {__('Log out')}
                             </button>
                         </>

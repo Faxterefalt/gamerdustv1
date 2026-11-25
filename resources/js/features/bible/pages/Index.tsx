@@ -82,17 +82,17 @@ export default function Index({ project, characters, locations, rules, loreCount
                             <h2 className="flex items-center gap-2 font-display text-base">
                                 <Icon size={17} className="text-primary" />
                                 {label}
-                                <span className="ml-auto font-mono text-[10px] text-[#9faf93]">{String(records.length).padStart(2, '0')}</span>
+                                <span className="ml-auto text-xs text-muted">{String(records.length).padStart(2, '0')}</span>
                             </h2>
                             <div className="mt-4 space-y-3">
                                 {records.map((record) => (
                                     <Link key={record.id} href={record.href} className="block rounded-lg border border-border bg-background/40 p-3.5 transition hover:border-primary/40">
-                                        <p className="text-sm text-[#dbe4d3]">{record.name}</p>
-                                        <p className="mt-2 line-clamp-3 whitespace-pre-wrap break-words text-[11px] leading-6 text-[#a0b294]">{record.description || __('No description yet.')}</p>
+                                        <p className="text-sm text-foreground">{record.name}</p>
+                                        <p className="mt-2 line-clamp-3 whitespace-pre-wrap break-words text-xs leading-6 text-muted">{record.description || __('No description yet.')}</p>
                                     </Link>
                                 ))}
                             </div>
-                            {!records.length && <p className="my-5 text-xs leading-6 text-[#a0b294]">{empty}</p>}
+                            {!records.length && <p className="my-5 text-xs leading-6 text-muted">{empty}</p>}
                             <div className="mt-4 flex gap-2">
                                 {add && (
                                     <Link href={addHref} className={`${secondary} flex-1 border-dashed`}>
@@ -111,7 +111,7 @@ export default function Index({ project, characters, locations, rules, loreCount
                     <Link href={`${base}/lore`} className={`${card} flex items-center gap-3 p-5 transition hover:border-primary/40`}>
                         <ScrollText size={18} className="text-primary" />
                         <span className="text-sm">{__('Lore')}</span>
-                        <span className="ml-auto font-mono text-[10px] text-[#9faf93]">{String(loreCount).padStart(2, '0')}</span>
+                        <span className="ml-auto text-xs text-muted">{String(loreCount).padStart(2, '0')}</span>
                         <ArrowUpRight size={14} className="text-primary" />
                     </Link>
                 </div>

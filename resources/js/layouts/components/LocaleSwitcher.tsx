@@ -6,15 +6,15 @@ import { __, locale, LOCALES } from '../../shared/lib/i18n';
  */
 export default function LocaleSwitcher({ className = '' }: { className?: string }) {
     return (
-        <div role="group" aria-label={__('Language')} className={`flex items-center gap-2 font-mono text-[11px] ${className}`}>
-            <Languages size={14} className="text-[#74816b]" />
+        <div role="group" aria-label={__('Language')} className={`flex items-center gap-2 text-xs ${className}`}>
+            <Languages size={14} className="text-subtle" />
             {LOCALES.map(({ code, label }) =>
                 code === locale ? (
                     <span key={code} title={label} aria-current="true" className="text-primary">
                         {code.toUpperCase()}
                     </span>
                 ) : (
-                    <a key={code} href={`/locale/${code}`} title={label} lang={code} className="text-[#afb5ac] hover:text-white">
+                    <a key={code} href={`/locale/${code}`} title={label} lang={code} className="text-muted hover:text-foreground">
                         {code.toUpperCase()}
                     </a>
                 ),

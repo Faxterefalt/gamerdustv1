@@ -79,7 +79,7 @@ export default function GeneralFields({ data, setData, errors, idPrefix, extraGe
                     </select>
                 </Row>
             </div>
-            {selectedType && <p className="-mt-2 text-xs text-[#98a58e]">{__(selectedType.help)}</p>}
+            {selectedType && <p className="-mt-2 text-xs text-subtle">{__(selectedType.help)}</p>}
 
             <Row id={`${idPrefix}-premise`} label={__('Initial premise')} optional error={errors.premise}>
                 <textarea
@@ -101,10 +101,10 @@ function Row({ id, label, required, optional, error, children }: { id: string; l
         <div>
             <label className="block text-sm" htmlFor={id}>
                 {label} {required && <span className="text-primary">*</span>}
-                {optional && <span className="ml-2 text-xs text-[#74816b]">{__('Optional')}</span>}
+                {optional && <span className="ml-2 text-xs text-subtle">{__('Optional')}</span>}
             </label>
             {children}
-            {error && <p className="mt-1 text-sm text-[#f0b4a0]">{error}</p>}
+            {error && <p className="mt-1 text-sm text-danger">{error}</p>}
         </div>
     );
 }

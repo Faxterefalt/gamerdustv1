@@ -41,7 +41,7 @@ export default function FeedbackButtons({ projectId, target, index = 0, initial 
                 aria-label={__('Useful')}
                 title={__('Useful')}
                 onClick={() => send(true)}
-                className={`${base} ${vote === true ? 'border-primary/50 bg-primary/15 text-primary' : 'border-border text-[#a2b697] hover:border-primary/30'}`}
+                className={`${base} ${vote === true ? 'border-primary/50 bg-primary/15 text-primary' : 'border-border text-muted hover:border-primary/30'}`}
             >
                 <ThumbsUp size={13} />
             </button>
@@ -52,7 +52,7 @@ export default function FeedbackButtons({ projectId, target, index = 0, initial 
                 aria-label={__('Not useful')}
                 title={__('Not useful')}
                 onClick={() => send(false)}
-                className={`${base} ${vote === false ? 'border-red-300/50 bg-red-400/10 text-[#f3baa5]' : 'border-border text-[#a2b697] hover:border-red-300/30'}`}
+                className={`${base} ${vote === false ? 'border-danger/50 bg-danger/10 text-danger' : 'border-border text-muted hover:border-danger/30'}`}
             >
                 <ThumbsDown size={13} />
             </button>

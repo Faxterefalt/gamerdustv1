@@ -63,21 +63,21 @@ export default function NodeAnalysisSection({ projectId, nodeId, catalog, before
     };
 
     return (
-        <section className="space-y-2 border-t border-zinc-800 pt-4">
+        <section className="space-y-2 border-t border-border pt-4">
             <div className="flex items-center justify-between gap-2">
-                <h3 className="text-sm font-semibold text-white">{__('Emotional analysis')}</h3>
+                <h3 className="text-sm font-semibold text-foreground">{__('Emotional analysis')}</h3>
                 <button
                     type="button"
                     onClick={() => void analyze(Boolean(analysis))}
                     disabled={loading}
-                    className="flex items-center gap-1.5 border border-fuchsia-800 px-2.5 py-1 text-xs text-fuchsia-200 hover:bg-fuchsia-950 disabled:opacity-50"
+                    className="flex items-center gap-1.5 border border-ember/50 px-2.5 py-1 text-xs text-ember hover:bg-ember/10 disabled:opacity-50"
                 >
                     {analysis ? <RefreshCw size={13} /> : <Brain size={13} />} {loading ? __('Analyzing...') : analysis ? __('Reanalyze') : __('Analyze emotions')}
                 </button>
             </div>
 
             {context && (
-                <p className="text-xs text-zinc-500">
+                <p className="text-xs text-subtle">
                     {__('Context: :scene, :character, :options, :lore.', {
                         scene: context.scene ? __('scene ":title"', { title: context.scene.title }) : __('no scene'),
                         character: context.character ? __('character :name', { name: context.character.name }) : __('no character'),
@@ -87,37 +87,37 @@ export default function NodeAnalysisSection({ projectId, nodeId, catalog, before
                 </p>
             )}
 
-            {error && <p className="text-xs text-rose-300">{error}</p>}
+            {error && <p className="text-xs text-danger">{error}</p>}
 
             {analysis && (
-                <div className="space-y-3 border border-zinc-800 bg-zinc-950 p-3 text-xs text-zinc-300">
+                <div className="space-y-3 border border-border bg-background p-3 text-xs text-muted">
                     <div className="flex flex-wrap items-center justify-between gap-2">
                         <EmotionChip emotion={analysis.emotion} catalog={catalog} size="sm" />
-                        <span className="text-[10px] text-zinc-500">
+                        <span className="text-xs text-subtle">
                             {analysis.source === 'groq' ? __('AI') : __('Keywords')}
                             {analysis.from_cache && ` · ${__('saved analysis')}`}
                         </span>
                     </div>
-                    {analysis.stale && <p className="text-[10px] text-amber-300">{__('The node or its context changed after this analysis. Reanalyze to update it.')}</p>}
-                    {analysis.degraded && <p className="text-[10px] text-amber-300">{__('The AI did not respond: this is the keyword analysis. Try again in a minute.')}</p>}
+                    {analysis.stale && <p className="text-xs text-primary">{__('The node or its context changed after this analysis. Reanalyze to update it.')}</p>}
+                    {analysis.degraded && <p className="text-xs text-primary">{__('The AI did not respond: this is the keyword analysis. Try again in a minute.')}</p>}
                     <NarrativeLine labels={analysis.labels} vad={analysis.vad} technical={false} />
-                    {analysis.summary && <p className="text-zinc-400">{analysis.summary}</p>}
+                    {analysis.summary && <p className="text-muted">{analysis.summary}</p>}
                     <Evidence text={analysis.evidence} />
                     {analysis.flow.explanation && (
-                        <p className={analysis.flow.justified === false ? 'text-amber-200' : 'text-zinc-400'}>
+                        <p className={analysis.flow.justified === false ? 'text-primary' : 'text-muted'}>
                             {analysis.flow.justified === false && <AlertTriangle size={12} className="mr-1 inline" />}
                             {analysis.flow.explanation}
                         </p>
                     )}
 
                     {analysis.speaker && (
-                        <div className="space-y-1 border-t border-zinc-800 pt-2">
-                            <p className="flex items-center gap-2 text-zinc-200">
+                        <div className="space-y-1 border-t border-border pt-2">
+                            <p className="flex items-center gap-2 text-foreground">
                                 {analysis.speaker.name} <EmotionChip emotion={analysis.speaker.emotion} catalog={catalog} size="sm" />
                             </p>
                             <NarrativeLine labels={analysis.speaker.labels} vad={analysis.speaker.vad} technical={false} withControl />
                             {analysis.speaker.out_of_character && (
-                                <p className="text-rose-300">
+                                <p className="text-danger">
                                     {__('Out of character')}: {analysis.speaker.out_of_character_reason}
                                 </p>
                             )}
@@ -125,10 +125,10 @@ export default function NodeAnalysisSection({ projectId, nodeId, catalog, before
                     )}
 
                     {analysis.inconsistencies.length > 0 && (
-                        <ul className="space-y-1.5 border-t border-zinc-800 pt-2">
+                        <ul className="space-y-1.5 border-t border-border pt-2">
                             {analysis.inconsistencies.map((item, index) => (
-                                <li key={index} className="text-rose-200">
-                                    <span className="text-[10px] uppercase text-rose-400">{severityLabel(item.severity)}</span> {item.explanation}{' '}
+                                <li key={index} className="text-danger">
+                                    <span className="text-xs text-danger">{severityLabel(item.severity)}</span> {item.explanation}{' '}
                                     {item.url ? (
                                         <Link href={item.url} className="underline">
                                             {item.contradicts}
@@ -142,11 +142,11 @@ export default function NodeAnalysisSection({ projectId, nodeId, catalog, before
                     )}
 
                     {analysis.suggestions.length > 0 && (
-                        <ul className="space-y-2 border-t border-zinc-800 pt-2">
+                        <ul className="space-y-2 border-t border-border pt-2">
                             {analysis.suggestions.map((suggestion, index) => (
-                                <li key={index} className="text-amber-100">
-                                    <span className="text-[10px] uppercase text-amber-400">{suggestionKindLabel(suggestion.kind)}</span> {suggestion.text}
-                                    {suggestion.why && <span className="block text-[10px] text-zinc-500">{suggestion.why}</span>}
+                                <li key={index} className="text-foreground">
+                                    <span className="text-xs text-primary">{suggestionKindLabel(suggestion.kind)}</span> {suggestion.text}
+                                    {suggestion.why && <span className="block text-xs text-subtle">{suggestion.why}</span>}
                                     <div className="mt-1 flex justify-end">
                                         <FeedbackButtons key={analysis.id} projectId={projectId} target={{ emotional_analysis_id: analysis.id }} index={index} initial={analysis.feedback[index] ?? null} />
                                     </div>
@@ -154,7 +154,7 @@ export default function NodeAnalysisSection({ projectId, nodeId, catalog, before
                             ))}
                         </ul>
                     )}
-                    <p className="text-[10px] text-zinc-500">{__('These are suggestions to review: they do not modify the text, options or connections.')}</p>
+                    <p className="text-xs text-subtle">{__('These are suggestions to review: they do not modify the text, options or connections.')}</p>
                 </div>
             )}
         </section>
