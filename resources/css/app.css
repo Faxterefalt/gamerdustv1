@@ -3,6 +3,7 @@
  * waive 38iii · la palabra pixelada en «ser jugadas.», «Más imaginación.» y «en expansión.» es la firma de la marca que el dueño pidió conservar
  * built: the project · redesign: full (dirección B «Bosque del narrador»)
  */
+/* Hallmark · dismissed 41 · primary-ink solo pinta texto sobre el relleno primary (10,8:1); nunca se usa como par con surface */
 @import './fonts.css';
 @import 'tailwindcss';
 
@@ -137,6 +138,10 @@
     }
     button:disabled {
         cursor: not-allowed;
+    }
+    /* Estado pulsado: un píxel hacia abajo (sin animación; vale con movimiento reducido). */
+    :where(button, [role="button"], a):active:not(:disabled) {
+        translate: 0 1px;
     }
     ::selection {
         background: var(--color-primary);
