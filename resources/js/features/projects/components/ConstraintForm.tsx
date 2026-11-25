@@ -34,9 +34,9 @@ export default function ConstraintForm({ project, usage }: ConstraintFormProps) 
     };
 
     return (
-        <form onSubmit={submit} className="space-y-4 border border-border bg-surface p-5">
+        <form onSubmit={submit} className="space-y-5 rounded-lg border border-border bg-surface p-5 sm:p-6">
             <div>
-                <h2 className="font-semibold text-foreground">{__('Narrative setup')}</h2>
+                <h2 className="text-lg font-bold">{__('Narrative setup')}</h2>
                 <p className="mt-1 text-sm text-muted">{__('All fields are optional: fill them in gradually during development.')}</p>
             </div>
 
@@ -114,11 +114,11 @@ export default function ConstraintForm({ project, usage }: ConstraintFormProps) 
                 />
             </Field>
 
-            <fieldset id="limits" className="scroll-mt-24 space-y-4 border-t border-border pt-4">
+            <fieldset id="limits" className="scroll-mt-24 space-y-4 border-t border-border pt-5">
                 <legend className="sr-only">{__('Production limits')}</legend>
                 <div>
-                    <h3 className="text-sm font-semibold text-foreground">{__('Production limits')}</h3>
-                    <p className="mt-1 text-xs text-subtle">{__('Leave a limit empty to have no limit. Reaching a limit exactly is not an excess.')}</p>
+                    <h3 className="font-bold">{__('Production limits')}</h3>
+                    <p className="mt-1 text-sm text-muted">{__('Leave a limit empty to have no limit. Reaching a limit exactly is not an excess.')}</p>
                 </div>
                 <div className="grid gap-4 md:grid-cols-3">
                     <Field
@@ -127,6 +127,7 @@ export default function ConstraintForm({ project, usage }: ConstraintFormProps) 
                         error={errors.max_characters}
                     >
                         <input type="number" min={0} step={1} value={data.max_characters} onChange={(event) => setData('max_characters', event.target.value)} className={inputClass} />
+                        {usage && <UsageMeter value={usage.characters} max={data.max_characters} />}
                     </Field>
                     <Field
                         label={__('Max. pages')}
@@ -134,6 +135,7 @@ export default function ConstraintForm({ project, usage }: ConstraintFormProps) 
                         error={errors.max_pages}
                     >
                         <input type="number" min={0} step={1} value={data.max_pages} onChange={(event) => setData('max_pages', event.target.value)} className={inputClass} />
+                        {usage && <UsageMeter value={usage.pages} max={data.max_pages} />}
                     </Field>
                     <Field
                         label={__('Budget (cost points)')}
@@ -141,6 +143,7 @@ export default function ConstraintForm({ project, usage }: ConstraintFormProps) 
                         error={errors.max_budget}
                     >
                         <input type="number" min={0} step={0.01} value={data.max_budget} onChange={(event) => setData('max_budget', event.target.value)} className={inputClass} />
+                        {usage && <UsageMeter value={usage.cost_points} max={data.max_budget} />}
                     </Field>
                 </div>
                 {usage && (
@@ -150,8 +153,8 @@ export default function ConstraintForm({ project, usage }: ConstraintFormProps) 
                         })}
                     </p>
                 )}
-                <label className="flex items-start gap-3 text-sm text-foreground">
-                    <input type="checkbox" checked={data.requires_twist} onChange={(event) => setData('requires_twist', event.target.checked)} className="mt-1 accent-primary" />
+                <label className="flex min-h-11 items-start gap-3 text-sm text-foreground">
+                    <input type="checkbox" checked={data.requires_twist} onChange={(event) => setData('requires_twist', event.target.checked)} className="mt-0.5 size-5 shrink-0" />
                     <span>
                         {__('The story must include a plot twist')}
                         <span className="block text-xs text-subtle">{__('It is reported as a contextual review, not as an error.')}</span>
@@ -174,10 +177,35 @@ const inputClass = fieldBlock;
 function Field({ label, help, error, children }: { label: string; help?: string; error?: string; children: ReactNode }) {
     return (
         <label className="block">
-            <span className="mb-1 block text-sm font-medium text-foreground">{label}</span>
-            {help && <span className="mb-2 block text-xs text-subtle">{help}</span>}
+            <span className="mb-1 block text-sm font-bold text-foreground">{label}</span>
+            {help && <span className="mb-2 block text-xs text-muted">{help}</span>}
             {children}
             {error && <span className="mt-1 block text-sm text-danger">{error}</span>}
         </label>
+    );
+}
+
+/**
+ * Uso frente al límite, como una barra de HUD: liquen mientras cabe, rojo si lo supera (igualar no es exceso).
+ * Decorativa: la cifra exacta ya está en el texto de ayuda del campo.
+ */
+function UsageMeter({ value, max }: { value: number; max: string | number }) {
+    const limit = Number(max);
+
+    if (!limit || limit <= 0) {
+        return null;
+    }
+
+    const over = value > limit;
+
+    return (
+        <span aria-hidden="true" className="mt-2 flex items-center gap-3">
+            <span className="h-2 flex-1 overflow-hidden rounded-full bg-surface-3">
+                <span className={`block h-full rounded-full ${over ? 'bg-danger' : 'bg-primary'}`} style={{ width: `${Math.min(100, (value / limit) * 100)}%` }} />
+            </span>
+            <span className={`font-pixel text-sm ${over ? 'text-danger' : 'text-foreground'}`}>
+                {value}/{limit}
+            </span>
+        </span>
     );
 }

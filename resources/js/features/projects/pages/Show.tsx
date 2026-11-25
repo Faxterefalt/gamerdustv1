@@ -22,8 +22,15 @@ interface ProjectShowProps {
     constraintUsage: ConstraintUsage;
 }
 
+/*
+ * Panel del proyecto: arriba el resumen y el HUD con los recuentos; después el planteamiento (con los límites
+ * de producción) junto a las validaciones; al final, lo reciente de cada sección.
+ */
 export default function Show({ project, validations, closedValidations, constraintUsage }: ProjectShowProps) {
     const latestAnalysis = project.emotional_analyses?.[0] ?? null;
+    const tags = [statusLabel(project.status), narrativeLabel(project.narrative_type), project.game_genre && genreLabel(project.game_genre), project.language && languageLabel(project.language)].filter(
+        Boolean,
+    ) as string[];
 
     return (
         <ProjectLayout
@@ -44,40 +51,43 @@ export default function Show({ project, validations, closedValidations, constrai
         >
             <Head title={project.title} />
 
-            <div className="space-y-6">
-                <section className="grid gap-4 lg:grid-cols-[1.5fr_1fr]">
-                    <div className="border border-border bg-surface p-5">
-                        <div className="flex flex-wrap gap-2 text-xs text-muted">
-                            <span className="border border-border-strong px-2 py-1">{statusLabel(project.status)}</span>
-                            <span className="border border-border-strong px-2 py-1">{narrativeLabel(project.narrative_type)}</span>
-                            {project.game_genre && <span className="border border-border-strong px-2 py-1">{genreLabel(project.game_genre)}</span>}
-                            {project.language && <span className="border border-border-strong px-2 py-1">{languageLabel(project.language)}</span>}
-                        </div>
-                        {project.description && <p className="mt-4 text-muted">{project.description}</p>}
-                        {project.premise && (
-                            <div className="mt-5">
-                                <h2 className="text-sm font-semibold text-primary">{__('Premise')}</h2>
-                                <p className="mt-2 text-sm text-muted">{project.premise}</p>
-                            </div>
-                        )}
-                        {project.central_conflict && (
-                            <div className="mt-5">
-                                <h2 className="text-sm font-semibold text-danger">{__('Main conflict')}</h2>
-                                <p className="mt-2 text-sm text-muted">{project.central_conflict}</p>
-                            </div>
-                        )}
-                    </div>
+            <div className="space-y-10">
+                <section aria-label={__('Summary')} className="space-y-6">
+                    <ul className="flex flex-wrap gap-2" aria-label={__('Project details')}>
+                        {tags.map((tag) => (
+                            <li key={tag} className="rounded-sm border border-border-strong px-2 py-0.5 text-sm text-muted">
+                                {tag}
+                            </li>
+                        ))}
+                    </ul>
+                    {project.description && <p className="max-w-[70ch] text-lg">{project.description}</p>}
                     <ProjectStats project={project} />
+                    {(project.premise || project.central_conflict) && (
+                        <div className="grid gap-6 md:grid-cols-2">
+                            {project.premise && (
+                                <div>
+                                    <h2 className="font-bold">{__('Premise')}</h2>
+                                    <p className="mt-2 max-w-[65ch] text-muted">{project.premise}</p>
+                                </div>
+                            )}
+                            {project.central_conflict && (
+                                <div>
+                                    <h2 className="font-bold">{__('Main conflict')}</h2>
+                                    <p className="mt-2 max-w-[65ch] text-muted">{project.central_conflict}</p>
+                                </div>
+                            )}
+                        </div>
+                    )}
+                    <QuickLinks projectId={project.id} />
                 </section>
 
-                <div className="grid gap-6 xl:grid-cols-[1.2fr_0.8fr]">
+                <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
                     <ConstraintForm project={project} usage={constraintUsage} />
-                    <NarrativeValidationPanel projectId={project.id} validations={validations} closed={closedValidations} />
+                    <div className="space-y-6">
+                        <NarrativeValidationPanel projectId={project.id} validations={validations} closed={closedValidations} />
+                        <EmotionalAnalysisPanel projectId={project.id} analysis={latestAnalysis} scenes={project.scenes ?? []} dialogues={project.dialogue_nodes ?? []} />
+                    </div>
                 </div>
-
-                <EmotionalAnalysisPanel projectId={project.id} analysis={latestAnalysis} scenes={project.scenes ?? []} dialogues={project.dialogue_nodes ?? []} />
-
-                <QuickLinks projectId={project.id} />
 
                 <DashboardSection title={__('Recent lore')} href={`/projects/${project.id}/lore`} createHref={`/projects/${project.id}/lore/create`}>
                     {(project.lore_entries ?? []).map((entry) => (
@@ -118,21 +128,21 @@ function QuickLinks({ projectId }: { projectId: number }) {
     ];
 
     return (
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-6">
+        <nav aria-label={__('Quick access')} className="flex flex-wrap gap-2">
             {links.map(([label, href]) => (
                 <Link key={href} href={href} className={secondary}>
                     {label}
                 </Link>
             ))}
-        </div>
+        </nav>
     );
 }
 
 function DashboardSection({ title, href, createHref, children }: { title: string; href: string; createHref: string; children: ReactNode }) {
     return (
         <section>
-            <div className="mb-3 flex items-center justify-between gap-4">
-                <h2 className="text-lg font-semibold text-foreground">{title}</h2>
+            <div className="mb-4 flex flex-wrap items-center justify-between gap-4 border-b border-border pb-3">
+                <h2 className="text-xl font-bold">{title}</h2>
                 <div className="flex gap-2">
                     <Link href={href} className={secondary}>
                         {__('View all')}

@@ -1,9 +1,11 @@
 import { Link } from '@inertiajs/react';
-import { ArrowLeft, BookOpen, ChevronRight, File, FileText, GitBranch, House, Lock, Settings2, Sparkles, Users, Workflow, X, type LucideIcon } from 'lucide-react';
+import { ArrowLeft, BookOpen, File, FileText, GitBranch, House, Lock, Settings2, Sparkles, Users, Workflow, X, type LucideIcon } from 'lucide-react';
 import { useEffect, useRef } from 'react';
 import { genreLabel } from '../../features/projects/projectOptions';
 import { __ } from '../../shared/lib/i18n';
 import ProjectCover from '../../shared/components/ProjectCover';
+import useProjectAccess from '../../shared/hooks/useProjectAccess';
+import { iconButton } from '../../shared/lib/styles';
 
 export interface WorkspaceProject {
     id: number;
@@ -61,6 +63,7 @@ interface ProjectSidebarProps {
 export default function ProjectSidebar({ project, url, expanded, open, onClose }: ProjectSidebarProps) {
     const dialog = useRef<HTMLDialogElement>(null);
     const active = activeSection(url, project.id);
+    const access = useProjectAccess();
 
     useEffect(() => {
         if (!open) {
@@ -86,29 +89,28 @@ export default function ProjectSidebar({ project, url, expanded, open, onClose }
 
     const contents = (mobile: boolean) => (
         <div className="flex h-full flex-col">
-            <div className="px-5 pb-7 pt-6">
+            <div className="px-4 pb-6 pt-4">
                 <div className="flex items-center justify-between">
-                    <Link href="/projects" onClick={onClose} className="flex items-center gap-2 text-xs text-muted hover:text-primary">
-                        <ArrowLeft size={14} /> {__('All projects')}
+                    <Link href="/projects" onClick={onClose} className="inline-flex min-h-11 items-center gap-2 text-sm text-muted hover:text-foreground">
+                        <ArrowLeft size={16} aria-hidden="true" /> {__('All projects')}
                     </Link>
                     {mobile && (
-                        <button type="button" autoFocus aria-label={__('Close project menu')} onClick={onClose} className="rounded p-2 text-muted hover:bg-surface-2">
+                        <button type="button" autoFocus aria-label={__('Close project menu')} onClick={onClose} className={iconButton}>
                             <X size={18} />
                         </button>
                     )}
                 </div>
-                <div className="mt-7 flex items-center gap-3 rounded-lg border border-border bg-surface p-3">
+                <div className="mt-3 flex items-center gap-3 rounded-lg bg-surface-2 p-3">
                     <ProjectCover title={project.title} genre={project.game_genre} size="sm" className="size-10 shrink-0 rounded-md" />
                     <div className="min-w-0">
-                        <p className="truncate text-xs font-medium">{project.title}</p>
-                        <p className="mt-1 truncate text-xs text-muted">{project.game_genre ? genreLabel(project.game_genre) : __('No genre')}</p>
+                        <p className="truncate font-bold">{project.title}</p>
+                        <p className="truncate text-sm text-muted">{project.game_genre ? genreLabel(project.game_genre) : __('No genre')}</p>
                     </div>
                 </div>
             </div>
 
             <nav aria-label={__('Project sections')} className="min-h-0 flex-1 overflow-y-auto px-3 pb-5">
-                <p className="mb-4 px-3 text-xs text-subtle">{__('YOUR CREATIVE UNIVERSE')}</p>
-                <div className="space-y-1.5">
+                <div className="space-y-1">
                     {PROJECT_SECTIONS.map((section) => {
                         const Icon = section.icon;
                         const current = section === active;
@@ -119,28 +121,26 @@ export default function ProjectSidebar({ project, url, expanded, open, onClose }
                                 href={`/projects/${project.id}${section.path}`}
                                 onClick={onClose}
                                 aria-current={current ? 'page' : undefined}
-                                className={`relative flex min-h-12 items-center gap-3.5 rounded-md px-4 text-xs transition ${
+                                className={`relative flex min-h-11 items-center gap-3 rounded-md px-3 text-sm transition-colors ${
                                     current
-                                        ? 'bg-primary/10 font-medium text-primary before:absolute before:inset-y-3 before:left-0 before:w-0.5 before:rounded-full before:bg-primary'
+                                        ? 'bg-surface-3 font-bold text-foreground before:absolute before:inset-y-2.5 before:left-0 before:w-1 before:rounded-full before:bg-primary'
                                         : 'text-muted hover:bg-surface-2 hover:text-foreground'
                                 }`}
                             >
-                                <Icon size={19} strokeWidth={1.6} />
+                                <Icon size={18} strokeWidth={1.75} aria-hidden="true" className={current ? 'text-primary' : ''} />
                                 {__(section.label)}
-                                {current && <ChevronRight size={13} className="ml-auto" />}
                             </Link>
                         );
                     })}
                 </div>
             </nav>
 
-            <div className="mx-5 mb-5 border-t border-border pt-5">
-                <p className="flex items-center gap-2 text-xs text-muted">
-                    <Lock size={14} className="text-primary" />
-                    {__('Private project')}
-                    <span className="ml-auto h-1.5 w-1.5 rounded-full bg-primary/70" />
+            <div className="mx-4 mb-4 border-t border-border pt-4">
+                <p className="flex items-center gap-2 text-sm text-muted">
+                    {access.is_owner ? <Lock size={16} aria-hidden="true" className="text-primary" /> : <Users size={16} aria-hidden="true" className="text-info" />}
+                    {access.is_owner ? __('Private project') : __('Shared project')}
                 </p>
-                <p className="mt-2 text-xs leading-5 text-subtle">{__('Saved on your server. Only you can see and edit it.')}</p>
+                {access.is_owner && <p className="mt-1 text-xs text-subtle">{__('Saved on your server. Only you can see and edit it.')}</p>}
             </div>
         </div>
     );
@@ -150,7 +150,7 @@ export default function ProjectSidebar({ project, url, expanded, open, onClose }
             <aside
                 id="desktop-project-sidebar"
                 aria-label={__('Project menu')}
-                className={`${expanded ? 'hidden lg:block' : 'hidden'} sticky top-(--header-h) h-[calc(100dvh-var(--header-h))] w-[238px] shrink-0 border-r border-border bg-surface`}
+                className={`${expanded ? 'hidden lg:block' : 'hidden'} sticky top-(--header-h) h-[calc(100dvh-var(--header-h))] w-60 shrink-0 border-r border-border bg-surface`}
             >
                 {contents(false)}
             </aside>
@@ -162,7 +162,7 @@ export default function ProjectSidebar({ project, url, expanded, open, onClose }
                 onClick={(event) => {
                     if (event.target === event.currentTarget) onClose();
                 }}
-                className="fixed inset-y-0 left-0 m-0 h-dvh max-h-none w-[280px] max-w-[calc(100vw-32px)] border-0 border-r border-border bg-surface p-0 text-foreground backdrop:bg-scrim lg:hidden"
+                className="fixed inset-y-0 left-0 m-0 h-dvh max-h-none w-72 max-w-[calc(100%-2rem)] border-0 border-r border-border bg-surface p-0 text-foreground backdrop:bg-scrim lg:hidden"
             >
                 {contents(true)}
             </dialog>

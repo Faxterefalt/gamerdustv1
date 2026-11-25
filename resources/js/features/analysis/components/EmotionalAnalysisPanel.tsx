@@ -28,16 +28,16 @@ export default function EmotionalAnalysisPanel({ projectId, analysis, scenes = [
     const sources = data.source_type === 'scene' ? scenes : dialogues;
 
     return (
-        <section className="border border-border bg-surface p-4">
+        <section className="rounded-lg border border-border bg-surface p-5">
             <div className="flex flex-col gap-1">
-                <h2 className="font-semibold text-foreground">{__('Emotional analysis')}</h2>
+                <h2 className="text-lg font-bold">{__('Emotional analysis')}</h2>
                 <p className="text-sm text-muted">{__('Local keyword-based placeholder, ready to connect AI later.')}</p>
             </div>
 
             {analysis ? (
                 <div className="mt-4 space-y-2 text-sm text-muted">
                     <div>
-                        {__('Dominant emotion:')} <span className="text-primary">{emotionLabel(analysis.dominant_emotion)}</span>
+                        {__('Dominant emotion:')} <span className="font-bold text-foreground">{emotionLabel(analysis.dominant_emotion)}</span>
                     </div>
                     {analysis.interpretation && <p>{analysis.interpretation}</p>}
                 </div>
@@ -45,7 +45,7 @@ export default function EmotionalAnalysisPanel({ projectId, analysis, scenes = [
                 <p className="mt-4 text-sm text-muted">{__('No saved analyses yet.')}</p>
             )}
 
-            <form onSubmit={submit} className="mt-4 grid gap-3 sm:grid-cols-[160px_1fr_auto]">
+            <form onSubmit={submit} className="mt-4 grid gap-3 sm:grid-cols-[10rem_minmax(0,1fr)_auto]">
                 <select
                     value={data.source_type}
                     onChange={(event) => {

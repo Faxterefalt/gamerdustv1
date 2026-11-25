@@ -15,16 +15,16 @@ export default function CharacterCard({ character }: CharacterCardProps) {
     };
 
     return (
-        <article className="border border-border bg-surface p-4">
+        <article className="flex flex-col rounded-lg border border-border bg-surface p-5">
             <div className="flex items-start justify-between gap-4">
                 <div>
-                    <h3 className="font-semibold text-foreground">{character.name}</h3>
+                    <h3 className="text-lg font-bold">{character.name}</h3>
                     <p className="text-sm text-muted">{character.role || __('Role not defined')}</p>
                 </div>
-                {character.archetype && <span className="border border-ember/50 bg-ember/10 px-2 py-1 text-xs text-ember">{character.archetype}</span>}
+                {character.archetype && <span className="shrink-0 rounded-sm border border-ember/50 bg-ember/10 px-2 py-0.5 text-xs text-ember">{character.archetype}</span>}
             </div>
             <p className="mt-3 text-sm text-muted">{character.motivation || character.background || __('No motivation or background yet.')}</p>
-            <div className="mt-4 flex gap-2">
+            <div className="mt-auto flex flex-wrap gap-2 pt-4">
                 <Link href={`/projects/${character.project_id}/characters/${character.id}/edit`} className={secondary}>
                     {__('Edit')}
                 </Link>

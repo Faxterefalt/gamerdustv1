@@ -1,6 +1,6 @@
 import { __, choice } from '../../../shared/lib/i18n';
 import { Link, router } from '@inertiajs/react';
-import { ArrowUpRight } from 'lucide-react';
+import { AlertOctagon, AlertTriangle, Eye, Info } from 'lucide-react';
 import { severityLabel } from '../labels';
 import type { NarrativeValidation, ValidationStatus } from '../validation.types';
 import { secondary } from '../../../shared/lib/styles';
@@ -12,81 +12,90 @@ interface NarrativeValidationPanelProps {
     closed?: NarrativeValidation[];
 }
 
-const severityClass: Record<string, string> = {
-    low: 'border-success/50 text-success',
-    medium: 'border-primary/50 text-primary',
-    high: 'border-danger/50 text-danger',
-    review: 'border-info/50 text-info',
+// La severidad se lee por icono y palabra, no solo por color (WCAG 1.4.1).
+const SEVERITY: Record<string, { tone: string; icon: typeof Info }> = {
+    high: { tone: 'border-danger/50 bg-danger/10 text-danger', icon: AlertOctagon },
+    medium: { tone: 'border-warning/50 bg-warning/10 text-warning', icon: AlertTriangle },
+    low: { tone: 'border-info/50 bg-info/10 text-info', icon: Info },
+    review: { tone: 'border-ember/50 bg-ember/10 text-ember', icon: Eye },
 };
 
 const STATUS_LABELS: Record<ValidationStatus, string> = { pending: 'Pending', resolved: 'Resolved', dismissed: 'Dismissed' };
+
+const textButton = 'inline-flex min-h-10 items-center rounded-md px-2 text-sm transition-colors hover:bg-surface-2 pointer-coarse:min-h-11';
 
 export default function NarrativeValidationPanel({ projectId, validations = [], closed = [] }: NarrativeValidationPanelProps) {
     const setStatus = (validation: NarrativeValidation, status: ValidationStatus) =>
         router.patch(`/projects/${projectId}/validations/${validation.id}`, { status }, { preserveScroll: true });
 
     return (
-        <section className="border border-border bg-surface p-4">
-            <div className="flex items-center justify-between gap-4">
-                <div>
-                    <h2 className="font-semibold text-foreground">{__('Narrative validations')}</h2>
-                    <p className="text-sm text-muted">{__('Simple coherence rules to detect early gaps.')}</p>
+        <section className="rounded-lg border border-border bg-surface p-5">
+            <div className="flex flex-wrap items-start justify-between gap-4">
+                <div className="min-w-0">
+                    <h2 className="text-lg font-bold">{__('Narrative validations')}</h2>
+                    <p className="mt-1 text-sm text-muted">{__('Simple coherence rules to detect early gaps.')}</p>
                 </div>
-                <button
-                    type="button"
-                    onClick={() => router.post(`/projects/${projectId}/validations`, {}, { preserveScroll: true })}
-                    className={secondary}
-                >
+                <button type="button" onClick={() => router.post(`/projects/${projectId}/validations`, {}, { preserveScroll: true })} className={secondary}>
                     {__('Recalculate')}
                 </button>
             </div>
 
-            <div className="mt-4 space-y-3">
-                {validations.length === 0 && <p className="text-sm text-muted">{__('No pending warnings.')}</p>}
-                {validations.map((validation) => (
-                    <div key={validation.id} className="border border-border bg-background p-3">
-                        <div className="flex items-start justify-between gap-4">
-                            <span className={`border px-2 py-1 text-xs ${severityClass[validation.severity] ?? severityClass.low}`}>{severityLabel(validation.severity)}</span>
-                            <div className="flex gap-3">
-                                <button type="button" onClick={() => setStatus(validation, 'resolved')} className="text-sm text-muted hover:text-foreground">
-                                    {__('Resolve')}
-                                </button>
-                                <button
-                                    type="button"
-                                    onClick={() => setStatus(validation, 'dismissed')}
-                                    title={__('It will not appear again while its cause stays the same.')}
-                                    className="text-sm text-subtle hover:text-foreground"
-                                >
-                                    {__('Dismiss')}
-                                </button>
-                            </div>
-                        </div>
-                        <p className="mt-3 text-sm text-foreground">{validation.message}</p>
-                        {validation.recommendation && <p className="mt-2 text-sm text-muted">{validation.recommendation}</p>}
-                        <SubjectLink validation={validation} />
-                    </div>
-                ))}
-            </div>
+            {validations.length === 0 ? (
+                <p className="mt-5 border-t border-border pt-5 text-sm text-muted">{__('No pending warnings.')}</p>
+            ) : (
+                <ul className="mt-4 divide-y divide-border border-t border-border">
+                    {validations.map((validation) => {
+                        const severity = SEVERITY[validation.severity] ?? SEVERITY.low;
+                        const Icon = severity.icon;
+
+                        return (
+                            <li key={validation.id} className="py-4">
+                                <div className="flex flex-wrap items-center justify-between gap-2">
+                                    <span className={`inline-flex items-center gap-1.5 rounded-sm border px-2 py-0.5 text-xs font-bold ${severity.tone}`}>
+                                        <Icon size={14} aria-hidden="true" /> {severityLabel(validation.severity)}
+                                    </span>
+                                    <div className="-mr-2 flex">
+                                        <button type="button" onClick={() => setStatus(validation, 'resolved')} className={`${textButton} text-foreground`}>
+                                            {__('Resolve')}
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => setStatus(validation, 'dismissed')}
+                                            title={__('It will not appear again while its cause stays the same.')}
+                                            className={`${textButton} text-muted`}
+                                        >
+                                            {__('Dismiss')}
+                                        </button>
+                                    </div>
+                                </div>
+                                <p className="mt-2">{validation.message}</p>
+                                {validation.recommendation && <p className="mt-1 text-sm text-muted">{validation.recommendation}</p>}
+                                <SubjectLink validation={validation} />
+                            </li>
+                        );
+                    })}
+                </ul>
+            )}
 
             {closed.length > 0 && (
-                <details className="mt-4 border-t border-border pt-3">
-                    <summary className="cursor-pointer text-sm text-muted hover:text-foreground">
+                <details className="mt-2 border-t border-border pt-2">
+                    <summary className="flex min-h-11 cursor-pointer items-center text-sm text-muted hover:text-foreground">
                         {choice(':count closed warning|:count closed warnings', closed.length)}
                     </summary>
-                    <div className="mt-3 space-y-2">
+                    <ul className="divide-y divide-border">
                         {closed.map((validation) => (
-                            <div key={validation.id} className="flex items-start justify-between gap-4 border border-border bg-background/60 p-3">
+                            <li key={validation.id} className="flex items-start justify-between gap-4 py-3">
                                 <div className="min-w-0">
                                     <p className="text-xs text-subtle">{__(STATUS_LABELS[validation.status])}</p>
                                     <p className="mt-1 text-sm text-muted">{validation.message}</p>
                                     <SubjectLink validation={validation} />
                                 </div>
-                                <button type="button" onClick={() => setStatus(validation, 'pending')} className="shrink-0 text-sm text-muted hover:text-foreground">
+                                <button type="button" onClick={() => setStatus(validation, 'pending')} className={`${textButton} shrink-0 text-muted`}>
                                     {__('Reopen')}
                                 </button>
-                            </div>
+                            </li>
                         ))}
-                    </div>
+                    </ul>
                 </details>
             )}
         </section>
@@ -100,8 +109,8 @@ function SubjectLink({ validation }: { validation: NarrativeValidation }) {
     }
 
     return (
-        <Link href={validation.subject.url} className="mt-2 inline-flex items-center gap-1 text-xs text-primary hover:text-foreground">
-            {__('Go to :element', { element: validation.subject.label })} <ArrowUpRight size={12} />
+        <Link href={validation.subject.url} className="mt-1 inline-flex min-h-10 items-center text-sm text-primary underline decoration-primary/40 underline-offset-4 hover:decoration-primary">
+            {__('Go to :element', { element: validation.subject.label })}
         </Link>
     );
 }
