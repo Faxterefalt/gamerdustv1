@@ -15,7 +15,7 @@ Gamerdust es una app web de asistencia al diseño narrativo de videojuegos (proy
 ## Comandos (en la raíz)
 
 ```
-composer setup             # install + .env + key + migrate + npm install + build (sin .env.example falla en un clon nuevo: crear .env antes)
+composer setup             # install + .env (copia .env.example) + key + migrate + npm install + build
 composer dev               # serve + queue:listen + pail + vite en paralelo (no en Windows: Pail necesita pcntl y --kill-others para todo)
 php artisan serve          # o: npm run dev  (en otra terminal)
 npm run build              # build de producción de Vite
@@ -34,7 +34,7 @@ php artisan gamerdust:ai-metrics {project?} [--output=f.csv]  # métricas de uso
 
 Variables en `.env` (valores por defecto en `config/services.php` → `groq` y `config/gamerdust.php`): `GROQ_API_KEY`, `GROQ_MODEL` (`openai/gpt-oss-120b`), `GROQ_FALLBACK_MODEL` (`openai/gpt-oss-20b`), `GROQ_TIMEOUT` (15 s), `GAMERDUST_AI_DRIVER` (`groq`|`keywords`; por defecto `groq` si hay clave), `GAMERDUST_AI_MAX_TOKENS`, `GAMERDUST_LOG_LEVEL` (`info`) y `GAMERDUST_LOG_DAYS` (30). La clave nunca sale del servidor. En local, `MAIL_MAILER=log`: el correo de recuperar contraseña (con su enlace) queda en `storage/logs/laravel.log`.
 
-Los tests usan SQLite en memoria (`phpunit.xml`), no MySQL. `phpunit.xml` vacía `GROQ_API_KEY`, fija el motor `keywords`, desactiva el SSR de Inertia y sube el canal `gamerdust` a `emergency` (no escribe logs); `Tests\TestCase` llama a `Http::preventStrayRequests()`, así que cualquier test que use Groq debe definir la clave con `config()` y usar `Http::fake()`. No existe `.env.example`; copiar el `.env` existente (plantilla local en la sección 10 del cuaderno de arquitectura). Las páginas Inertia de los tests renderizan `@vite`, así que la suite necesita `public/build/manifest.json` (`npm run build`).
+Los tests usan SQLite en memoria (`phpunit.xml`), no MySQL. `phpunit.xml` vacía `GROQ_API_KEY`, fija el motor `keywords`, desactiva el SSR de Inertia y sube el canal `gamerdust` a `emergency` (no escribe logs); `Tests\TestCase` llama a `Http::preventStrayRequests()`, así que cualquier test que use Groq debe definir la clave con `config()` y usar `Http::fake()`. `.env.example` es la plantilla (sin secretos) para servir por HTTPS (túnel o proxy que termina TLS); para desarrollo local por http cambiar `APP_ENV=local`, `APP_DEBUG=true` y `SESSION_SECURE_COOKIE=false`. Las páginas Inertia de los tests renderizan `@vite`, así que la suite necesita `public/build/manifest.json` (`npm run build`).
 Con `APP_LOCALE=en` en `.env` fallan los tests que esperan textos en español (p. ej. `DÍA` en el guion); ejecutar con `APP_LOCALE=es php artisan test`. En Laragon el CLI necesita PHP ≥ 8.4 (ruta `laragon/bin/php/php-8.5...`).
 
 ## Arquitectura

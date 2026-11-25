@@ -15,6 +15,10 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        // Confía en el túnel o proxy que termina TLS (Cloudflare Tunnel): sin esto Laravel
+        // ve la petición como http y genera URLs, redirecciones y assets sin https.
+        $middleware->trustProxies(at: '*');
+
         // Global: registra cualquier 5xx en el canal gamerdust (HU 59).
         $middleware->append(LogServerErrors::class);
 
