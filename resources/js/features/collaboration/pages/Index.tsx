@@ -29,7 +29,7 @@ export default function Index({ project, comments, members, roles }: Collaborati
 
             <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_300px]">
                 <section className={`${card} p-5 sm:p-7`}>
-                    <h2 className="mb-6 font-display text-lg">
+                    <h2 className="mb-6 font-bold text-lg">
                         {__('Project conversations')} <span className="ml-2 text-xs text-primary">{comments.length}</span>
                     </h2>
                     <CommentsPanel projectId={project.id} comments={comments} />
@@ -39,7 +39,7 @@ export default function Index({ project, comments, members, roles }: Collaborati
                     <MembersPanel projectId={project.id} members={members} roles={roles} />
                     <div className={`${card} p-6`}>
                         <Lock size={23} className="text-primary" />
-                        <h2 className="mt-4 font-display text-lg">{shared ? __('A shared project') : __('A private project')}</h2>
+                        <h2 className="mt-4 font-bold text-lg">{shared ? __('A shared project') : __('A private project')}</h2>
                         <p className="mt-3 text-xs leading-7 text-muted">
                             {shared
                                 ? __('Only the people in the team can see this project and its comments.')
@@ -49,7 +49,7 @@ export default function Index({ project, comments, members, roles }: Collaborati
                         <p className="mt-3 text-xs leading-6 text-muted">{__('Comments on a scene also appear in the Script editor, in the Comments tab.')}</p>
                     </div>
                     <div className={`${card} p-6`}>
-                        <h2 className="flex items-center gap-2 font-display text-base">
+                        <h2 className="flex items-center gap-2 font-bold text-base">
                             <Users size={17} className="text-primary" /> {__('Voices in the conversation')}
                         </h2>
                         <div className="mt-4 space-y-3">

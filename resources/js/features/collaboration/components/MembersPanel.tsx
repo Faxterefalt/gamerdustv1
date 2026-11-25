@@ -51,7 +51,7 @@ export default function MembersPanel({ projectId, members, roles }: MembersPanel
 
     return (
         <div className={`${card} p-6`}>
-            <h2 className="flex items-center gap-2 font-display text-lg">
+            <h2 className="flex items-center gap-2 font-bold text-lg">
                 <Users size={18} className="text-primary" /> {__('Team')}
             </h2>
             <p className="mt-2 text-xs leading-6 text-muted">{__('Invite people who already have a Gamerdust account. Each role decides what they can do.')}</p>

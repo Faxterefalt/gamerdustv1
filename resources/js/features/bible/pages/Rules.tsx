@@ -187,7 +187,7 @@ export default function Rules({ project, entries, selected, scenes, characters, 
                                 {form.data.rigidity === 'unbreakable' ? <Lock size={18} strokeWidth={1.5} /> : <ScrollText size={18} strokeWidth={1.5} />}
                             </span>
                             <div>
-                                <h2 className="font-display text-lg">{active ? __('Rule sheet: :name', { name: active.title }) : __('New rule')}</h2>
+                                <h2 className="font-bold text-lg">{active ? __('Rule sheet: :name', { name: active.title }) : __('New rule')}</h2>
                                 <p className="mt-0.5 text-xs text-muted">{__('A clear rule makes the world believable and the conflicts sharper.')}</p>
                             </div>
                         </div>

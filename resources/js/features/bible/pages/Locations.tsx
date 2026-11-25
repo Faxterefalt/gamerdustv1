@@ -192,7 +192,7 @@ export default function Locations({ project, entries, selected, scenes, characte
                                 <TypeIcon size={18} strokeWidth={1.5} />
                             </span>
                             <div>
-                                <h2 className="font-display text-lg">{active ? __('Place sheet: :name', { name: active.title }) : __('New place')}</h2>
+                                <h2 className="font-bold text-lg">{active ? __('Place sheet: :name', { name: active.title }) : __('New place')}</h2>
                                 <p className="mt-0.5 text-xs text-muted">{__('Describe it, give it a purpose and connect it to your story.')}</p>
                             </div>
                         </div>

@@ -218,7 +218,7 @@ export default function Index({ project, entries, selected, startNew, scenes, em
                                 <UserRound size={18} strokeWidth={1.5} />
                             </span>
                             <div>
-                                <h2 className="font-display text-lg">{active ? __('Character sheet: :name', { name: active.name }) : __('New character')}</h2>
+                                <h2 className="font-bold text-lg">{active ? __('Character sheet: :name', { name: active.name }) : __('New character')}</h2>
                                 <p className="mt-0.5 text-xs text-muted">{__('Give them a face, a goal and a voice.')}</p>
                             </div>
                         </div>

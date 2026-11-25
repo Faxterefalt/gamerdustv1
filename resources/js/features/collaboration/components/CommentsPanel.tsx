@@ -62,7 +62,7 @@ export default function CommentsPanel({ projectId, comments, sceneId, compact = 
                 {visible.map((comment) => (
                     <article key={comment.id} className={`rounded-lg border border-border bg-background/30 ${compact ? 'p-3.5' : 'p-5'}`}>
                         <div className="flex items-start gap-3">
-                            <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary/10 font-display text-xs text-primary">
+                            <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary/10 font-bold text-xs text-primary">
                                 {comment.author.slice(0, 2).toUpperCase()}
                             </span>
                             <div className="min-w-0 flex-1">

@@ -1,4 +1,4 @@
-import { ArrowRight, ChevronRight, Plus, Search, type LucideIcon } from 'lucide-react';
+import { ChevronRight, Plus, Search, type LucideIcon } from 'lucide-react';
 import { __ } from '../../../shared/lib/i18n';
 import { secondary } from '../../../shared/lib/styles';
 
@@ -49,7 +49,7 @@ export default function EntryCatalog({
         <aside aria-label={label} className="overflow-hidden rounded-xl border border-border bg-surface lg:sticky lg:top-[calc(var(--header-h)+1rem)]">
             <div className="border-b border-border p-4">
                 <div className="flex items-center justify-between">
-                    <h2 className="font-display text-base">{label}</h2>
+                    <h2 className="font-bold text-base">{label}</h2>
                     <span className="text-xs text-primary">{String(count).padStart(2, '0')}</span>
                 </div>
                 <label className="mt-4 flex items-center gap-2 rounded-md border border-border bg-background px-3 py-2.5">
@@ -61,7 +61,6 @@ export default function EntryCatalog({
                         <Plus size={14} />
                         {addLabel}
                     </span>
-                    <ArrowRight size={14} />
                 </button>
             </div>
             <div className="max-h-64 space-y-1 overflow-y-auto p-2.5 lg:max-h-[calc(100dvh-380px)]">

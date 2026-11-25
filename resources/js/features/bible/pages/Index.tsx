@@ -79,7 +79,7 @@ export default function Index({ project, characters, locations, rules, loreCount
                 <div className="space-y-5">
                     {groups.map(({ key, label, icon: Icon, empty, add, addHref, allHref, records }) => (
                         <section key={key} className={`${card} p-5`}>
-                            <h2 className="flex items-center gap-2 font-display text-base">
+                            <h2 className="flex items-center gap-2 font-bold text-base">
                                 <Icon size={17} className="text-primary" />
                                 {label}
                                 <span className="ml-auto text-xs text-muted">{String(records.length).padStart(2, '0')}</span>

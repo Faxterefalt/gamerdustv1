@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { FormError } from '../../../shared/components/ui';
 import { api, ApiError } from '../../../shared/lib/api';
 import { __, locale } from '../../../shared/lib/i18n';
-import { primarySm, secondary } from '../../../shared/lib/styles';
+import { iconButton, primarySm, secondary } from '../../../shared/lib/styles';
 import { ChangeAlert, EmotionChip, Evidence, NarrativeLine } from '../../analysis/components/EmotionBits';
 import FeedbackButtons from '../../analysis/components/FeedbackButtons';
 import type { CharacterEmotion, EmotionCatalog, EmotionChange, SceneEmotionAnalysis } from '../../analysis/emotion.types';
@@ -146,7 +146,7 @@ export default function EmotionPanel({ projectId, sceneId, sceneCode, dirty, cat
                         <HeartPulse size={17} className="text-primary" /> {__('How this scene feels')}
                     </h2>
                 </div>
-                <button type="button" onClick={onClose} aria-label={__('Close panel')} className="rounded p-2 text-muted hover:bg-surface-2">
+                <button type="button" onClick={onClose} aria-label={__('Close panel')} className={iconButton}>
                     <X size={17} />
                 </button>
             </div>

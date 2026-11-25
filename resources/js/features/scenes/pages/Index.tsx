@@ -56,7 +56,7 @@ export default function Index({ project, scenes }: ScenesIndexProps) {
             <div className="space-y-8">
                 {acts.map((act) => (
                     <section key={act || '__none'}>
-                        <h2 className="mb-4 font-display text-base">{act || __('No act')}</h2>
+                        <h2 className="mb-4 font-bold text-base">{act || __('No act')}</h2>
                         <div className="grid gap-4 lg:grid-cols-2">
                             {filtered
                                 .filter((scene) => (scene.act ?? '') === act)
@@ -71,7 +71,7 @@ export default function Index({ project, scenes }: ScenesIndexProps) {
             {!filtered.length && (
                 <div className={`${card} px-6 py-16 text-center`}>
                     <GitBranch size={30} className="mx-auto text-primary" />
-                    <h2 className="mt-5 font-display text-xl">{query ? __('We could not find that scene.') : __('Your first scene starts here.')}</h2>
+                    <h2 className="mt-5 font-bold text-xl">{query ? __('We could not find that scene.') : __('Your first scene starts here.')}</h2>
                     <p className="mt-3 text-xs leading-6 text-muted">{query ? __('Try another name or act.') : __('Add a scene and bring it to life from the Script editor.')}</p>
                 </div>
             )}

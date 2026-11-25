@@ -1,5 +1,5 @@
 import { Head, Link, router, useForm } from '@inertiajs/react';
-import { ArrowRight, Check, ChevronRight, Link2, Plus, Save, Scale, Search, Settings2, ShieldCheck, Trash2, X } from 'lucide-react';
+import { Check, ChevronRight, Link2, Plus, Save, Scale, Search, ShieldCheck, Trash2, X } from 'lucide-react';
 import { useState, type FormEvent } from 'react';
 import ProjectLayout from '../../../layouts/ProjectLayout';
 import LinkPicker from '../../../shared/components/LinkPicker';
@@ -174,9 +174,6 @@ export default function Index({ project, mechanics, selected, scenes, characters
                         >
                             <Scale size={14} /> {__('Detect dissonances')}
                         </button>
-                        <span className="flex items-center gap-2 rounded-full border border-primary/15 bg-primary/5 px-3 py-1.5 text-xs text-primary">
-                            <Settings2 size={12} /> {__('SYSTEMS WITH NARRATIVE')}
-                        </span>
                     </span>
                 }
             />
@@ -185,7 +182,7 @@ export default function Index({ project, mechanics, selected, scenes, characters
                 <aside aria-label={__('Mechanics catalog')} className="overflow-hidden rounded-xl border border-border bg-surface lg:sticky lg:top-[calc(var(--header-h)+1rem)]">
                     <div className="border-b border-border p-4">
                         <div className="flex items-center justify-between">
-                            <h2 className="font-display text-base">{__('Catalog')}</h2>
+                            <h2 className="font-bold text-base">{__('Catalog')}</h2>
                             <span className="text-xs text-primary">{String(mechanics.length).padStart(2, '0')}</span>
                         </div>
                         <label className="mt-4 flex items-center gap-2 rounded-md border border-border bg-background px-3 py-2.5">
@@ -203,7 +200,6 @@ export default function Index({ project, mechanics, selected, scenes, characters
                                 <Plus size={14} />
                                 {__('Add mechanic')}
                             </span>
-                            <ArrowRight size={14} />
                         </button>
                     </div>
                     <div className="max-h-64 space-y-1.5 overflow-y-auto p-2.5 lg:max-h-[calc(100dvh-340px)]">
@@ -242,7 +238,7 @@ export default function Index({ project, mechanics, selected, scenes, characters
                                 <ActiveIcon size={18} strokeWidth={1.5} />
                             </span>
                             <div>
-                                <h2 className="font-display text-lg">{active ? __('Edit mechanic') : __('New mechanic')}</h2>
+                                <h2 className="font-bold text-lg">{active ? __('Edit mechanic') : __('New mechanic')}</h2>
                                 <p className="mt-0.5 text-xs text-muted">{__('Design the experience, connect its meaning.')}</p>
                             </div>
                         </div>
@@ -359,8 +355,8 @@ export default function Index({ project, mechanics, selected, scenes, characters
                                     />
                                 </label>
                                 {!form.data.conflict && project.central_conflict && (
-                                    <button type="button" className="text-xs text-primary sm:ml-[97px]" onClick={() => update('conflict', project.central_conflict ?? '')}>
-                                        {__('Use the project conflict')} <ArrowRight size={11} className="ml-1 inline" />
+                                    <button type="button" className="inline-flex min-h-10 items-center text-sm text-primary underline decoration-primary/40 underline-offset-4 sm:ml-[97px]" onClick={() => update('conflict', project.central_conflict ?? '')}>
+                                        {__('Use the project conflict')}
                                     </button>
                                 )}
                             </div>
