@@ -46,7 +46,7 @@ export default function EntryCatalog({
     footnote?: string;
 }) {
     return (
-        <aside aria-label={label} className="overflow-hidden rounded-xl border border-border bg-surface lg:sticky lg:top-[88px]">
+        <aside aria-label={label} className="overflow-hidden rounded-xl border border-border bg-surface lg:sticky lg:top-[calc(var(--header-h)+1rem)]">
             <div className="border-b border-border p-4">
                 <div className="flex items-center justify-between">
                     <h2 className="font-display text-base">{label}</h2>

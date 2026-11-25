@@ -1,91 +1,92 @@
 import { __ } from '../../../shared/lib/i18n';
-import { Head, Link } from '@inertiajs/react';
-import { ArrowRight, ArrowUpRight, Check, GitBranch, Globe2, Sparkles, Users } from 'lucide-react';
+import { Head, Link, usePage } from '@inertiajs/react';
 import SiteLayout from '../../../layouts/SiteLayout';
-import { button } from '../../../shared/lib/styles';
+import type { PageProps } from '../../projects/projects.types';
+import { button, pixelAccent } from '../../../shared/lib/styles';
 
-const forest = 'https://images.unsplash.com/photo-1483982258113-b72862e6cff6?auto=format&fit=crop&w=1600&q=85';
-
-const pixel = "font-['Pixelify_Sans',monospace] font-bold text-primary tracking-normal";
-
+/*
+ * Landing: el producto se enseña con capturas reales del proyecto de demostración (public/images/landing),
+ * no con fotos de stock. Una idea por pantalla: el titular con la palabra pixelada, la hoja de guion,
+ * lo que hace cada parte del estudio y la acción.
+ */
 const tools = [
-    { icon: Globe2, title: 'Worlds that breathe', text: 'Build the history, rules and secrets of a universe that feels alive.', tag: 'WORLDBUILDING' },
-    { icon: Users, title: 'More than an NPC', text: 'Give them a past, desires and contradictions. Create characters your players will remember.', tag: 'CHARACTERS' },
-    { icon: GitBranch, title: 'Every choice, a path', text: 'Connect scenes, explore branches and turn decisions into stories.', tag: 'NON-LINEAR NARRATIVE' },
+    { title: 'Script', text: 'Scenes in screenplay format, with versions you can compare.' },
+    { title: 'Dialogues', text: 'A graph with variables, conditions and endings you can play.' },
+    { title: 'Narrative Bible', text: 'Characters, places and world rules linked to every scene.' },
+    { title: 'AI Analysis', text: 'Emotional arc and coherence warnings, only when you ask.' },
 ];
 
 export default function Landing() {
+    const { props } = usePage<PageProps>();
+    const signedIn = Boolean(props.auth?.user);
+
     return (
         <SiteLayout>
             <Head title={__('Home')} />
-            <section className="mx-auto grid max-w-[1400px] gap-12 px-6 pb-16 pt-14 lg:grid-cols-[1.04fr_1fr] lg:gap-14 lg:px-16 lg:pb-20 lg:pt-16">
-                <div className="flex flex-col items-start py-3">
-                    <span className="flex items-center gap-2 text-xs text-primary">
-                        <span className="h-1.5 w-1.5 rounded-full bg-primary" /> {__('YOUR NEXT UNIVERSE STARTS HERE')}
-                    </span>
-                    <h1 className="mt-7 font-['Outfit',sans-serif] text-[clamp(48px,5.1vw,74px)] font-medium leading-[1.06]">
-                        {__('There are stories')}
-                        <br />
-                        {__('that deserve')}
-                        <br />
-                        {__('to be')} <span className={pixel}>{__('played.')}</span>
+            <section className="mx-auto grid max-w-[1360px] items-center gap-12 px-4 pb-16 pt-12 sm:px-6 lg:grid-cols-[minmax(0,5fr)_minmax(0,6fr)] lg:gap-16 lg:px-16 lg:pb-24 lg:pt-16">
+                <div>
+                    <h1 className="max-w-[14ch] text-5xl font-bold tracking-[-0.02em]">
+                        {__('There are stories that deserve to be')} <span className={pixelAccent}>{__('played.')}</span>
                     </h1>
-                    <p className="mt-7 max-w-[390px] text-base leading-[1.8] text-muted">
-                        {__('Create worlds, bring your characters to life and design narratives that leave a mark. Your imagination in command. AI as your adventure companion.')}
-                    </p>
-                    <div className="mt-8 flex flex-wrap items-center gap-7">
-                        <Link href="/projects" className={button}>
-                            {__('Build your world')} <ArrowUpRight size={17} />
+                    <p className="mt-6 max-w-[40ch] text-lg text-muted">{__('Script, branching dialogue and world coherence, in one studio.')}</p>
+                    <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-4">
+                        <Link href="/projects/create" className={button}>
+                            {__('Create a project')}
                         </Link>
-                        <a href="#herramientas" className="flex items-center gap-2 text-xs text-muted">
-                            {__('Explore GAMERDUST')} <ArrowRight size={15} />
-                        </a>
-                    </div>
-                    <div className="mt-8 flex items-center gap-2 text-xs text-subtle">
-                        <Check size={13} /> {__('Free to start')} <span className="mx-2">·</span> {__('No card. No limits to your imagination.')}
+                        <Link href={signedIn ? '/projects' : '/login'} className="inline-flex min-h-11 items-center text-base text-foreground underline decoration-border-strong underline-offset-4 hover:decoration-primary">
+                            {signedIn ? __('My projects') : __('Log in')}
+                        </Link>
                     </div>
                 </div>
-                <div className="relative min-h-[530px] overflow-hidden rounded-lg border border-border lg:min-h-[580px]">
-                    <img src={forest} alt={__('A misty forest, the setting of a world to discover')} className="absolute h-full w-full object-cover brightness-[.65]" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-surface-2/20" />
-                    <div className="absolute bottom-6 left-6 right-6">
-                        <span className="text-xs text-primary">{__('DARK FANTASY / CHAPTER 01')}</span>
-                        <h2 className="mt-2 font-display text-3xl">{__('Echoes of the forest')}</h2>
-                        <p className="mt-1 text-xs text-muted">{__('Every decision leaves a root.')}</p>
+                <figure className="min-w-0">
+                    <img
+                        src="/images/landing/guion-cumbre-muda.webp"
+                        width={1120}
+                        height={840}
+                        fetchPriority="high"
+                        alt={__('The script editor with the first scene of Cumbre Muda, the demo project')}
+                        className="aspect-[4/3] w-full rounded-xl border border-border bg-surface object-cover object-left-top"
+                    />
+                    <figcaption className="mt-3 text-sm text-subtle">{__('Cumbre Muda, the demo project, open in the script editor.')}</figcaption>
+                </figure>
+            </section>
+
+            <section id="herramientas" className="border-t border-border bg-surface">
+                <div className="mx-auto grid max-w-[1360px] gap-12 px-4 py-20 sm:px-6 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-16 lg:px-16 lg:py-28">
+                    <div>
+                        <h2 className="text-4xl font-bold tracking-[-0.015em]">
+                            {__('Less friction.')} <span className={pixelAccent}>{__('More imagination.')}</span>
+                        </h2>
+                        <dl className="mt-10">
+                            {tools.map(({ title, text }) => (
+                                <div key={title} className="grid gap-1 border-t border-border py-4 sm:grid-cols-[10rem_minmax(0,1fr)] sm:gap-6">
+                                    <dt className="font-bold">{__(title)}</dt>
+                                    <dd className="text-muted">{__(text)}</dd>
+                                </div>
+                            ))}
+                        </dl>
                     </div>
+                    <figure className="min-w-0 self-center">
+                        <img
+                            src="/images/landing/grafo-cumbre-muda.webp"
+                            width={1280}
+                            height={800}
+                            loading="lazy"
+                            alt={__('The dialogue graph of Cumbre Muda, with its start, its branches and three endings')}
+                            className="aspect-[16/10] w-full rounded-xl border border-border bg-background object-cover"
+                        />
+                        <figcaption className="mt-3 text-sm text-subtle">{__('The dialogue graph: every choice changes variables and opens or closes paths.')}</figcaption>
+                    </figure>
                 </div>
             </section>
 
-            <section id="herramientas" className="mx-auto max-w-[1400px] px-6 py-20 lg:px-16">
-                <span className="text-xs text-primary">{__('YOUR CREATIVE INVENTORY')}</span>
-                <h2 className="mt-4 font-['Outfit',sans-serif] text-3xl font-medium md:text-3xl">
-                    {__('Less friction.')} <span className={pixel}>{__('More imagination.')}</span>
-                </h2>
-                <div className="mt-9 grid gap-4 md:grid-cols-3">
-                    {tools.map(({ icon: Icon, title, text, tag }) => (
-                        <Link
-                            href="/projects"
-                            key={title}
-                            className="group rounded-lg border border-border bg-surface p-6 transition hover:border-primary/40 hover:bg-surface-2"
-                        >
-                            <div className="flex justify-between">
-                                <Icon size={25} strokeWidth={1.3} className="text-primary" />
-                                <ArrowUpRight size={17} className="text-subtle group-hover:text-primary" />
-                            </div>
-                            <h3 className="mt-7 font-display text-lg">{__(title)}</h3>
-                            <p className="mt-3 max-w-[300px] text-xs leading-6 text-subtle">{__(text)}</p>
-                            <div className="mt-7 text-xs text-subtle">{__(tag)}</div>
-                        </Link>
-                    ))}
+            <section className="mx-auto flex max-w-[1360px] flex-wrap items-center justify-between gap-6 px-4 py-20 sm:px-6 lg:px-16">
+                <div>
+                    <h2 className="text-3xl font-bold">{__('Your next story does not exist yet.')}</h2>
+                    <p className="mt-2 text-lg text-muted">{__('And no one can tell it like you.')}</p>
                 </div>
-            </section>
-
-            <section className="mx-6 mb-16 rounded-lg border border-border bg-surface-2 px-6 py-12 text-center lg:mx-auto lg:max-w-[1272px]">
-                <Sparkles className="mx-auto text-primary" size={22} />
-                <h2 className="mt-4 font-display text-3xl">{__('Your next story does not exist yet.')}</h2>
-                <p className="mt-3 text-sm text-muted">{__('And no one can tell it like you.')}</p>
-                <Link href="/projects/create" className={`${button} mt-6`}>
-                    {__('Start writing it')} <ArrowUpRight size={16} />
+                <Link href="/projects/create" className={button}>
+                    {__('Start writing it')}
                 </Link>
             </section>
         </SiteLayout>

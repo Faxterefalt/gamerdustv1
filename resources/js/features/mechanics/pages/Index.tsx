@@ -183,7 +183,7 @@ export default function Index({ project, mechanics, selected, scenes, characters
             />
 
             <div className="grid items-start gap-5 lg:grid-cols-[225px_minmax(0,1fr)] xl:grid-cols-[245px_minmax(0,1fr)]">
-                <aside aria-label={__('Mechanics catalog')} className="overflow-hidden rounded-xl border border-border bg-surface lg:sticky lg:top-[88px]">
+                <aside aria-label={__('Mechanics catalog')} className="overflow-hidden rounded-xl border border-border bg-surface lg:sticky lg:top-[calc(var(--header-h)+1rem)]">
                     <div className="border-b border-border p-4">
                         <div className="flex items-center justify-between">
                             <h2 className="font-display text-base">{__('Catalog')}</h2>

@@ -585,7 +585,7 @@ export default function Index({ project, scenes, characters, locations, comments
         <ProjectLayout bare>
             <Head title={`${__('Script')} - ${project.title}`} />
             <div
-                className="flex min-h-[calc(100dvh-139px)] flex-col bg-background"
+                className="flex min-h-[calc(100dvh-var(--header-h)-var(--crumb-h))] flex-col bg-background"
                 onKeyDown={(event) => {
                     const mod = event.ctrlKey || event.metaKey;
 

@@ -108,10 +108,10 @@ function WorkspaceShell({ project, url, children }: PropsWithChildren<{ project:
     return (
         <div className="min-h-screen bg-background text-foreground">
             <Header onToggleSidebar={toggle} sidebarExpanded={desktop ? expanded : mobileOpen} />
-            <div className="flex min-h-[calc(100dvh-88px)]">
+            <div className="flex min-h-[calc(100dvh-var(--header-h))]">
                 <ProjectSidebar project={project} url={url} expanded={expanded} open={mobileOpen} onClose={close} />
                 <main id="studio-content" className="min-w-0 flex-1">
-                    <div className="flex h-[50px] items-center justify-between gap-4 border-b border-border px-5 sm:px-7">
+                    <div className="flex h-(--crumb-h) items-center justify-between gap-4 border-b border-border px-5 sm:px-7">
                         <nav aria-label={__('Project breadcrumb')} className="flex min-w-0 items-center gap-2 text-xs sm:gap-3 sm:text-xs">
                             <Link href="/projects" className="hidden shrink-0 text-subtle hover:text-primary sm:inline">
                                 {__('My projects')}

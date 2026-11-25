@@ -94,6 +94,11 @@
 }
 
 @layer base {
+    /* Alturas de la cabecera y de la barra de migas: las usan el sidebar fijo y el editor de guion. */
+    :root {
+        --header-h: 4.5rem;
+        --crumb-h: 3rem;
+    }
     html,
     body {
         overflow-x: clip;

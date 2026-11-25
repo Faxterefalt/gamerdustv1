@@ -150,7 +150,7 @@ export default function ProjectSidebar({ project, url, expanded, open, onClose }
             <aside
                 id="desktop-project-sidebar"
                 aria-label={__('Project menu')}
-                className={`${expanded ? 'hidden lg:block' : 'hidden'} sticky top-[88px] h-[calc(100dvh-88px)] w-[238px] shrink-0 border-r border-border bg-surface`}
+                className={`${expanded ? 'hidden lg:block' : 'hidden'} sticky top-(--header-h) h-[calc(100dvh-var(--header-h))] w-[238px] shrink-0 border-r border-border bg-surface`}
             >
                 {contents(false)}
             </aside>
