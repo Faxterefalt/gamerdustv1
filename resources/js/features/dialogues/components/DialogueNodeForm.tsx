@@ -57,7 +57,7 @@ export default function DialogueNodeForm({ projectId, dialogue, scenes, characte
     };
 
     return (
-        <form onSubmit={submit} className="space-y-5 border border-border bg-surface p-5">
+        <form onSubmit={submit} className="space-y-5 rounded-lg border border-border bg-surface p-5 sm:p-6">
             <div className="grid gap-4 md:grid-cols-3">
                 <Field label={__('Node key')} error={errors.node_key}>
                     <input value={data.node_key} onChange={(event) => setData('node_key', event.target.value)} className={inputClass} />

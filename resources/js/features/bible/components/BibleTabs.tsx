@@ -17,7 +17,7 @@ export default function BibleTabs({ projectId, active }: { projectId: number; ac
     ] as const;
 
     return (
-        <nav aria-label={__('Narrative Bible sections')} className="mb-6 flex gap-1 overflow-x-auto border-b border-border">
+        <nav aria-label={__('Narrative Bible sections')} className="mb-6 flex gap-1 overflow-x-auto overflow-y-hidden border-b border-border">
             {tabs.map(({ key, label, href, icon: Icon }) => (
                 <Link
                     key={key}

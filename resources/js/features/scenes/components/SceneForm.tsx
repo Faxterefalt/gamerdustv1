@@ -33,7 +33,7 @@ export default function SceneForm({ projectId, scene, method = 'post', submitLab
     };
 
     return (
-        <form onSubmit={submit} className="space-y-5 border border-border bg-surface p-5">
+        <form onSubmit={submit} className="space-y-5 rounded-lg border border-border bg-surface p-5 sm:p-6">
             <div className="grid gap-4 md:grid-cols-[1fr_1fr_120px]">
                 <Field label={__('Title')} error={errors.title}>
                     <input value={data.title} onChange={(event) => setData('title', event.target.value)} className={inputClass} />

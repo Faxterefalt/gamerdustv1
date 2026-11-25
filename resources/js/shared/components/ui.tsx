@@ -61,13 +61,13 @@ export function Pending({ pending, children }: { pending: boolean; children: Rea
     );
 }
 
-export function PageHeading({ eyebrow, title, description, action }: { eyebrow?: string; title: string; description: string; action?: ReactNode }) {
+/** Cabecera de página del estudio: título y una frase (sin eyebrow; la sección ya está en las migas). */
+export function PageHeading({ title, description, action }: { title: string; description: string; action?: ReactNode }) {
     return (
         <div className="mb-8 flex flex-wrap items-end justify-between gap-5">
-            <div>
-                <p className="text-xs text-subtle">{eyebrow ?? __('THE STUDIO / YOUR STORY')}</p>
-                <h1 className="mt-3 font-display text-2xl font-medium sm:text-3xl">{title}</h1>
-                <p className="mt-2 max-w-2xl text-xs leading-6 text-muted">{description}</p>
+            <div className="min-w-0">
+                <h1 className="text-3xl font-bold">{title}</h1>
+                <p className="mt-2 max-w-[65ch] text-muted">{description}</p>
             </div>
             {action}
         </div>

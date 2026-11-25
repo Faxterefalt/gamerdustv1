@@ -15,7 +15,7 @@ export default function AnalysisTabs({ projectId, active }: { projectId: number;
     ] as const;
 
     return (
-        <nav aria-label={__('AI Analysis sections')} className="mb-6 flex gap-1 overflow-x-auto border-b border-border">
+        <nav aria-label={__('AI Analysis sections')} className="mb-6 flex gap-1 overflow-x-auto overflow-y-hidden border-b border-border">
             {tabs.map(({ key, label, href, icon: Icon }) => (
                 <Link
                     key={key}

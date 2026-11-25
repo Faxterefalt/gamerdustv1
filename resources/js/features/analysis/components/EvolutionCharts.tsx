@@ -96,7 +96,7 @@ function StoryArc({ projectId, scenes, catalog }: { projectId: number; scenes: T
 
     return (
         <section className={`${card} p-5 sm:p-6`}>
-            <h2 className="font-display text-lg">{__('Emotional arc of the story')}</h2>
+            <h2 className="text-lg font-bold">{__('Emotional arc of the story')}</h2>
             <p className="mt-1 text-xs leading-5 text-muted">{__('The tension line shows pacing: look for rises before the climax and breathers after.')}</p>
 
             <div className="mt-5 h-[320px] w-full">
@@ -171,14 +171,14 @@ function ArcTooltip({ row, catalog }: { row?: ArcRow; catalog: EmotionCatalog })
         <TooltipBox>
             <p className="text-xs text-primary">
                 {scene.code}
-                {scene.act ? ` · ${scene.act}` : ''}
+                {scene.act ? `, ${scene.act}` : ''}
             </p>
             <p className="text-xs font-medium">{scene.title}</p>
             {scene.emotion && scene.labels ? (
                 <>
                     <EmotionChip emotion={scene.emotion} catalog={catalog} size="sm" />
                     <p className="text-xs">
-                        {__('Tone')}: {scene.labels.tone} · {__('Tension')}: {scene.labels.tension}
+                        {__('Tone')}: {scene.labels.tone}, {__('Tension')}: {scene.labels.tension}
                     </p>
                     {scene.stale && <p className="text-xs text-warning">{__('The text changed after this analysis.')}</p>}
                     {scene.alert === 'red' && <p className="text-xs text-danger">{__('Tone jump with no visible cause')}</p>}
@@ -247,7 +247,7 @@ function CharacterEmotions({ projectId, timeline, catalog }: ChartsProps) {
 
     return (
         <section className={`${card} p-5 sm:p-6`}>
-            <h2 className="font-display text-lg">{__('Character emotions')}</h2>
+            <h2 className="text-lg font-bold">{__('Character emotions')}</h2>
             <p className="mt-1 text-xs leading-5 text-muted">{__('From the state you set for each character to what the AI detected in each scene.')}</p>
 
             {characters.length ? (
@@ -321,7 +321,7 @@ function CharacterEmotions({ projectId, timeline, catalog }: ChartsProps) {
                                     <AlertTriangle size={14} className="mt-0.5 shrink-0 text-danger" />
                                     <span className="min-w-0 flex-1">
                                         <span className="text-xs text-primary">{review.code}</span> {review.title}
-                                        {review.name && <span className="text-danger"> · {review.name}</span>}
+                                        {review.name && <span className="text-danger">, {review.name}</span>}
                                         <span className="block text-muted">{review.explanation || __('Abrupt emotional change with no visible cause in the scene')}</span>
                                     </span>
                                     <ArrowUpRight size={14} className="shrink-0 text-primary" />
@@ -356,7 +356,7 @@ function CharacterTooltip({ row, characters, catalog }: { row?: CharacterRow; ch
                         <span className="text-xs font-normal text-muted">{point!.origin === 'author' ? __('Set by you') : __('Detected by AI')}</span>
                     </p>
                     <p className="mt-1 text-xs">
-                        {__('Tone')}: {point!.labels.tone} · {__('Tension')}: {point!.labels.tension} · {__('Character control')}: {point!.labels.control}
+                        {__('Tone')}: {point!.labels.tone}, {__('Tension')}: {point!.labels.tension}, {__('Character control')}: {point!.labels.control}
                     </p>
                     {point!.evidence && <p className="mt-1 text-xs italic text-muted">“{point!.evidence}”</p>}
                     {point!.explanation && <p className="mt-1 text-xs text-muted">{point!.explanation}</p>}

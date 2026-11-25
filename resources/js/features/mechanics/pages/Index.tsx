@@ -161,7 +161,6 @@ export default function Index({ project, mechanics, selected, scenes, characters
         <ProjectLayout>
             <Head title={`${__('Game mechanics')} - ${project.title}`} />
             <PageHeading
-                eyebrow={__('THE STUDIO / PLAYABLE DESIGN')}
                 title={__('Game mechanics')}
                 description={__('What the player does. What your story remembers.')}
                 action={

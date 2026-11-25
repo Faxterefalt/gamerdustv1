@@ -19,18 +19,18 @@ export function EmotionChip({ emotion, catalog, size = 'md' }: { emotion: string
     );
 }
 
-/** "Tono: Negativo · Tensión: Alta" (y control si se pide). En modo técnico, además, v/a/d. */
+/** "Tono: Negativo, Tensión: Alta" (y control si se pide). En modo técnico, además, v/a/d. */
 export function NarrativeLine({ labels, vad, technical, withControl = false }: { labels: NarrativeLabels; vad: Vad; technical: boolean; withControl?: boolean }) {
     return (
         <p className="text-xs leading-5 text-muted">
-            {__('Tone')}: <strong className="font-medium text-foreground">{labels.tone}</strong> · {__('Tension')}: <strong className="font-medium text-foreground">{labels.tension}</strong>
+            {__('Tone')}: <strong className="font-medium text-foreground">{labels.tone}</strong>, {__('Tension')}: <strong className="font-medium text-foreground">{labels.tension}</strong>
             {withControl && (
                 <>
                     {' '}
-                    · {__('Character control')}: <strong className="font-medium text-foreground">{labels.control}</strong>
+                    , {__('Character control')}: <strong className="font-medium text-foreground">{labels.control}</strong>
                 </>
             )}
-            {technical && <span className="ml-2 text-xs text-subtle">{`v ${vad.v.toFixed(2)} · a ${vad.a.toFixed(2)} · d ${vad.d.toFixed(2)}`}</span>}
+            {technical && <span className="ml-2 text-xs text-subtle">{`v ${vad.v.toFixed(2)}, a ${vad.a.toFixed(2)}, d ${vad.d.toFixed(2)}`}</span>}
         </p>
     );
 }

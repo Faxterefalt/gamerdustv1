@@ -38,7 +38,7 @@ export default function Edit() {
             <Head title={__('Account')} />
 
             <div className="grid gap-6 lg:grid-cols-2">
-                <section className="border border-border bg-surface p-5">
+                <section className="rounded-lg border border-border bg-surface p-5 sm:p-6">
                     <div>
                         <h2 className="text-lg font-semibold text-foreground">{__('Profile')}</h2>
                         <p className="mt-1 text-sm text-muted">{__('Update your display name and login email.')}</p>
@@ -62,7 +62,7 @@ export default function Edit() {
                     </form>
                 </section>
 
-                <section className="border border-border bg-surface p-5">
+                <section className="rounded-lg border border-border bg-surface p-5 sm:p-6">
                     <div>
                         <h2 className="text-lg font-semibold text-foreground">{__('Password')}</h2>
                         <p className="mt-1 text-sm text-muted">{__('Confirm your current password before saving a new one.')}</p>
