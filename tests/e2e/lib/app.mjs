@@ -7,8 +7,8 @@ import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { sleep } from './browser.mjs';
 
+// Raíz del repositorio, que es la propia app Laravel (artisan, public/, vendor/).
 export const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '../../..');
-export const API = join(ROOT, 'apps/api');
 
 const php = () => process.env.PHP_BINARY ?? 'php';
 
@@ -44,7 +44,7 @@ export class App {
     }
 
     artisan(...args) {
-        return execFileSync(php(), ['artisan', ...args], { cwd: API, env: this.env, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] });
+        return execFileSync(php(), ['artisan', ...args], { cwd: ROOT, env: this.env, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] });
     }
 
     /** Ejecuta PHP dentro de la app y devuelve el JSON que imprime en la última línea. */
@@ -56,7 +56,7 @@ export class App {
 
     /** Base de datos nueva con CumbreMudaSeeder y los ids que usan los escenarios. */
     prepare() {
-        if (existsSync(join(API, 'bootstrap/cache/config.php'))) {
+        if (existsSync(join(ROOT, 'bootstrap/cache/config.php'))) {
             throw new Error('La configuración está cacheada (bootstrap/cache/config.php): ejecuta "php artisan config:clear" antes de las pruebas.');
         }
 
@@ -88,10 +88,10 @@ export class App {
 
     async start() {
         const log = createWriteStream(this.serverLog);
-        const server = join(API, 'vendor/laravel/framework/src/Illuminate/Foundation/resources/server.php');
+        const server = join(ROOT, 'vendor/laravel/framework/src/Illuminate/Foundation/resources/server.php');
 
         // php -S con el router de Laravel; debe ejecutarse desde public/.
-        this.server = spawn(php(), ['-S', `127.0.0.1:${this.port}`, server], { cwd: join(API, 'public'), env: this.env });
+        this.server = spawn(php(), ['-S', `127.0.0.1:${this.port}`, server], { cwd: join(ROOT, 'public'), env: this.env });
         this.server.stdout.pipe(log);
         this.server.stderr.pipe(log);
 

@@ -11,7 +11,7 @@ import { execSync } from 'node:child_process';
 import { mkdtempSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { API, App } from './lib/app.mjs';
+import { App, ROOT } from './lib/app.mjs';
 import { Browser } from './lib/browser.mjs';
 import account from './scenarios/account.mjs';
 import ai from './scenarios/ai.mjs';
@@ -38,7 +38,7 @@ let failed = 0;
 try {
     if (!args.includes('--skip-build')) {
         console.log('· npm run build');
-        execSync('npm run build', { cwd: API, stdio: 'ignore' });
+        execSync('npm run build', { cwd: ROOT, stdio: 'ignore' });
     }
 
     console.log('· Base de datos temporal con CumbreMudaSeeder');
