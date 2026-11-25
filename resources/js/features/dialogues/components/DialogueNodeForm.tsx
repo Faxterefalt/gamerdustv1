@@ -5,6 +5,7 @@ import { DIALOGUE_TYPE_STYLE, dialogueTypeLabel } from '../../branching/layout';
 import type { Character } from '../../characters/characters.types';
 import type { DialogueNode, DialogueOption, DialogueType } from '../dialogues.types';
 import type { Scene } from '../../scenes/scenes.types';
+import { fieldBlock, primarySm, secondary } from '../../../shared/lib/styles';
 
 interface DialogueNodeFormProps {
     projectId: number;
@@ -111,7 +112,7 @@ export default function DialogueNodeForm({ projectId, dialogue, scenes, characte
                     <button
                         type="button"
                         onClick={() => setData('options', [...data.options, { player_option: '', next_dialogue_node_id: '', consequence: '', required_condition: '' }])}
-                        className="border border-border-strong px-3 py-2 text-sm hover:border-primary"
+                        className={secondary}
                     >
                         {__('Add option')}
                     </button>
@@ -153,7 +154,7 @@ export default function DialogueNodeForm({ projectId, dialogue, scenes, characte
                 ))}
             </section>
 
-            <button type="submit" disabled={processing} className="border border-primary px-4 py-2 text-sm text-foreground hover:bg-primary/10 disabled:opacity-50">
+            <button type="submit" disabled={processing} className={primarySm}>
                 {submitLabel}
             </button>
         </form>
@@ -169,7 +170,7 @@ function normalizeOptions(options: DialogueOption[]): DialogueOptionForm[] {
     }));
 }
 
-const inputClass = 'w-full border border-border-strong bg-background px-3 py-2 text-sm text-foreground focus:border-primary';
+const inputClass = fieldBlock;
 
 function Field({ label, error, children }: { label: string; error?: string; children: ReactNode }) {
     return (

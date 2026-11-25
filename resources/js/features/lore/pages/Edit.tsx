@@ -4,6 +4,7 @@ import ProjectLayout from '../../../layouts/ProjectLayout';
 import LoreEntryForm from '../components/LoreEntryForm';
 import type { LoreEntry } from '../lore.types';
 import type { Project } from '../../projects/projects.types';
+import { secondary } from '../../../shared/lib/styles';
 
 interface LoreEditProps {
     project: Project;
@@ -15,7 +16,7 @@ export default function Edit({ project, loreEntry }: LoreEditProps) {
         <ProjectLayout
             title={__('Edit :name', { name: loreEntry.title })}
             actions={
-                <Link href={`/projects/${project.id}/lore`} className="border border-border-strong px-4 py-2 text-sm hover:border-primary">
+                <Link href={`/projects/${project.id}/lore`} className={secondary}>
                     {__('Back')}
                 </Link>
             }

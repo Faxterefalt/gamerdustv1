@@ -3,6 +3,7 @@ import { Head, Link } from '@inertiajs/react';
 import ProjectLayout from '../../../layouts/ProjectLayout';
 import ProjectForm from '../components/ProjectForm';
 import type { Project } from '../projects.types';
+import { secondary } from '../../../shared/lib/styles';
 
 interface ProjectEditProps {
     project: Project;
@@ -13,7 +14,7 @@ export default function Edit({ project }: ProjectEditProps) {
         <ProjectLayout
             title={__('Edit :name', { name: project.title })}
             actions={
-                <Link href={`/projects/${project.id}`} className="border border-border-strong px-4 py-2 text-sm hover:border-primary">
+                <Link href={`/projects/${project.id}`} className={secondary}>
                     {__('Back')}
                 </Link>
             }

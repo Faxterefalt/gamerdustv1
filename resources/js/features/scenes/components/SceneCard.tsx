@@ -2,6 +2,7 @@ import { __, choice } from '../../../shared/lib/i18n';
 import { Link, router } from '@inertiajs/react';
 import type { Scene } from '../scenes.types';
 import CostEstimationBadge from '../../analysis/components/CostEstimationBadge';
+import { dangerButton, secondary } from '../../../shared/lib/styles';
 
 interface SceneCardProps {
     scene: Scene;
@@ -33,13 +34,13 @@ export default function SceneCard({ scene }: SceneCardProps) {
                 {typeof scene.dialogue_nodes_count === 'number' && <span>{choice(':count dialogue|:count dialogues', scene.dialogue_nodes_count)}</span>}
             </div>
             <div className="mt-4 flex flex-wrap gap-2">
-                <Link href={`/projects/${scene.project_id}/script?scene=${scene.id}`} className="border border-primary/40 px-3 py-2 text-sm text-primary hover:bg-primary/10">
+                <Link href={`/projects/${scene.project_id}/script?scene=${scene.id}`} className={secondary}>
                     {__('Write script')}
                 </Link>
-                <Link href={`/projects/${scene.project_id}/scenes/${scene.id}/edit`} className="border border-border-strong px-3 py-2 text-sm hover:border-primary">
+                <Link href={`/projects/${scene.project_id}/scenes/${scene.id}/edit`} className={secondary}>
                     {__('Edit')}
                 </Link>
-                <button type="button" onClick={destroy} className="border border-danger/50 px-3 py-2 text-sm text-danger hover:bg-danger/10">
+                <button type="button" onClick={destroy} className={dangerButton}>
                     {__('Delete')}
                 </button>
             </div>

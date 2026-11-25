@@ -3,6 +3,7 @@ import { useForm } from '@inertiajs/react';
 import type { FormEvent, ReactNode } from 'react';
 import type { LoreEntry, LoreType } from '../lore.types';
 import { LORE_TYPES, loreTypeLabel } from '../loreOptions';
+import { fieldBlock, primarySm } from '../../../shared/lib/styles';
 
 interface LoreEntryFormProps {
     projectId: number;
@@ -52,14 +53,14 @@ export default function LoreEntryForm({ projectId, entry, method = 'post', submi
             <Field label={__('Narrative function')} error={errors.narrative_function}>
                 <textarea value={data.narrative_function} onChange={(event) => setData('narrative_function', event.target.value)} rows={4} className={inputClass} />
             </Field>
-            <button type="submit" disabled={processing} className="border border-primary px-4 py-2 text-sm text-foreground hover:bg-primary/10 disabled:opacity-50">
+            <button type="submit" disabled={processing} className={primarySm}>
                 {submitLabel}
             </button>
         </form>
     );
 }
 
-const inputClass = 'w-full border border-border-strong bg-background px-3 py-2 text-sm text-foreground focus:border-primary';
+const inputClass = fieldBlock;
 
 function Field({ label, error, children }: { label: string; error?: string; children: ReactNode }) {
     return (

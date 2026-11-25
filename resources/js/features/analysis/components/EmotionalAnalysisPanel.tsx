@@ -5,6 +5,7 @@ import type { DialogueNode } from '../../dialogues/dialogues.types';
 import type { EmotionalAnalysis } from '../emotion.types';
 import { emotionLabel } from '../labels';
 import type { Scene } from '../../scenes/scenes.types';
+import { fieldInline, primarySm } from '../../../shared/lib/styles';
 
 interface EmotionalAnalysisPanelProps {
     projectId: number;
@@ -52,7 +53,7 @@ export default function EmotionalAnalysisPanel({ projectId, analysis, scenes = [
                         const first = sourceType === 'scene' ? scenes[0]?.id : dialogues[0]?.id;
                         setData({ source_type: sourceType, source_id: first ?? '' });
                     }}
-                    className="border border-border-strong bg-background px-3 py-2 text-sm"
+                    className={fieldInline}
                 >
                     <option value="scene">{__('Scene')}</option>
                     <option value="dialogue">{__('Dialogue')}</option>
@@ -60,7 +61,7 @@ export default function EmotionalAnalysisPanel({ projectId, analysis, scenes = [
                 <select
                     value={data.source_id}
                     onChange={(event) => setData('source_id', event.target.value ? Number(event.target.value) : '')}
-                    className="border border-border-strong bg-background px-3 py-2 text-sm"
+                    className={fieldInline}
                 >
                     {sources.map((source) => (
                         <option key={source.id} value={source.id}>
@@ -68,7 +69,7 @@ export default function EmotionalAnalysisPanel({ projectId, analysis, scenes = [
                         </option>
                     ))}
                 </select>
-                <button type="submit" disabled={processing || sources.length === 0} className="border border-primary px-4 py-2 text-sm text-foreground hover:bg-primary/10 disabled:opacity-50">
+                <button type="submit" disabled={processing || sources.length === 0} className={primarySm}>
                     {__('Analyze')}
                 </button>
             </form>

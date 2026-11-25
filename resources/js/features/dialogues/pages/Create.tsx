@@ -6,6 +6,7 @@ import type { Character } from '../../characters/characters.types';
 import type { DialogueNode } from '../dialogues.types';
 import type { Project } from '../../projects/projects.types';
 import type { Scene } from '../../scenes/scenes.types';
+import { secondary } from '../../../shared/lib/styles';
 
 interface DialogueCreateProps {
     project: Project;
@@ -19,7 +20,7 @@ export default function Create({ project, scenes, characters, dialogues }: Dialo
         <ProjectLayout
             title={__('New dialogue node')}
             actions={
-                <Link href={`/projects/${project.id}/dialogues`} className="border border-border-strong px-4 py-2 text-sm hover:border-primary">
+                <Link href={`/projects/${project.id}/dialogues`} className={secondary}>
                     {__('Back')}
                 </Link>
             }

@@ -2,6 +2,7 @@ import { __ } from '../../../shared/lib/i18n';
 import { useForm } from '@inertiajs/react';
 import type { FormEvent, ReactNode } from 'react';
 import type { Scene } from '../scenes.types';
+import { fieldBlock, primarySm } from '../../../shared/lib/styles';
 
 interface SceneFormProps {
     projectId: number;
@@ -70,14 +71,14 @@ export default function SceneForm({ projectId, scene, method = 'post', submitLab
                 <textarea value={data.consequence} onChange={(event) => setData('consequence', event.target.value)} rows={3} className={inputClass} />
             </Field>
 
-            <button type="submit" disabled={processing} className="border border-primary px-4 py-2 text-sm text-foreground hover:bg-primary/10 disabled:opacity-50">
+            <button type="submit" disabled={processing} className={primarySm}>
                 {submitLabel}
             </button>
         </form>
     );
 }
 
-const inputClass = 'w-full border border-border-strong bg-background px-3 py-2 text-sm text-foreground focus:border-primary';
+const inputClass = fieldBlock;
 
 function Field({ label, error, children }: { label: string; error?: string; children: ReactNode }) {
     return (

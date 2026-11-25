@@ -4,6 +4,7 @@ import ProjectLayout from '../../../layouts/ProjectLayout';
 import LoreEntryCard from '../components/LoreEntryCard';
 import type { LoreEntry } from '../lore.types';
 import type { Paginated, Project } from '../../projects/projects.types';
+import { primarySm, secondary } from '../../../shared/lib/styles';
 
 interface LoreIndexProps {
     project: Project;
@@ -16,10 +17,10 @@ export default function Index({ project, loreEntries }: LoreIndexProps) {
             title={`Lore - ${project.title}`}
             actions={
                 <div className="flex gap-2">
-                    <Link href={`/projects/${project.id}`} className="border border-border-strong px-4 py-2 text-sm hover:border-primary">
+                    <Link href={`/projects/${project.id}`} className={secondary}>
                         {__('Dashboard')}
                     </Link>
-                    <Link href={`/projects/${project.id}/lore/create`} className="border border-primary px-4 py-2 text-sm text-foreground hover:bg-primary/10">
+                    <Link href={`/projects/${project.id}/lore/create`} className={primarySm}>
                         {__('New entry')}
                     </Link>
                 </div>

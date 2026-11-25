@@ -1,6 +1,7 @@
 import { __ } from '../../../shared/lib/i18n';
 import { Link, router } from '@inertiajs/react';
 import type { Character } from '../characters.types';
+import { dangerButton, secondary } from '../../../shared/lib/styles';
 
 interface CharacterCardProps {
     character: Character;
@@ -24,10 +25,10 @@ export default function CharacterCard({ character }: CharacterCardProps) {
             </div>
             <p className="mt-3 text-sm text-muted">{character.motivation || character.background || __('No motivation or background yet.')}</p>
             <div className="mt-4 flex gap-2">
-                <Link href={`/projects/${character.project_id}/characters/${character.id}/edit`} className="border border-border-strong px-3 py-2 text-sm hover:border-primary">
+                <Link href={`/projects/${character.project_id}/characters/${character.id}/edit`} className={secondary}>
                     {__('Edit')}
                 </Link>
-                <button type="button" onClick={destroy} className="border border-danger/50 px-3 py-2 text-sm text-danger hover:bg-danger/10">
+                <button type="button" onClick={destroy} className={dangerButton}>
                     {__('Delete')}
                 </button>
             </div>

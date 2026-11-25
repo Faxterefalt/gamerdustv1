@@ -13,6 +13,7 @@ import SceneCard from '../../scenes/components/SceneCard';
 import type { ConstraintUsage, Project } from '../projects.types';
 import type { NarrativeValidation } from '../../analysis/validation.types';
 import { genreLabel, languageLabel, narrativeLabel, statusLabel } from '../projectOptions';
+import { primarySm, secondary } from '../../../shared/lib/styles';
 
 interface ProjectShowProps {
     project: Project;
@@ -29,13 +30,13 @@ export default function Show({ project, validations, closedValidations, constrai
             title={project.title}
             actions={
                 <div className="flex flex-wrap gap-2">
-                    <Link href={`/projects/${project.id}/branching`} className="border border-primary px-4 py-2 text-sm text-foreground hover:bg-primary/10">
+                    <Link href={`/projects/${project.id}/branching`} className={primarySm}>
                         {__('Branching editor')}
                     </Link>
-                    <Link href={`/projects/${project.id}/edit`} className="border border-border-strong px-4 py-2 text-sm hover:border-primary">
+                    <Link href={`/projects/${project.id}/edit`} className={secondary}>
                         {__('Edit')}
                     </Link>
-                    <Link href="/projects" className="border border-border-strong px-4 py-2 text-sm hover:border-primary">
+                    <Link href="/projects" className={secondary}>
                         {__('Projects')}
                     </Link>
                 </div>
@@ -119,7 +120,7 @@ function QuickLinks({ projectId }: { projectId: number }) {
     return (
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-6">
             {links.map(([label, href]) => (
-                <Link key={href} href={href} className="border border-border bg-surface px-4 py-3 text-sm text-foreground hover:border-primary">
+                <Link key={href} href={href} className={secondary}>
                     {label}
                 </Link>
             ))}
@@ -133,10 +134,10 @@ function DashboardSection({ title, href, createHref, children }: { title: string
             <div className="mb-3 flex items-center justify-between gap-4">
                 <h2 className="text-lg font-semibold text-foreground">{title}</h2>
                 <div className="flex gap-2">
-                    <Link href={href} className="border border-border-strong px-3 py-2 text-sm hover:border-primary">
+                    <Link href={href} className={secondary}>
                         {__('View all')}
                     </Link>
-                    <Link href={createHref} className="border border-primary px-3 py-2 text-sm text-foreground hover:bg-primary/10">
+                    <Link href={createHref} className={primarySm}>
                         {__('Create')}
                     </Link>
                 </div>

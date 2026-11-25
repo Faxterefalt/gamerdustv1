@@ -11,6 +11,7 @@ import NodeEditorPanel from '../components/NodeEditorPanel';
 import PlaytestDialog from '../components/PlaytestDialog';
 import VariablesDialog from '../components/VariablesDialog';
 import { useBranchingGraph } from '../hooks/useBranchingGraph';
+import { secondary } from '../../../shared/lib/styles';
 
 interface BranchingIndexProps {
     project: { id: number; title: string };
@@ -147,10 +148,10 @@ export default function Index({ project, graph: initialGraph, selectedNodeId, em
                     <button type="button" onClick={() => setShowVariables(true)} className="flex items-center gap-1.5 border border-border-strong px-3 py-2 text-sm hover:border-primary">
                         <Variable size={14} /> {__('Variables')} ({graph.variables.length})
                     </button>
-                    <Link href={`/projects/${project.id}`} className="border border-border-strong px-3 py-2 text-sm hover:border-primary">
+                    <Link href={`/projects/${project.id}`} className={secondary}>
                         {__('Dashboard')}
                     </Link>
-                    <Link href={`/projects/${project.id}/dialogues`} className="border border-border-strong px-3 py-2 text-sm hover:border-primary">
+                    <Link href={`/projects/${project.id}/dialogues`} className={secondary}>
                         {__('Dialogue list')}
                     </Link>
                 </div>

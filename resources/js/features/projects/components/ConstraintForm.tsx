@@ -2,6 +2,7 @@ import { __ } from '../../../shared/lib/i18n';
 import { useForm } from '@inertiajs/react';
 import type { FormEvent, ReactNode } from 'react';
 import type { ConstraintUsage, Project } from '../projects.types';
+import { fieldBlock, primarySm } from '../../../shared/lib/styles';
 
 interface ConstraintFormProps {
     project: Project;
@@ -159,7 +160,7 @@ export default function ConstraintForm({ project, usage }: ConstraintFormProps) 
             </fieldset>
 
             <div className="flex items-center gap-3">
-                <button type="submit" disabled={processing} className="border border-primary px-4 py-2 text-sm text-foreground hover:bg-primary/10 disabled:opacity-50">
+                <button type="submit" disabled={processing} className={primarySm}>
                     {processing ? __('Saving...') : __('Save setup')}
                 </button>
                 {recentlySuccessful && <span className="text-sm text-success">{__('Changes saved successfully.')}</span>}
@@ -168,7 +169,7 @@ export default function ConstraintForm({ project, usage }: ConstraintFormProps) 
     );
 }
 
-const inputClass = 'w-full border border-border-strong bg-background px-3 py-2 text-sm text-foreground focus:border-primary';
+const inputClass = fieldBlock;
 
 function Field({ label, help, error, children }: { label: string; help?: string; error?: string; children: ReactNode }) {
     return (

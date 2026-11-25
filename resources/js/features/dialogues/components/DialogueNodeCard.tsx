@@ -2,6 +2,7 @@ import { __ } from '../../../shared/lib/i18n';
 import { Link, router } from '@inertiajs/react';
 import { dialogueTypeLabel } from '../../branching/layout';
 import type { DialogueNode } from '../dialogues.types';
+import { dangerButton, secondary } from '../../../shared/lib/styles';
 
 interface DialogueNodeCardProps {
     dialogue: DialogueNode;
@@ -36,13 +37,13 @@ export default function DialogueNodeCard({ dialogue }: DialogueNodeCardProps) {
                 </div>
             )}
             <div className="mt-4 flex gap-2">
-                <Link href={`/projects/${dialogue.project_id}/branching?node=${dialogue.id}`} className="border border-ember/50 px-3 py-2 text-sm text-ember hover:bg-ember/10">
+                <Link href={`/projects/${dialogue.project_id}/branching?node=${dialogue.id}`} className={secondary}>
                     {__('View on map')}
                 </Link>
-                <Link href={`/projects/${dialogue.project_id}/dialogues/${dialogue.id}/edit`} className="border border-border-strong px-3 py-2 text-sm hover:border-primary">
+                <Link href={`/projects/${dialogue.project_id}/dialogues/${dialogue.id}/edit`} className={secondary}>
                     {__('Edit')}
                 </Link>
-                <button type="button" onClick={destroy} className="border border-danger/50 px-3 py-2 text-sm text-danger hover:bg-danger/10">
+                <button type="button" onClick={destroy} className={dangerButton}>
                     {__('Delete')}
                 </button>
             </div>

@@ -3,6 +3,7 @@ import { Head, Link } from '@inertiajs/react';
 import ProjectLayout from '../../../layouts/ProjectLayout';
 import LoreEntryForm from '../components/LoreEntryForm';
 import type { Project } from '../../projects/projects.types';
+import { secondary } from '../../../shared/lib/styles';
 
 interface LoreCreateProps {
     project: Project;
@@ -13,7 +14,7 @@ export default function Create({ project }: LoreCreateProps) {
         <ProjectLayout
             title={__('New lore entry')}
             actions={
-                <Link href={`/projects/${project.id}/lore`} className="border border-border-strong px-4 py-2 text-sm hover:border-primary">
+                <Link href={`/projects/${project.id}/lore`} className={secondary}>
                     {__('Back')}
                 </Link>
             }

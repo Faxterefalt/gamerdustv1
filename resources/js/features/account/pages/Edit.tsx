@@ -3,6 +3,7 @@ import { Head, useForm, usePage } from '@inertiajs/react';
 import type { FormEvent, ReactNode } from 'react';
 import ProjectLayout from '../../../layouts/ProjectLayout';
 import type { PageProps } from '../../projects/projects.types';
+import { fieldBlock, primarySm } from '../../../shared/lib/styles';
 
 export default function Edit() {
     const { props } = usePage<PageProps>();
@@ -54,7 +55,7 @@ export default function Edit() {
                         <button
                             type="submit"
                             disabled={profileForm.processing}
-                            className="border border-primary px-4 py-2 text-sm font-medium text-foreground hover:bg-primary/10 disabled:opacity-50"
+                            className={primarySm}
                         >
                             {__('Save profile')}
                         </button>
@@ -91,7 +92,7 @@ export default function Edit() {
                         <button
                             type="submit"
                             disabled={passwordForm.processing}
-                            className="border border-primary px-4 py-2 text-sm font-medium text-foreground hover:bg-primary/10 disabled:opacity-50"
+                            className={primarySm}
                         >
                             {__('Change password')}
                         </button>
@@ -102,7 +103,7 @@ export default function Edit() {
     );
 }
 
-const inputClass = 'w-full border border-border-strong bg-background px-3 py-2 text-sm text-foreground focus:border-primary';
+const inputClass = fieldBlock;
 
 function Field({ label, error, children }: { label: string; error?: string; children: ReactNode }) {
     return (

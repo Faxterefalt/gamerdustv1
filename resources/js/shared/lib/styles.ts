@@ -11,6 +11,9 @@ export const button =
 export const field =
     'mt-2 min-h-10 w-full rounded-md border border-border-strong bg-background px-3 py-2 text-base text-foreground transition-colors hover:border-muted focus:border-primary disabled:cursor-not-allowed disabled:opacity-50 pointer-coarse:min-h-11';
 
+/** Campo sin margen superior (cuando la etiqueta ya separa). */
+export const fieldBlock = field.replace('mt-2 ', '');
+
 /** Acción secundaria con borde. */
 export const secondary =
     'inline-flex min-h-10 items-center justify-center gap-2 rounded-md border border-border bg-surface px-3 text-sm text-foreground transition-colors hover:border-primary/50 hover:bg-surface-2 active:translate-y-px disabled:cursor-not-allowed disabled:opacity-50 pointer-coarse:min-h-11';
@@ -18,6 +21,14 @@ export const secondary =
 /** Botón principal compacto (estudio de proyecto). */
 export const primarySm =
     'inline-flex min-h-10 items-center justify-center gap-2 rounded-md bg-primary px-4 text-sm font-bold text-primary-ink transition-colors hover:bg-primary-hover active:translate-y-px disabled:cursor-wait disabled:opacity-50 pointer-coarse:min-h-11';
+
+/** Acción destructiva (eliminar, retirar). */
+export const dangerButton =
+    'inline-flex min-h-10 items-center justify-center gap-2 rounded-md border border-danger/50 px-3 text-sm text-danger transition-colors hover:bg-danger/10 active:translate-y-px disabled:cursor-not-allowed disabled:opacity-50 pointer-coarse:min-h-11';
+
+/** Campo en línea (selects y entradas dentro de una barra, sin ancho completo). */
+export const fieldInline =
+    'min-h-10 rounded-md border border-border-strong bg-background px-3 py-2 text-sm text-foreground transition-colors hover:border-muted focus:border-primary disabled:cursor-not-allowed disabled:opacity-50 pointer-coarse:min-h-11';
 
 /** Botón de solo icono (siempre con aria-label). */
 export const iconButton =

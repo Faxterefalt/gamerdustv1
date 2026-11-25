@@ -1,9 +1,9 @@
 import { __, locale } from '../../../shared/lib/i18n';
 import { Head, Link, useForm } from '@inertiajs/react';
-import { ArrowRight, BookOpen, ChevronRight, Sparkles } from 'lucide-react';
+import { ChevronRight } from 'lucide-react';
 import type { FormEvent } from 'react';
 import SiteLayout from '../../../layouts/SiteLayout';
-import { button } from '../../../shared/lib/styles';
+import { button, secondary } from '../../../shared/lib/styles';
 import GeneralFields, { validateGeneral } from '../components/GeneralFields';
 import type { NarrativeType } from '../projects.types';
 
@@ -31,43 +31,40 @@ export default function Create() {
     return (
         <SiteLayout>
             <Head title={__('Create project')} />
-            <div className="mx-auto min-h-[78vh] max-w-[1400px] px-6 py-10 lg:px-16">
-                <nav aria-label={__('Breadcrumb')} className="flex items-center gap-2 text-xs text-subtle">
-                    <Link href="/projects" className="hover:text-primary">
+            <div className="mx-auto max-w-[1360px] px-4 pb-20 pt-8 sm:px-6 lg:px-16">
+                <nav aria-label={__('Breadcrumb')} className="flex items-center gap-2 text-sm text-muted">
+                    <Link href="/projects" className="inline-flex min-h-11 items-center hover:text-foreground">
                         {__('My projects')}
                     </Link>
-                    <ChevronRight size={13} />
+                    <ChevronRight size={14} aria-hidden="true" />
                     <span className="text-muted">{__('Create project')}</span>
                 </nav>
 
                 <section className="mx-auto mt-8 max-w-[820px] pb-12">
-                    <span className="flex items-center gap-2 text-xs text-primary">
-                        <Sparkles size={14} /> {__('THE FIRST CHAPTER OF YOUR UNIVERSE')}
-                    </span>
-                    <h1 className="mt-4 font-display text-3xl font-medium sm:text-4xl">{__('Create narrative project')}</h1>
-                    <p className="mt-3 text-sm leading-6 text-subtle">
+                    <h1 className="text-3xl font-bold">{__('Create narrative project')}</h1>
+                    <p className="mt-3 max-w-[60ch] text-muted">
                         {__('Give your idea a name. This is the beginning of a world only you can imagine.')}
                     </p>
 
-                    <form onSubmit={submit} className="mt-6 rounded-xl border border-border bg-surface p-5 sm:p-6">
+                    <form onSubmit={submit} className="mt-8 rounded-lg border border-border bg-surface p-5 sm:p-8">
                         <GeneralFields data={data} setData={setData} errors={errors} idPrefix="create" />
 
                         <div className="mt-7 flex flex-wrap items-center justify-between gap-5 border-t border-border pt-6">
-                            <p className="text-xs text-subtle">
+                            <p className="text-sm text-muted">
                                 <span className="text-primary">*</span> {__('Required fields')}
                             </p>
                             <div className="flex gap-3">
-                                <Link href="/projects" className="inline-flex items-center justify-center rounded-md border border-border px-5 py-3 text-sm transition hover:border-primary/50">
+                                <Link href="/projects" className={secondary}>
                                     {__('Cancel')}
                                 </Link>
                                 <button type="submit" disabled={processing} className={`${button} disabled:opacity-50`}>
-                                    {__('Create project')} <ArrowRight size={16} />
+                                    {__('Create project')}
                                 </button>
                             </div>
                         </div>
                     </form>
-                    <p className="mt-5 flex items-center justify-center gap-2 text-xs text-subtle">
-                        <BookOpen size={13} /> {__('Your story belongs to you. Stored on your server.')}
+                    <p className="mt-5 text-sm text-subtle">
+                        {__('Your story belongs to you. Stored on your server.')}
                     </p>
                 </section>
             </div>

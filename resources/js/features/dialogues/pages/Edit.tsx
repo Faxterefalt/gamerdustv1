@@ -6,6 +6,7 @@ import type { Character } from '../../characters/characters.types';
 import type { DialogueNode } from '../dialogues.types';
 import type { Project } from '../../projects/projects.types';
 import type { Scene } from '../../scenes/scenes.types';
+import { secondary } from '../../../shared/lib/styles';
 
 interface DialogueEditProps {
     project: Project;
@@ -20,7 +21,7 @@ export default function Edit({ project, dialogue, scenes, characters, dialogues 
         <ProjectLayout
             title={__('Edit :name', { name: dialogue.node_key })}
             actions={
-                <Link href={`/projects/${project.id}/dialogues`} className="border border-border-strong px-4 py-2 text-sm hover:border-primary">
+                <Link href={`/projects/${project.id}/dialogues`} className={secondary}>
                     {__('Back')}
                 </Link>
             }

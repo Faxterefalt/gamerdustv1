@@ -3,6 +3,7 @@ import { Link, router } from '@inertiajs/react';
 import { ArrowUpRight } from 'lucide-react';
 import { severityLabel } from '../labels';
 import type { NarrativeValidation, ValidationStatus } from '../validation.types';
+import { secondary } from '../../../shared/lib/styles';
 
 interface NarrativeValidationPanelProps {
     projectId: number;
@@ -34,7 +35,7 @@ export default function NarrativeValidationPanel({ projectId, validations = [], 
                 <button
                     type="button"
                     onClick={() => router.post(`/projects/${projectId}/validations`, {}, { preserveScroll: true })}
-                    className="border border-border-strong px-3 py-2 text-sm hover:border-primary"
+                    className={secondary}
                 >
                     {__('Recalculate')}
                 </button>

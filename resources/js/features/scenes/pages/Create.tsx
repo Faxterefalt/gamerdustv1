@@ -3,6 +3,7 @@ import { Head, Link } from '@inertiajs/react';
 import ProjectLayout from '../../../layouts/ProjectLayout';
 import SceneForm from '../components/SceneForm';
 import type { Project } from '../../projects/projects.types';
+import { secondary } from '../../../shared/lib/styles';
 
 interface SceneCreateProps {
     project: Project;
@@ -13,7 +14,7 @@ export default function Create({ project }: SceneCreateProps) {
         <ProjectLayout
             title={__('New scene')}
             actions={
-                <Link href={`/projects/${project.id}/scenes`} className="border border-border-strong px-4 py-2 text-sm hover:border-primary">
+                <Link href={`/projects/${project.id}/scenes`} className={secondary}>
                     {__('Back')}
                 </Link>
             }

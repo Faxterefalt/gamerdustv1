@@ -2,6 +2,7 @@ import { __ } from '../../../shared/lib/i18n';
 import { Link, router } from '@inertiajs/react';
 import type { LoreEntry } from '../lore.types';
 import { loreTypeLabel } from '../loreOptions';
+import { dangerButton, secondary } from '../../../shared/lib/styles';
 
 interface LoreEntryCardProps {
     entry: LoreEntry;
@@ -23,10 +24,10 @@ export default function LoreEntryCard({ entry }: LoreEntryCardProps) {
             <p className="mt-3 text-sm text-muted">{entry.description || __('No description.')}</p>
             {entry.narrative_function && <p className="mt-3 text-sm text-foreground">{entry.narrative_function}</p>}
             <div className="mt-4 flex gap-2">
-                <Link href={`/projects/${entry.project_id}/lore/${entry.id}/edit`} className="border border-border-strong px-3 py-2 text-sm hover:border-primary">
+                <Link href={`/projects/${entry.project_id}/lore/${entry.id}/edit`} className={secondary}>
                     {__('Edit')}
                 </Link>
-                <button type="button" onClick={destroy} className="border border-danger/50 px-3 py-2 text-sm text-danger hover:bg-danger/10">
+                <button type="button" onClick={destroy} className={dangerButton}>
                     {__('Delete')}
                 </button>
             </div>
