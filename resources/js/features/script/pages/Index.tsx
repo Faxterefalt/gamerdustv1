@@ -16,6 +16,8 @@ import {
     MessageSquare,
     PanelRight,
     Parentheses,
+    Pin,
+    PinOff,
     Plus,
     Redo2,
     Save,
@@ -101,6 +103,9 @@ const plainText = (blocks: ScriptBlock[]) =>
 type DraftOffer = { sceneId: number; draft: LocalDraft; conflict: boolean };
 
 const LOCAL_DELAY = 700;
+
+/** Preferencia de la barra de herramientas fija (fijada salvo que se haya soltado). */
+const TOOLBAR_PIN_KEY = 'gamerdust.script-toolbar-pinned';
 
 /**
  * Borradores del navegador al abrir el editor (HU 24): se ofrecen los más recientes que la versión guardada
@@ -565,6 +570,24 @@ export default function Index({ project, scenes, characters, locations, comments
         />
     ) : null;
 
+    const [pinned, setPinned] = useState(() => {
+        try {
+            return localStorage.getItem(TOOLBAR_PIN_KEY) !== 'false';
+        } catch {
+            return true;
+        }
+    });
+
+    function togglePinned() {
+        try {
+            localStorage.setItem(TOOLBAR_PIN_KEY, String(!pinned));
+        } catch {
+            // Preferencia opcional: sin almacenamiento simplemente no se recuerda.
+        }
+
+        setPinned(!pinned);
+    }
+
     const wordCount = current ? countWords(current.snapshot.elements.map((element) => element.text).join(' ')) : 0;
     const focusedBlock = current?.snapshot.elements.find((element) => element.id === focused);
     const focusedKind = focusedBlock?.kind;
@@ -629,8 +652,15 @@ export default function Index({ project, scenes, characters, locations, comments
                     </div>
                 </div>
 
-                <div role="toolbar" aria-label={__('Script tools')} className="flex flex-wrap items-center justify-between gap-x-3 gap-y-2 border-y border-border bg-surface px-4 py-3 sm:px-6">
-                    <div className="flex flex-wrap gap-1.5">
+                {/* Fijada queda bajo la cabecera; en pantallas estrechas pasa a una sola fila con desplazamiento para no tapar la hoja. */}
+                <div
+                    role="toolbar"
+                    aria-label={__('Script tools')}
+                    className={`flex items-center justify-between gap-x-3 gap-y-2 border-y border-border bg-surface px-4 py-3 sm:px-6 ${
+                        pinned ? 'sticky top-(--header-h) z-20 overflow-x-auto lg:flex-wrap lg:overflow-x-visible' : 'flex-wrap'
+                    }`}
+                >
+                    <div className={`flex gap-1.5 ${pinned ? 'shrink-0 lg:shrink lg:flex-wrap' : 'flex-wrap'}`}>
                         {TOOLS.map(({ kind, label, icon: Icon }) => (
                             <button
                                 key={kind}
@@ -647,7 +677,17 @@ export default function Index({ project, scenes, characters, locations, comments
                             </button>
                         ))}
                     </div>
-                    <div className="flex flex-wrap items-center gap-1.5">
+                    <div className={`flex items-center gap-1.5 ${pinned ? 'shrink-0 lg:shrink lg:flex-wrap' : 'flex-wrap'}`}>
+                        <button
+                            type="button"
+                            aria-label={__('Pin toolbar')}
+                            aria-pressed={pinned}
+                            title={pinned ? __('Unpin toolbar') : __('Pin toolbar')}
+                            className={`${secondary} !px-2.5 ${pinned ? '!border-primary/50 !text-primary' : ''}`}
+                            onClick={togglePinned}
+                        >
+                            {pinned ? <Pin size={15} aria-hidden="true" /> : <PinOff size={15} aria-hidden="true" />}
+                        </button>
                         <button
                             type="button"
                             aria-label={__('Undo')}

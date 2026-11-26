@@ -87,7 +87,7 @@ export default function BlockInput({ block, label, index, disabled, onChange, on
                     }
                 }}
                 placeholder={__(PLACEHOLDERS[block.kind])}
-                className={`block min-h-6 w-full resize-none overflow-hidden rounded-sm border-0 bg-transparent p-0 text-inherit placeholder:text-paper-muted focus-visible:!outline-0 ${centered ? 'text-center' : 'text-left'}`}
+                className={`block min-h-6 w-full scroll-mt-56 resize-none overflow-hidden rounded-sm border-0 bg-transparent p-0 text-inherit placeholder:text-paper-muted focus-visible:!outline-0 ${centered ? 'text-center' : 'text-left'}`}
             />
             <button
                 type="button"
