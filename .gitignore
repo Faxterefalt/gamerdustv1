@@ -16,6 +16,7 @@ __pycache__/
 .venv/
 prompt-ia-emocional-gamerdust.md
 prompt-cierre-mvp.md
+gamerdust.sql
 /vendor
 /public/build
 /public/hot
